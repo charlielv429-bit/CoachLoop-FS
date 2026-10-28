@@ -1,0 +1,62 @@
+{
+  "is_mock": true,
+  "source": "mock://manual/forward_outside_edge_L/side_view",
+  "model": "mock-geometry",
+  "fps": 30,
+  "frames": [
+    {
+      "frame_idx": 0,
+      "timestamp_ms": 0,
+      "is_mock": true,
+      "source": "mock://manual/forward_outside_edge_L/side_view",
+      "landmarks": [
+        {"id": 11, "name": "left_shoulder", "x": 0.48, "y": 0.30, "visibility": 0.97},
+        {"id": 12, "name": "right_shoulder", "x": 0.52, "y": 0.30, "visibility": 0.95},
+        {"id": 23, "name": "left_hip", "x": 0.50, "y": 0.55, "visibility": 0.94},
+        {"id": 24, "name": "right_hip", "x": 0.54, "y": 0.55, "visibility": 0.92},
+        {"id": 25, "name": "left_knee", "x": 0.62, "y": 0.70, "visibility": 0.90},
+        {"id": 27, "name": "left_ankle", "x": 0.47, "y": 0.92, "visibility": 0.88}
+      ]
+    },
+    {
+      "frame_idx": 1,
+      "timestamp_ms": 33,
+      "is_mock": true,
+      "source": "mock://manual/forward_outside_edge_L/side_view",
+      "landmarks": [
+        {"id": 11, "name": "left_shoulder", "x": 0.46, "y": 0.28, "visibility": 0.96},
+        {"id": 12, "name": "right_shoulder", "x": 0.54, "y": 0.28, "visibility": 0.94},
+        {"id": 23, "name": "left_hip", "x": 0.50, "y": 0.52, "visibility": 0.93},
+        {"id": 24, "name": "right_hip", "x": 0.54, "y": 0.52, "visibility": 0.91},
+        {"id": 25, "name": "left_knee", "x": 0.50, "y": 0.60, "visibility": 0.89},
+        {"id": 27, "name": "left_ankle", "x": 0.47, "y": 0.92, "visibility": 0.87}
+      ]
+    },
+    {
+      "frame_idx": 2,
+      "timestamp_ms": 66,
+      "is_mock": true,
+      "source": "mock://manual/forward_outside_edge_L/side_view",
+      "landmarks": [
+        {"id": 11, "name": "left_shoulder", "x": 0.48, "y": 0.30, "visibility": 0.95},
+        {"id": 12, "name": "right_shoulder", "x": 0.52, "y": 0.30, "visibility": 0.93},
+        {"id": 23, "name": "left_hip", "x": 0.50, "y": 0.55, "visibility": 0.92},
+        {"id": 24, "name": "right_hip", "x": 0.54, "y": 0.55, "visibility": 0.90}
+      ]
+    },
+    {
+      "frame_idx": 3,
+      "timestamp_ms": 99,
+      "is_mock": true,
+      "source": "mock://manual/forward_outside_edge_L/side_view",
+      "landmarks": [
+        {"id": 11, "name": "left_shoulder", "x": 0.48, "y": 0.30, "visibility": 0.95},
+        {"id": 12, "name": "right_shoulder", "x": 0.52, "y": 0.30, "visibility": 0.93},
+        {"id": 23, "name": "left_hip", "x": 0.50, "y": 0.72, "visibility": 0.92},
+        {"id": 24, "name": "right_hip", "x": 0.54, "y": 0.72, "visibility": 0.90},
+        {"id": 25, "name": "left_knee", "x": 0.50, "y": 0.72, "visibility": 0.88},
+        {"id": 27, "name": "left_ankle", "x": 0.47, "y": 0.92, "visibility": 0.86}
+      ]
+    }
+  ]
+}
