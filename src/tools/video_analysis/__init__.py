@@ -15,6 +15,7 @@ from .schemas import (
 from .keypoint_io import read_keypoint_json, KeypointValidationError
 from .features import extract_features, process_keypoint_dataset
 from .geometry import DegenerateGeometryError
+from .mp_mapping import POSE_LANDMARK_NAMES, build_keypoint_frame
 
 __all__ = [
     "Landmark",
@@ -28,4 +29,6 @@ __all__ = [
     "extract_features",
     "process_keypoint_dataset",
     "DegenerateGeometryError",
+    "POSE_LANDMARK_NAMES",
+    "build_keypoint_frame",
 ]

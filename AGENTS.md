@@ -31,11 +31,15 @@
   - 涉及视角：膝角/躯干角/髋踝偏移均适用于侧（侧向 90°）视角
   - 运行：`PYTHONPATH=src pytest -q tests/test_video_analysis.py`
   - MOCK 数据：`assets/mock/pose_keypoints_mock.json`
-- **后续接入 MediaPipe 最小步骤**（待批准后执行，现未安装）：
-  1. 安装 `mediapipe`（需解决与现有 `opencv-python` 的共存/版本策略）
-  2. 用 `cv2.VideoCapture`/ffmpeg 抽帧
-  3. 每帧运行 `mp_pose.Pose()` 得到 33 点，序列化为本模块 `Landmark`/`KeypointFrame` 结构
-  4. 复用本模块 `extract_features` 计算特征；此时 `model` 标注为 `mediapipe_pose`、`is_mock=false`
+- **V2 真实视频识别**（`src/tools/video_analysis/`，需隔离环境 `.venv-video`）：
+  - `mp_mapping.py`：MediaPipe 33 点 → KeypointFrame 纯映射（无 mediapipe 依赖，主 venv 可测）
+  - `pose_extractor.py`：MediaPipe 1.2 新版 tasks API，MP4→33 点→复用 extract_features；`is_mock=false`；缺失即标记 `detected=false`，不做插值冒充
+  - `extract_video.py`：CLI（`.venv-video/bin/python -m tools.video_analysis.extract_video <mp4> --side left`）
+  - **前置阻碍（real 识别暂不可运行）**：① 需获授权测试视频；② 需 `pose_landmarker.task` 模型文件（应放 `assets/models/`，MediaPipe 不自带）；③ 系统库 `libEGL.so.1` 缺失（需批准安装系统包）。缺任一即抛 `MissingPrerequisiteError`。
+  - 隔离环境：`.venv-video`（mediapipe 1.2.0 + opencv-contrib + pydantic），**不污染主 `.venv`**
+- **真实视频识别待完成项**（本轮未执行端到端）：
+  - ① 提供获授权测试视频；② 放置 `assets/models/pose_landmarker_lite.task` 模型；③ 批准安装 `libEGL/libGL` 系统库（headless 环境缺失）
+  - 满足后：`.venv-video/bin/python -m tools.video_analysis.extract_video <mp4> --side left` 即可复用 extract_features 产出 `is_mock=false` 的逐帧特征与有效帧比例
 
 ### 关键约定
 - `skill_code`：仅校验为**非空字符串**，不做候选白名单硬拦截（候选编码占位仅供参考，待专业确认）
