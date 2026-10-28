@@ -21,7 +21,9 @@
 - 无（纯确定性代码，不加载任何集成技能）
 
 ### 关键约定
-- 候选技能编码：`jump, spin, spiral, footwork, step, camel`（占位，待专业确认）
-- 候选评分范围：`[0, 10]`
+- `skill_code`：仅校验为**非空字符串**，不做候选白名单硬拦截（候选编码占位仅供参考，待专业确认）
+- `duration_min` / `stability_score`：接受**整数**或**可无歧义转整数的纯数字字符串**（如 "30"、"3"），在工作流入口标准化为 `int`；拒绝小数/`abc`/空串/布尔
+- `stability_score` 为空时允许通过；不将候选评分范围或训练时长范围作为正式拦截条件
 - 非法输入不生成模拟反馈，仅返回 `errors` 与 `validation_result`
+- `errors` 为结构化列表，`code` 区分 `missing_field` / `invalid_type` / `empty`
 - 无知识库依据：`evidence_overall = "insufficient"`，`mock = true`

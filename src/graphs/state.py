@@ -55,7 +55,9 @@ class ValidateOutput(BaseModel):
     """校验节点的输出"""
     run_status: str = Field(..., description="运行状态：valid / invalid")
     validation_result: dict = Field(default={}, description="字段级校验结果")
-    errors: list = Field(default=[], description="字段错误信息列表")
+    errors: list = Field(default=[], description="结构化字段错误列表（含 missing_field/invalid_type/empty）")
+    duration_min: Any = Field(default=None, description="标准化后的训练时长（整数）")
+    stability_score: Any = Field(default=None, description="标准化后的稳定性得分（整数或空）")
 
 
 class ValidateStatusInput(BaseModel):
