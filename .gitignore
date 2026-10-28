@@ -53,3 +53,7 @@ __pycache__/
 
 # CodeGraph index
 .codegraph
+
+# 大型 ML 模型文件（避免误提交大体积二进制）
+assets/models/
+*.task
