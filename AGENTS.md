@@ -45,6 +45,11 @@
   - `events_cli.py`：CLI（`PYTHONPATH=src .venv/bin/python -m tools.video_analysis.events_cli --input /tmp/pose_result.json -o /tmp/event_detection_result.json --print-summary`）
   - 测试：`tests/test_event_detection.py`（无事件/连续事件合并/低质量帧/缺失特征/自定义阈值）
   - 界定：不重跑视频推理，不推断双腿遮挡/真实重心/冰刀用刃（需教练结合 3D/冰面复核）
+- **V5-MVP 教练事件审核**（`src/tools/video_analysis/`，纯逻辑，仅需主 `.venv`）：
+  - `event_review.py`：复用 V4 事件结果，生成稳定可复现 `event_id`（sha1(video|frame_start|frame_end|feature)）；审核状态机 pending/confirmed/normal_movement/tracking_error/uncertain；记录审核人/审核时间/备注；`original_event` 与 `source` 不可变，审核写回仅追加 `review_history`（审计可追溯）
+  - `events_review_cli.py`：CLI（`PYTHONPATH=src .venv/bin/python -m tools.video_analysis.events_review_cli --input /tmp/event_detection_result.json -o /tmp/event_review_result.json`；`--apply <event_id> --status <s> --by <name> --note <txt>` 写回单条审核）
+  - 测试：`tests/test_event_review.py`（状态合法性/稳定 id/原始数据不被覆盖/审计轨迹可追溯）
+  - 界定：不做自动动作诊断、不接前端/大模型/数据库；审核结果以 JSON 持久化供后续 Agent 消费
 
 ### 关键约定
 - `skill_code`：仅校验为**非空字符串**，不做候选白名单硬拦截（候选编码占位仅供参考，待专业确认）
