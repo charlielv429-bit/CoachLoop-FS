@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CoachLoop-FS · 教练事件审核</title>
+<style>
+  :root{--bd:#e2e6ea;--m:#6b7280;--ok:#16a34a;--blue:#2563eb;--orange:#ea580c;--purple:#7c3aed;--demo:#dc2626}
+  *{box-sizing:border-box}
+  body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;margin:0;background:#f6f7f9;color:#111}
+  .wrap{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
+  h1{font-size:20px;margin:6px 0 2px}
+  .sub{color:var(--m);font-size:12px;margin-bottom:12px}
+  .cards{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:14px}
+  .card{background:#fff;border:1px solid var(--bd);border-radius:8px;padding:8px 10px;text-align:center}
+  .card b{display:block;font-size:18px}
+  .card span{font-size:11px;color:var(--m)}
+  .player{position:relative;background:#000;border-radius:10px;overflow:hidden;margin-bottom:6px}
+  video{width:100%;max-height:300px;display:block;background:#000}
+  .pnote{font-size:12px;color:var(--m);margin-bottom:12px}
+  .tabs{display:flex;gap:8px;margin:14px 0}
+  .tab{border:1px solid var(--bd);background:#fff;border-radius:8px;padding:8px 14px;cursor:pointer;font-size:13px}
+  .tab.on{background:#111;color:#fff;border-color:#111}
+  .demo-badge{background:var(--demo);color:#fff;border-radius:6px;padding:1px 6px;font-size:11px;margin-left:6px}
+  table{width:100%;border-collapse:collapse;background:#fff;border-radius:8px;overflow:hidden}
+  th,td{border-bottom:1px solid var(--bd);padding:8px 8px;font-size:12.5px;text-align:left;vertical-align:middle}
+  th{background:#fafafa;color:var(--m);font-weight:600;position:sticky;top:0}
+  .st{display:inline-block;border-radius:6px;padding:2px 8px;font-size:11.5px;color:#fff}
+  .s-pending{background:#9ca3af}.s-confirmed{background:var(--ok)}.s-normal_movement{background:var(--blue)}
+  .s-tracking_error{background:var(--orange)}.s-uncertain{background:var(--purple)}
+  .demo-row td{background:#fff5f5}
+  .btn{border:1px solid var(--bd);background:#fff;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;margin:2px}
+  .btn:hover{background:#f0f0f0}
+  .btn.primary{background:#111;color:#fff;border-color:#111}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .revform{display:none;margin-top:6px;background:#fafafa;border:1px dashed var(--bd);border-radius:6px;padding:8px}
+  .revform.open{display:block}
+  .note{width:100%;border:1px solid var(--bd);border-radius:6px;padding:6px;font-size:12px;margin:6px 0}
+  .revbtns{display:flex;flex-wrap:wrap;gap:6px}
+  input.note::placeholder{color:#b0b4bb}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111;color:#fff;padding:8px 16px;border-radius:8px;font-size:13px;z-index:99;display:none}
+  .empty{color:var(--m);font-size:12px;padding:16px;text-align:center}
+  .hint{font-size:12px;color:var(--m);margin-bottom:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>CoachLoop-FS · 教练事件审核</h1>
+  <div class="sub">V5.2 最小审核界面 · 事件来自 V4 检测，人工判定仅供教练参考（非自动诊断）</div>
+
+  <div class="cards" id="summary"></div>
+
+  <div class="player"><video id="player" controls playsinline></video></div>
+  <div class="pnote">提示：点击列表中「跳转视频」可定位到事件起始时间。若沙箱环境视频无法直接访问/播放，界面会明确提示，不会伪造播放结果。</div>
+
+  <div class="tabs">
+    <div class="tab on" data-tab="real">教练审核</div>
+    <div class="tab" data-tab="demo">演示 DEMO<span class="demo-badge">demo</span></div>
+  </div>
+
+  <div class="hint" id="hint"></div>
+  <table id="evtTable"></table>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const FEATURE_CN = {knee_angle_deg:"膝角", torso_pitch_deg:"躯干倾角", hip_ankle_offset_norm:"髋踝偏移"};
+const FEATURE_UNIT = {knee_angle_deg:"°", torso_pitch_deg:"°", hip_ankle_offset_norm:""};
+const STATUS_CN = {pending:"待审核", confirmed:"已确认", normal_movement:"常规动作", tracking_error:"跟踪误差", uncertain:"不确定"};
+const STATUS_BTN = [
+  {v:"confirmed", t:"确认动作变化"}, {v:"normal_movement", t:"常规动作"},
+  {v:"tracking_error", t:"跟踪误差"}, {v:"uncertain", t:"不确定"}
+];
+let mode = "real";
+let player = document.getElementById("player");
+const toast = document.getElementById("toast");
+function setVideo(){
+  const src = "/video";
+  player.src = src;
+  player.onerror = function(){ toastShow("沙箱环境视频不可访问，无法播放（未伪造播放结果）"); };
+}
+function toastShow(m){
+  toast.textContent = m; toast.style.display="block";
+  clearTimeout(toast._t); toast._t = setTimeout(()=>toast.style.display="none",2600);
+}
+function fmtTime(ms){ let s = ms/1000; return s.toFixed(2)+"s"; }
+function render(review, isDemo){
+  const {records, summary, source} = review;
+  const cards = document.getElementById("summary");
+  const bs = (summary&&summary.by_status)||{};
+  cards.innerHTML = [
+    ["事件", summary.total], ["待审核", bs.pending||0], ["已确认", bs.confirmed||0],
+    ["常规动作", bs.normal_movement||0], ["跟踪误差", bs.tracking_error||0], ["不确定", bs.uncertain||0]
+  ].map(([k,v])=>`<div class="card"><b>${v}</b><span>${k}</span></div>`).join("");
+  const hint = document.getElementById("hint");
+  if(isDemo){
+    hint.innerHTML = '<span style="color:#dc2626">⚠ 演示数据（demo）</span> —— 仅用于界面演示，独立保存于演示文件，绝不混入真实教练结果。';
+  } else {
+    const vp = (source&&source.video_path)||"-";
+    hint.textContent = "来源视频: " + vp + " · 刷新页面将重新读取已保存的审核结果，不会丢失。";
+  }
+  const tb = document.getElementById("evtTable");
+  if(!records || !records.length){ tb.innerHTML = '<tr><td class="empty">暂无事件</td></tr>'; return; }
+  let rows = records.map((r,i)=>{
+    const ev = r.original_event||{};
+    const fea = ev.feature||"-";
+    const clazz = isDemo ? "demo-row" : ((r.review_status&&r.review_status!=="pending")?"reviewed-row":"");
+    let revInfo = "";
+    if(r.review_history && r.review_history.length){
+      const last = r.review_history[r.review_history.length-1];
+      revInfo = `<div style="color:var(--m);font-size:11px">${last.reviewed_by} · ${(last.reviewed_at||"").slice(0,19).replace("T"," ")} · 已${STATUS_CN[last.status]||last.status}</div>`;
+    }
+    const statusCls = "st s-" + (r.review_status||"pending");
+    return `<tr class="${clazz}" data-id="${r.event_id}">
+      <td>${isDemo?'<span class="demo-badge">demo</span>':(i+1)}</td>
+      <td>${fmtTime(ev.start_time_ms)} ~ ${fmtTime(ev.end_time_ms)}<div style="color:var(--m);font-size:11px">时长 ${(ev.duration_ms/1000).toFixed(2)}s</div></td>
+      <td>${FEATURE_CN[fea]||fea}</td>
+      <td>${ev.deviation_max}${FEATURE_UNIT[fea]||""}</td>
+      <td><span class="${statusCls}">${STATUS_CN[r.review_status]||r.review_status}</span>${revInfo}</td>
+      <td>
+        <button class="btn" onclick="jump(${ev.start_time_ms})">跳转视频</button>
+        <button class="btn" onclick="toggle('${r.event_id}')">审核</button>
+        <div class="revform" id="form-${r.event_id}">
+          <input class="note" id="note-${r.event_id}" placeholder="备注（可选）">
+          <div class="revbtns">${STATUS_BTN.map(b=>`<button class="btn" onclick="submit('${r.event_id}','${b.v}','${isDemo}')">${b.t}</button>`).join("")}</div>
+        </div>
+      </td>
+    </tr>`;
+  }).join("");
+  tb.innerHTML = `<thead><tr><th>#</th><th>时间段</th><th>特征</th><th>偏离幅度</th><th>审核状态</th><th>操作</th></tr></thead><tbody>${rows}</tbody>`;
+}
+function toggle(id){ const f=document.getElementById("form-"+id); f.classList.toggle("open"); }
+function jump(ms){
+  const s = (ms||0)/1000;
+  try{
+    if(player.src){
+      player.currentTime = s; player.play();
+      player.ontimeupdate = ()=>{ if(player.currentTime>=s) player.ontimeupdate=null; };
+      toastShow("已定位到 " + s.toFixed(2)+"s");
+    }
+  }catch(e){ toastShow("沙箱环境视频不可访问，无法播放（未伪造播放结果）"); }
+}
+async function submit(id, status, demoStr){
+  const demo = demoStr==="true";
+  const note = document.getElementById("note-"+id).value || "";
+  const reviewer = demo ? "" : prompt("审核人（必填，真实教练）:", "");
+  if(!demo && !reviewer){ toastShow("真实审核需填写审核人"); return; }
+  const body = {event_id:id, status, note, reviewed_by: reviewer||""};
+  const r = await fetch(demo?"/api/demo/review":"/api/review", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)});
+  const data = await r.json();
+  if(!r.ok || !data.ok){ toastShow("保存失败: "+(data.error||"未知")); return; }
+  render(data.review, demo);
+  toastShow("已保存审核，本状态已持久化");
+}
+async function load(mod){
+  mode = mod;
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on", t.dataset.tab===mod));
+  let review;
+  if(mod==="real"){ review = (await (await fetch("/api/events")).json()).review; }
+  else{
+    let data = await (await fetch("/api/demo")).json();
+    if(!data.review || !data.review.records || !data.review.records.length){
+      data = await (await fetch("/api/demo/reset", {method:"POST"})).json();
+    }
+    review = data.review;
+  }
+  render(review, mod==="demo");
+}
+document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click", ()=>load(t.dataset.tab)));
+setVideo();
+load("real");
+</script>
+</body>
+</html>

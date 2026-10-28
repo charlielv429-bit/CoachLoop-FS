@@ -50,6 +50,11 @@
   - `events_review_cli.py`：CLI（`PYTHONPATH=src .venv/bin/python -m tools.video_analysis.events_review_cli --input /tmp/event_detection_result.json -o /tmp/event_review_result.json`；`--apply <event_id> --status <s> --by <name> --note <txt>` 写回单条审核）
   - 测试：`tests/test_event_review.py`（状态合法性/稳定 id/原始数据不被覆盖/审计轨迹可追溯）
   - 界定：不做自动动作诊断、不接前端/大模型/数据库；审核结果以 JSON 持久化供后续 Agent 消费
+- **V5.2 最小教练审核界面**（`src/tools/video_analysis/`，标准库 HTTP 服务）：
+  - `review_ui.py`：本地 HTTP 服务（`PYTHONPATH=src .venv/bin/python -m tools.video_analysis.review_ui --port 8766`）；路由 `/`(页面)、`/video`(同源视频 Range 位流，支持点击跳转播放)、`/api/events`、`/api/review`、`/api/demo`、`/api/demo/reset`、`/api/demo/review`
+  - `review_ui_static.html`：纯净中文前端（事件表/点击跳转/四种审核+备注/演示 DEMO 面板）
+  - 持久化：真实审核→`/tmp/coach_review.json`，演示→`/tmp/coach_review.demo.json`（演示强制 `[demo]` 署名，与真实结果隔离）
+  - 界定：不接大模型/数据库；视频不可访问时仅提示、不伪造播放
 
 ### 关键约定
 - `skill_code`：仅校验为**非空字符串**，不做候选白名单硬拦截（候选编码占位仅供参考，待专业确认）

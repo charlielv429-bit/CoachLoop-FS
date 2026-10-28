@@ -1,0 +1,219 @@
+CoachLoop-FS V5-MVP 第一阶段教练事件审核模块完成。
+
+- 结构：kind=coach_event_review v1.0，含 stable event_id、审核状态机(pending/confirmed/normal_movement/tracking_error/uncertain)、reviewed_by/reviewed_at/notes、不可变 original_event+source、review_history 审计轨迹。
+- 真实数据：16 条记录（初始全 pending，演示写回 evt_5c55c83d52df→tracking_error）。
+- 测试：41 passed（原31+新增10），覆盖状态合法性/稳定唯一id/原始数据不被覆盖/来源保留/审计可追溯。
+- 修改：新增 event_review.py、events_review_cli.py、test_event_review.py，更新 AGENTS.md；未改 V2/V3/V4 逻辑，未接大模型/数据库/前端，无部署/Push。
+- JSON：/tmp/event_review_result.json
+## CoachLoop-FS V5-MVP 第一阶段 · 教练事件审核模块 验收报告
+
+**复用**：`/tmp/event_detection_result.json`（V4 结果），未重跑视频推理/未下载模型/未装依赖。
+
+### 1. 审核数据结构样例（来自真实数据，含一次已写回的审核）
+```json
+{
+  "kind": "coach_event_review", "version": "1.0",
+  "source": {"mode": "real","is_mock": false,"video_path": "assets/videos/input_skate.mp4","fps": 30.0,"input_json": "/tmp/pose_result.json"},
+  "summary": {"total": 16, "by_status": {"pending": 15,"confirmed": 0,"normal_movement": 0,"tracking_error": 1,"uncertain": 0}},
+  "records": [{
+    "event_id": "evt_5c55c83d52df",
+    "original_event": {"feature":"hip_ankle_offset_norm","frame_start":33,"frame_end":39,"duration_ms":200,"deviation_max":0.132,...},
+    "source": {"mode":"real","is_mock":false,"video_path":"assets/videos/input_skate.mp4","fps":30},
+    "review_status": "tracking_error",
+    "reviewed_by": "coach_zhang",
+    "reviewed_at": "2026-10-28T12:55:18+00:00",
+    "notes": "教练初步判为疑似跟踪误差，待二次复核",
+    "review_history": [{"status":"tracking_error","reviewed_by":"coach_zhang","reviewed_at":"...","note":"..."}]
+  }, ...]
+}
+```
+- **稳定 event_id**：`evt_` + sha1(video|frame_start|frame_end|feature)[:12] → 同一事件恒同、跨视频/特征/帧段区分（单测验证可复现且唯一）。
+- **状态机**：`pending/confirmed/normal_movement/tracking_error/uncertain`，非法状态抛 `ValueError`。
+- **不可变原始数据**：`original_event` + `source` 为快照，`apply_review` 只写审核字段，不覆盖原始（单测断言）。
+- **可追溯**：每次审核追加 `review_history`（人/时间/备注），`reviewed_at` 记录审核时间，最新状态生效。
+
+### 2. 测试结果
+- **41 passed**（原 31 + V5 新增 10）：状态合法性、稳定/唯一 event_id、原始数据不被覆盖、来源保留、审计轨迹追加与序列化往返可追溯。
+
+### 3. 修改文件
+- 新增：`src/tools/video_analysis/event_review.py`、`src/tools/video_analysis/events_review_cli.py`、`tests/test_event_review.py`
+- 更新：`AGENTS.md`
+- **未改** P1/P2/V2/V3/V4 逻辑；未接大模型/数据库/前端；真实视频与个人数据未提交。
+
+### 4. JSON 路径
+- `/tmp/event_review_result.json`（16 条审核记录，初始全 pending；演示将 `evt_5c55c83d52df` 写回为 tracking_error）。
+
+已交付，未部署/未 Push
+
+
+41 项测试全部通过。更新 AGENTS.md 登记 V5 模块后收尾
+
+
+全量回归测试 + 打印一条带审核记录的样例结构供验收
+Note: the `--apply` re-reads the existing output file (since it exists) and applies, preserving state. Good, it appended: total 16, tracking_error=1, pending=15. history_len=1. Wait but I applied once (to evt_5c55c83d52df) with history_len=1. Good.
+
+But note the `_load_or_build` reads output if exists, else builds from input. Since I generated the file first, the apply round read it and updated — audit trail preserved. Good.
+
+Now run full test suite to confirm no regression, and inspect a sample JSON record for the report. Also let me verify the applied record shows review_history and original preserved. Let me print one applied record from the JSON.
+V5 审核单测 10 项全通过。生成真实审核 JSON 并演示一次审核写回（可追溯
+测试对时间戳计数的断言过脆。改为显式传入审核时间，验证时间与轨迹可追溯
+
+
+The `_now_iso` is called in build_review_records (created_at, updated_at) → increments counter 2 times (records[0] created_at + updated_at) before apply. Actually build creates record for each of 2 events → created_at & updated_at calls: 2 records * 2 = calls 1,2 (created both records: first record created_at=1, updated_at=2; second record created_at=3, updated_at=4). Then apply_review call uses reviewed_at=None → _now_iso() → call 5. Then apply_review updated_at = _now_iso() → call 6.
+
+So reviewed_at (via default) isn't a simple call sequencing. My assertion of "00:00:02" is wrong. Better: not monkeypatch reviewed_at via counter, or set reviewed_at explicitly. Let me make the test pass explicit reviewed_at values for clarity, and instead validate history ordering & that reviewed_at reflects passed value. Rewrite test to pass explicit reviewed_at.
+
+Also updated_at uses _now_iso again — with monkeypatched fake_now the updated_at after second apply = next counter. Not important. Let me just assert reviewed_at equals the explicitly passed value and history len/order/status.
+I used json in test file for roundtrip. Need to import json. Let me add that import. Also EventReviewOutput used — need to import it. Let me fix imports.
+Now write the unit tests test_event_review.py:
+- status validity: valid set, invalid raises ValueError.
+- event_id stable & distinct & source-based.
+- original data not overwritten by apply.
+- traceability: review_history appended, reviewed_by/at set, notes.
+- source preserved.
+- build_records creates all pending, preserves original_event & source.
+
+Let me write.
+Now the CLI. It should:
+- default: build all-pending records from event_detection_result.json → write /tmp/event_review_result.json + print sample.
+- optional --apply <event_id> --status <s> --by <name> --note <txt> to apply one review (append to existing file if exists, or build new then apply).
+
+Let me write CLI.
+V5-MVP 第一阶段启动。计划：新增审核模块（stable event_id + 状态机 + 溯源 + 审计轨迹）+ CLI + 单测，复用 V4 JSON
+V5-MVP 第一阶段：教练事件审核模块。
+
+任务：
+1. 为每个事件建立稳定 event_id。
+2. 支持教练审核状态：pending、confirmed、normal_movement、tracking_error、uncertain。
+3. 支持记录审核人、审核时间、备注，并保留原始事件数据与来源。
+4. 生成可供后续 Agent 使用的结构化 JSON。
+5. 添加必要单元测试，验证审核状态合法性、原始数据不被覆盖及审核结果可追溯。
+
+限制：不开发前端、不接大模型、不新增数据库、不做自动动作诊断、不改 P1/P2/V2/V3/V4 逻辑、不部署、不 Push。
+
+验收：审核数据结构样例、测试结果、修改文件、JSON 路径。
+
+设计：
+- 复用 /tmp/event_detection_result.json（V4 输出）。
+- 新模块 src/tools/video_analysis/event_review.py
+- 定义 pydantic 模型：
+  - ReviewStatus 枚举：pending/confirmed/normal_movement/tracking_error/uncertain
+  - EventReviewRecord: event_id, review_status, reviewed_by, reviewed_at, notes, plus immutable原始事件快照 (original_event dict) 和来源 (source 溯源)
+  - EventReviewOutput / ReviewCollection: 结构
+- 为每个事件生成稳定 event_id。稳定 = 基于源 + 事件特征去重/可复现。做法：event_id = hash of (source video_path + frame_start + frame_end + feature) 或 a deterministic id like "evt_{video}_{frame_start}_{frame_end}_{feature}". 稳定且可复现更符合"稳定"。用确定性哈希: e.g. sha1 of source+feature+start+end → prefix。或直接可读 id。我用确定性：`f"evt_{basename}_{frame_start}_{frame_end}_{feature}"` 加上 sha1 哈希确保唯一稳定。更简单可读且稳定：`f"{source_basename}_f{frame_start}-{frame_end}_{feature}"`。为稳定，我用 sha1 生成定长 hash id + 保留可读标签。
+
+  稳定 event_id 要求：同一输入生成相同 id（算法确定），且不同事件唯一。用 hashlib.sha1(video_path|frame_start|frame_end|feature).hexdigest()[:12]，前缀 "evt_"。这满足确定性 + 可追溯。也可以加入事件起始时间戳。但不同 source 相同帧号可能冲突——应含 video_path。好。
+
+- 审核状态集合法：VALID_STATUSES = {pending, confirmed, normal_movement, tracking_error, uncertain}。初始所有事件 status=pending。
+- 支持记录审核人 reviewed_by、审核时间 reviewed_at、备注 notes。提供一个 apply_review(event_id, status, reviewed_by, notes) 方法更新(仅当启用的应用逻辑；模块提供 apply 函数以支持后续 agent/人工写入)。但本阶段不新增 DB；审核结果以 JSON 持久化到 /tmp/event_review_result.json（或 review 文件）。原始事件数据保留在 original_event 且 immutable（用 pydantic model with frozen? 用 snapshot dict 且不更新）。
+
+- "原始数据不被覆盖"：EventReviewRecord 包含 original_event（V4 事件原始 dict 快照）+ metadata.source。审核字段与原始字段分离；apply 只改 review 字段，不改 original_event。单测验证 apply 后 original_event 不变。
+
+- "审核结果可追溯"：记录 origin（生成/最新更新的来源：ini未审或审核人+时间）。保留 reviewed_by/reviewed_at/audit_trail? 至少 reviewed_at 记录时间。为可追溯，给每条记录加 updated_at 和 review_history（list of {status, reviewed_by, at, note}）可追溯审计。简化但满足"可追溯"：加 audit trail list。
+
+- CLI: events_review_cli.py 读取 event_detection_result.json，生成审核记录（全 pending），写 /tmp/event_review_result.json。可选通过 --status/--reviewed-by/--reviewed-at/--event 应用一条审核（演示 apply）。或提供一个 apply CLI 参数。为满足手/agent review，我做：default 生成全 pending 文件；提供 CLI 支持 `--apply <event_id> --status <s> --by <name> --note <txt>` 更新单条。这样满足"支持记录审核人/时间/备注"。
+
+- 单测 test_event_review.py：
+  - 测试 status 合法性：非法 status 抛 ValueError；合法集合枚举。
+  - 原始数据不被覆盖：apply 后 original_event 不变。
+  - 可追溯：review_history 记录、reviewed_at 设置、event_id 稳定（同输入同 id、不同事件不同 id）。
+  - source 保留。
+
+Let me design schemas:
+
+```python
+class ReviewStatus(str, Enum):
+    pending="pending"
+    confirmed="confirmed"
+    normal_movement="normal_movement"
+    tracking_error="tracking_error"
+    uncertain="uncertain"
+
+VALID = set(ReviewStatus)
+
+class ReviewAction(BaseModel):
+    status: ReviewStatus
+    reviewed_by: str
+    reviewed_at: str  # ISO time
+    note: str
+
+class EventReviewRecord(BaseModel):
+    event_id: str
+    # 原始事件（不可变快照，来自 V4）
+    original_event: Dict[str, Any]   # 原始事件数据，不被审核覆盖
+    source: Dict[str, Any]           # 来源溯源(V4 source)
+    # 审核字段
+    review_status: ReviewStatus = pending
+    reviewed_by: Optional[str] = None
+    reviewed_at: Optional[str] = None
+    notes: str = ""
+    review_history: List[...] = []
+    created_at: str
+    updated_at: str
+```
+
+apply function: validates status, records history, updates review fields.
+
+Output model:
+```python
+class EventReviewOutput(BaseModel):
+    source: dict
+    generated_from: str  # input json path
+    records: List[EventReviewRecord]
+    summary: {total, by_status:{...}}
+```
+
+Neutral: no auto diagnosis — all pending default, apply is explicit human/agent action.
+
+Time: use datetime.now timezone-aware ISO. For determinism in tests of event_id, that's fine. For tests of traceability, pass explicit reviewed_at maybe.
+
+Let me create core module event_review.py, CLI events_review_cli.py, tests test_event_review.py. Reuse output /tmp/event_review_result.json.
+
+Note: don't run video inference; reuse V4 json.
+
+Let me write.
+
+For stable event_id using hashlib:
+```python
+def make_event_id(source_video, frame_start, frame_end, feature):
+    raw = f"{source_video}|{frame_start}|{frame_end}|{feature}"
+    h = hashlib.sha1(raw.encode('utf-8')).hexdigest()[:12]
+    return f"evt_{h}"
+```
+
+Include start_time maybe not needed. Fine deterministic.
+
+Now for "保留原始事件数据与来源": original_event = event model_dump (V4 ChangeEvent dict), source = V4 source dict. Good.
+
+Let me write core module.
+
+apply_review signature:
+```python
+def apply_review(record, status, reviewed_by, reviewed_at=None, note=""):
+    validate status in VALID; reviewed_by non-empty required.
+    append to review_history {status, reviewed_by, reviewed_at, note}
+    set record.review_status, reviewed_by, reviewed_at, notes=note, updated_at=now
+```
+Returns record. Mutates in place (or returns new). I'll mutate in place and return it.
+
+Also provide `build_review_records(output)` to convert V4 EventDetectionOutput dict into records with default pending.
+
+Let me write core, cli, tests. Then run tests, generate review JSON from real data, print sample, done.
+
+Let me create todos.
+开始 CoachLoop-FS V5-MVP 第一阶段：教练事件审核模块。
+
+复用 V4 的 event_detection_result.json，禁止重新运行视频推理。
+
+任务：
+1. 为每个事件建立稳定 event_id。
+2. 支持教练审核状态：pending、confirmed、normal_movement、tracking_error、uncertain。
+3. 支持记录审核人、审核时间、备注，并保留原始事件数据与来源。
+4. 生成可供后续 Agent 使用的结构化 JSON。
+5. 添加必要单元测试，验证审核状态合法性、原始数据不被覆盖及审核结果可追溯。
+
+限制：
+不开发前端、不接大模型、不新增数据库、不做自动动作诊断；不改 P1/P2/V2/V3/V4 已有逻辑，不部署、不 Push。
+
+验收：
+输出审核数据结构样例、测试结果、修改文件和 JSON 路径。完成后停止。
