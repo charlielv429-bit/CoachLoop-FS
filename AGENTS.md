@@ -40,6 +40,11 @@
 - **真实视频识别待完成项**（本轮未执行端到端）：
   - ① 提供获授权测试视频；② 放置 `assets/models/pose_landmarker_lite.task` 模型；③ 批准安装 `libEGL/libGL` 系统库（headless 环境缺失）
   - 满足后：`.venv-video/bin/python -m tools.video_analysis.extract_video <mp4> --side left` 即可复用 extract_features 产出 `is_mock=false` 的逐帧特征与有效帧比例
+- **V4-MVP 姿态变化事件检测**（`src/tools/video_analysis/`，纯逻辑，仅需主 `.venv`）：
+  - `event_detection.py`：复用 V2 pose_result 的 knee/torso/hip_ankle 特征，轻量平滑（居中移动平均）+ 相对稳健基线变化检测 + 连续异常帧合并为事件（起止时间/时长/变化幅度/次数）；按可见度/缺失/孤立突跳标记 `review_required`。探索性阈值，**非评分/非诊断**，仅 2D 可观测几何量
+  - `events_cli.py`：CLI（`PYTHONPATH=src .venv/bin/python -m tools.video_analysis.events_cli --input /tmp/pose_result.json -o /tmp/event_detection_result.json --print-summary`）
+  - 测试：`tests/test_event_detection.py`（无事件/连续事件合并/低质量帧/缺失特征/自定义阈值）
+  - 界定：不重跑视频推理，不推断双腿遮挡/真实重心/冰刀用刃（需教练结合 3D/冰面复核）
 
 ### 关键约定
 - `skill_code`：仅校验为**非空字符串**，不做候选白名单硬拦截（候选编码占位仅供参考，待专业确认）
