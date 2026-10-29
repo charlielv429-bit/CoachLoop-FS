@@ -17,13 +17,15 @@ ROOT=Path(__file__).resolve().parents[2]
 
 
 @pytest.mark.parametrize('configured',[True,False],ids=['configured-bearer','missing-bearer-config'])
-def test_real_uvicorn_main_routes_with_isolated_postgres(database,configured):
+@pytest.mark.parametrize('public_profile',[False,True],ids=['legacy-surface','prelesson-only-surface'])
+def test_real_uvicorn_main_routes_with_isolated_postgres(database,configured,public_profile):
     admin,_actors=database
     token=secrets.token_urlsafe(32)
     # Never use inherited production URLs or print URLs/credentials/process env.
     env={**os.environ,'PYTHONPATH':str(ROOT/'src'),'PYTHONDONTWRITEBYTECODE':'1',
          'PGDATABASE_URL':admin.url.set(drivername='postgresql').render_as_string(hide_password=False),
          'COACHLOOP_PRELESSON_TOKEN':token if configured else '',
+         'COACHLOOP_PRELESSON_ONLY':'1' if public_profile else '0',
          'LANGSMITH_TRACING':'false','LANGCHAIN_TRACING_V2':'false'}
     with socket.socket() as s:s.bind(('127.0.0.1',0));port=s.getsockname()[1]
     process=subprocess.Popen([sys.executable,'-B','-m','uvicorn','main:app','--host','127.0.0.1','--port',str(port),'--log-level','warning'],
@@ -67,8 +69,19 @@ def test_real_uvicorn_main_routes_with_isolated_postgres(database,configured):
             outputs.append(data)
         if configured:assert outputs[0]==outputs[1]
         status,spec=request('/openapi.json')
-        assert status==200 and '/prelesson/draft' in spec['paths']
+        assert status==(404 if public_profile else 200)
+        if not public_profile:assert '/prelesson/draft' in spec['paths']
         assert token not in json.dumps(spec)
+        if public_profile:
+            for path in ('/run','/async_run','/stream_run'):
+                assert request(path)[0]==404
+                assert request(path,{},True)[0]==404
+            if configured:
+                smoke=subprocess.run([sys.executable,'-B',str(ROOT/'scripts/check_coze_deployment.py'),'--base-url',base],
+                    env=env,cwd=ROOT,capture_output=True,text=True,timeout=30)
+                assert smoke.returncode==0,'Local readiness smoke failed; raw output deliberately omitted'
+                report=json.loads(smoke.stdout)
+                assert report['passed'] and token not in smoke.stdout+smoke.stderr
     finally:
         process.terminate()
         try:process.wait(timeout=5)

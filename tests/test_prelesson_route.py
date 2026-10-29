@@ -23,6 +23,7 @@ def isolated_main():
     # cached app whose credential belongs to another test/import environment.
     with pytest.MonkeyPatch.context() as patch:
         patch.setenv('COACHLOOP_PRELESSON_TOKEN',TOKEN)
+        patch.setenv('COACHLOOP_PRELESSON_ONLY','0')
         spec=importlib.util.spec_from_file_location('coachloop_route_test_main',ROOT/'src/main.py')
         main=importlib.util.module_from_spec(spec)
         spec.loader.exec_module(main)

@@ -87,3 +87,10 @@
 - JSON限制与错误脱敏通过 `PrelessonRoute` 局部生效，不替换主服务旧接口的全局处理。旧主服务接口并未自动获得新鉴权，公网发布必须单独验证路由访问策略。
 - 新测试 `tests/test_prelesson_route.py`（lifespan替换的单元测试）和 `tests/teaching/test_main_prelesson_http.py`（真实uvicorn/main lifespan＋隔离PostgreSQL），后者必须在专用数据库中实际执行。
 - 安全方案、181项跳过说明、主服务OpenAPI切片和下一阶段最小边界见 `docs/coze-integration-v01.md`；不覆盖Coze本地未提交文件，不部署。
+
+### INTEGRATION-04 部署准备（未部署）
+- 显式 `COACHLOOP_PRELESSON_ONLY=1` 在main安装课前公开面白名单：仅GET健康检查和两个POST课前入口；其他路径/方法在处理器前404，旧流程仍在默认/0模式保留。配置值非法则启动失败。
+- `src/integrations/prelesson/exposure.py` 不替代Bearer或教师身份认证；公网部署不能依赖未验证的Coze网关。平台控制面与系统依赖兼容性待Coze实测。
+- `scripts/coze_prelesson_run.sh` 是可选受控启动器，先执行 `scripts/check_coze_deployment.py --preflight`，不满足条件退出；本轮不改 `.coze` 自动部署入口。
+- 检查脚本使用标准库、只输出脱敏状态；HTTP检查拒绝重定向、验证认证与草稿保护，并用GET探测旧POST路径，不能启动旧工作流/异步任务或调用模型。待批准HTTPS地址确定后才可进行远程检查；本轮只做回环测试。
+- 说明/GUI最少步骤见 `docs/coze-deploy-readiness-v01.md`；测试 `tests/test_deploy_readiness.py` 与现有隔离PG真实main测试联合运行。
