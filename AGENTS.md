@@ -61,5 +61,16 @@
 - `duration_min` / `stability_score`：接受**整数**或**可无歧义转整数的纯数字字符串**（如 "30"、"3"），在工作流入口标准化为 `int`；拒绝小数/`abc`/空串/布尔
 - `stability_score` 为空时允许通过；不将候选评分范围或训练时长范围作为正式拦截条件
 - 非法输入不生成模拟反馈，仅返回 `errors` 与 `validation_result`
+
+### 教案生成 Agent（阶段A 基础模块 + 任务1 草稿生成器）
+- 目录 `src/agents/lesson_plan_agent/`，纯确定性逻辑，仅需主 `.venv`，不接大模型/知识库/数据库
+  - `schemas.py`：七要素 Pydantic 结构；`TeachingFlow` 校验三段式（PREP 8-10 / MAIN 28-30 / CLOSING 5-7）合计严格 == 45
+  - `load_calc.py`：`calc_load(total, group_min, indiv_min, avg_hr, kind)` → 群体/个体密度 + 平均心率，含公式/分子分母/单位/结果；区分预计(ESTIMATED)与实测(MEASURED)
+  - `guard.py`：`canvas` 未接知识库→`unverified_kb()`；确认前缀保护 `validate_event_claims()`（禁止把未审核事件写成已确认技术错误）
+  - `generate_draft.py`（任务1，新增）：`build_draft()` 由输入生成七要素 45 分钟教案草稿，`draft_to_json()` 可序列化 JSON；CLI：`PYTHONPATH=src .venv/bin/python -m agents.lesson_plan_agent.generate_draft --theme "..." --student-count 20 ... --output /tmp/lesson_draft.json`
+    - 任务1.1 跨字段一致性：`_parse_staffing()/_build_staffing()` 从输入解析教练/教师人数（不自行增设）；`_build_grouping_and_tiers()` 明确能力分层3级↔轮换组4组对应；负荷词典注明"设计目标、尚未由课堂安排实测验证"；安全措辞去掉绝对化处置、技术要领待专项教练确认；主/结束段评价为可观察三层级过程性目标（非官方合格线）
+    - 任务2A 最小知识库接入：`kb_adapter.py` 封装一次真实检索，**仅**接受带【原文出处】标记、非图像块、score≥0.5 的可核验命中（KBHit：query/content/source_file/page/score）；图像块、无标记、SDK异常一律返回空（不虚构引用）。`build_draft(..., kb_evidence=[...])` 仅对可核验命中新增 `EvidenceSource.KB_EVIDENCE`（含 citation 文件|原PDF第N页）；无可核验命中→维持 `unverified`。CLI 加 `--kb`。真实 E2E：`curriculum_2022` 已导入已核验前言 p1-6（doc 7701926456758370330）；Q1 命中 原PDF第6页(核心素养内涵章节目录)，Q2/Q3 仅图像块/无标记文本→无核验命中、降级 unverified
+- 测试：`tests/test_lesson_plan_agent.py` + `tests/test_generate_draft.py` + `tests/test_generate_draft_consistency.py` + `tests/test_kb_adapter.py`（合计 88 项通过；V2—V5.2 等原有测试无回归）
+- 界定：来源严格区分 teacher_input / unverified(不虚构引用) / design_assumption；技术建议待专业教练确认、不设角度阈值；未审核事件不得描述为已确认错误
 - `errors` 为结构化列表，`code` 区分 `missing_field` / `invalid_type` / `empty`
 - 无知识库依据：`evidence_overall = "insufficient"`，`mock = true`

@@ -60,3 +60,7 @@ assets/models/
 
 # V3 叠加可视化输出（生成产物）
 assets/videos/overlay_frames/
+
+# 真实录像推导事件数据，勿提交 GitHub（仅本地留档）
+assets/event_detection_result.json
+assets/mock/
