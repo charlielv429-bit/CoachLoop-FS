@@ -123,6 +123,7 @@ def test_bearer_is_not_a_plugin_parameter_or_bypass(configured, headers, status)
     builder.PLACEHOLDER, 'https://example.com', 'https://127.0.0.1',
     'https://localhost', 'https://10.0.0.1', 'https://service.org\\bad',
     'https://service.org\n', 'https://service.org:0',
+    'https://127.1', 'https://0177.0.0.1', 'https://0x7f.0.0.1',
 ])
 def test_unsafe_or_placeholder_final_origins_are_rejected(origin):
     with pytest.raises(ValueError):
@@ -170,4 +171,31 @@ def test_cli_rejects_credentials_without_echoing_them(tmp_path):
         capture_output=True, text=True)
     assert result.returncode != 0
     assert secret not in result.stdout + result.stderr
+    assert not target.exists()
+
+
+@pytest.mark.parametrize('arguments', [
+    ['--token', 'synthetic-private-argument'],
+    ['--bearer=synthetic-private-argument'],
+    ['synthetic-private-argument'],
+    ['--synthetic-private-argument'],
+])
+def test_cli_parser_errors_never_echo_unknown_argument_values(tmp_path, arguments):
+    target = tmp_path / 'plugin.json'
+    result = subprocess.run([sys.executable, str(ROOT / 'scripts/build_coze_prelesson_plugin.py'),
+        '--origin', 'https://school-service.org', '--output', str(target), *arguments],
+        capture_output=True, text=True)
+    assert result.returncode == 2
+    assert 'synthetic-private-argument' not in result.stdout + result.stderr
+    assert not target.exists()
+
+
+@pytest.mark.parametrize('origin', [
+    builder.PLACEHOLDER, 'https://example.com', 'https://127.1', 'http://school-service.org',
+])
+def test_cli_never_writes_a_placeholder_or_invalid_origin(tmp_path, origin):
+    target = tmp_path / 'plugin.json'
+    result = subprocess.run([sys.executable, str(ROOT / 'scripts/build_coze_prelesson_plugin.py'),
+        '--origin', origin, '--output', str(target)], capture_output=True, text=True)
+    assert result.returncode == 2
     assert not target.exists()

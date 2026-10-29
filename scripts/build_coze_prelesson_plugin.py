@@ -11,6 +11,13 @@ PATH = '/api/v1/lesson-plans/draft'
 PLACEHOLDER = 'https://configure-your-service.invalid'
 
 
+class RedactedParser(argparse.ArgumentParser):
+    def error(self, _message):
+        # Unknown options/positionals may be accidentally pasted credentials.
+        # Do not let argparse echo argv values, even before origin validation.
+        self.exit(2, 'Invalid arguments; use --origin and --output. Values omitted.\n')
+
+
 def schema30(value, schemas=None):
     """Translate the used JSON Schema vocabulary without flattening API fields."""
     if isinstance(value, list):
@@ -64,6 +71,11 @@ def checked_origin(value):
     try:
         address = ipaddress.ip_address(host)
     except ValueError:
+        # Legacy IPv4 spellings (127.1, octal/hex components) can resolve to
+        # loopback while ipaddress rejects them and the DNS label check passes.
+        # A numeric final DNS label is not a public hostname for this tool.
+        if host.rsplit('.', 1)[-1].isdigit():
+            raise ValueError('Ambiguous numeric service hostname is not allowed')
         if '.' not in host or any(not part or not all(c.isalnum() or c == '-' for c in part)
                                   or part.startswith('-') or part.endswith('-') for part in host.split('.')):
             raise ValueError('Invalid public service hostname')
@@ -94,7 +106,7 @@ def build(origin=PLACEHOLDER):
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = RedactedParser(description=__doc__)
     parser.add_argument('--origin', required=True)
     parser.add_argument('--output', required=True, type=Path)
     args = parser.parse_args()
