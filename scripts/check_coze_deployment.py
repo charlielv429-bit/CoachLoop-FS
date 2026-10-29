@@ -15,6 +15,7 @@ from urllib.parse import urlsplit
 from functools import lru_cache
 
 RESPONSE_CONTRACT=Path(__file__).resolve().parents[1]/'docs/prelesson-workflow-v01.response.schema.json'
+ERROR_CONTRACT=Path(__file__).resolve().parents[1]/'docs/coze-integration-v01.openapi.json'
 
 ROOT_FIELDS=('guiding_ideology','teaching_material_analysis','learner_analysis','venue_equipment',
              'safety_precautions','teaching_flow','load_accounting')
@@ -37,7 +38,8 @@ def preflight(environ=None):
         {'name':'prelesson_only_profile','passed':env.get('COACHLOOP_PRELESSON_ONLY')=='1'},
         {'name':'service_credential_format','passed':len(token)>=32 and token.isascii() and not any(c.isspace() or ord(c)<33 or ord(c)>126 for c in token)},
         {'name':'explicit_postgresql_url_present','passed':bool(database_ok)},
-        {'name':'published_response_contract_present','passed':contract_available()}]
+        {'name':'published_response_contract_present','passed':contract_available()},
+        {'name':'published_error_contract_present','passed':error_contract_available()}]
     for package in ('fastapi','pydantic','langgraph','uvicorn','coze-coding-utils','coze-coding-dev-sdk','psycopg','psycopg2-binary'):
         try:importlib.metadata.version(package);present=True
         except importlib.metadata.PackageNotFoundError:present=False
@@ -108,6 +110,19 @@ def contract_available():
     except (OSError,ValueError):return False
 
 
+@lru_cache(maxsize=1)
+def error_contract():
+    root=json.loads(ERROR_CONTRACT.read_text())
+    return root['components']['schemas']['ErrorResponse'],root
+
+
+def error_contract_available():
+    try:
+        schema,_=error_contract()
+        return schema.get('type')=='object' and 'detail' in schema.get('required',[])
+    except (OSError,ValueError,KeyError,TypeError,AttributeError):return False
+
+
 def contract_shape(value,schema,root):
     """Check the published response's required structure/types without an SDK.
 
@@ -116,8 +131,11 @@ def contract_shape(value,schema,root):
     """
     if '$ref' in schema:
         ref=schema['$ref']
-        if not ref.startswith('#/$defs/'):return False
-        return contract_shape(value,root['$defs'][ref.removeprefix('#/$defs/')],root)
+        if not ref.startswith('#/'):return False  # Local JSON pointers only; no URL fetches.
+        target=root
+        for key in ref[2:].split('/'):
+            target=target[key.replace('~1','/').replace('~0','~')]
+        return contract_shape(value,target,root)
     if 'anyOf' in schema:return any(contract_shape(value,s,root) for s in schema['anyOf'])
     kind=schema.get('type')
     if kind=='object':
@@ -149,6 +167,41 @@ def contract_shape(value,schema,root):
         if 'exclusiveMinimum' in schema and value<=schema['exclusiveMinimum']:return False
         if 'exclusiveMaximum' in schema and value>=schema['exclusiveMaximum']:return False
     return True
+
+
+@lru_cache(maxsize=1)
+def success_payload_keys():
+    schema=response_contract()
+    return (set(schema['properties']) | set(schema['$defs']['DraftPlan']['properties'])
+            | {'draft_ready'})
+
+
+def contains_success_payload(value,depth=0):
+    if depth>32:return True  # Fail closed for abnormally nested error data.
+    if isinstance(value,dict):
+        return (bool(value.keys() & success_payload_keys())
+                or any(contains_success_payload(v,depth+1) for v in value.values()))
+    if isinstance(value,list):return any(contains_success_payload(v,depth+1) for v in value)
+    if isinstance(value,str):
+        if value=='draft_ready':return True
+        if value.lstrip().startswith(('{','[','"')):
+            try:decoded=json.loads(value)
+            except (ValueError,RecursionError):return False
+            return contains_success_payload(decoded,depth+1)
+    return False
+
+
+def valid_error_response(data):
+    """Use the API's published ErrorResponse; deny success data in any error.
+
+    The API schema permits additional properties, but deployment safety checks
+    deliberately accept only its actual detail envelope, without success fields.
+    """
+    try:
+        if not isinstance(data,dict) or set(data)!={'detail'}:return False
+        schema,root=error_contract()
+        return contract_shape(data,schema,root) and not contains_success_payload(data)
+    except (OSError,ValueError,TypeError,KeyError,OverflowError,RecursionError):return False
 
 
 def valid_draft(data,expected_request=None):
@@ -200,8 +253,13 @@ def check_http(origin,token,requestor=None):
     def probe(name,method,path,expected,payload=None,credential=None,extra=None,validator=None):
         try:
             status,data=requestor(method,path,payload,credential,extra)
-            passed=status in expected and (validator(data) if validator else True)
-            checks.append({'name':name,'passed':bool(passed),'status':status})
+            status_ok=type(status) is int and status in expected
+            error_ok=valid_error_response(data) if status_ok and 400<=status<=599 else True
+            passed=status_ok and error_ok and (validator(data) if validator else True)
+            item={'name':name,'passed':bool(passed)}
+            if type(status) is int:item['status']=status
+            else:item['error']='invalid_http_status'
+            checks.append(item)
             return data if passed else None
         except Exception:
             # Deliberately omit raw exceptions/URLs/headers/response text.
@@ -214,8 +272,7 @@ def check_http(origin,token,requestor=None):
         probe(label+'_spoofed_gateway','POST',path,{401},SAMPLE,extra={'X-Coze-Authenticated':'true','X-Authenticated-User':'teacher'})
         probe(label+'_draft','POST',path,{200},SAMPLE,token,validator=lambda d:valid_draft(d,SAMPLE))
         for key,value in (('total_minutes',40),('theme','不支持的主题'),('review_status','approved')):
-            probe(label+'_reject_'+key,'POST',path,{422},{**SAMPLE,key:value},token,
-                  validator=lambda d:'detail' in d and 'lesson_plan' not in d)
+            probe(label+'_reject_'+key,'POST',path,{422},{**SAMPLE,key:value},token)
     # GET cannot execute these POST-only legacy workflows or enqueue async jobs.
     # 405 means a legacy route may still be exposed; fail rather than claim safety.
     for path in ('/run','/async_run','/stream_run'):
