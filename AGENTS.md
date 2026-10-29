@@ -74,3 +74,9 @@
 - 边界：人工核验记录真实性依赖可信上游，尚未实现真实Coze来源认证；本模块不自动部署、不推断专项技术合格线，也不替代教师/教练审核。
 - `errors` 为结构化列表，`code` 区分 `missing_field` / `invalid_type` / `empty`
 - 无知识库依据：`evidence_overall = "insufficient"`，`mock = true`
+### INTEGRATION-02 独立课前工作流
+- `src/graphs/prelesson_graph.py`：`generate_prelesson_draft → await_teacher_review`，复用教案Agent，不修改原 `graphs.graph.main_graph` 的三个节点或分支。
+- 输入 `integrations.prelesson.schemas.DraftRequest`：零基础、固定双足滑行主题、45分钟；结构化人数/师资与场地器材条件。输出 `DraftResponse` 含七要素、预计负荷、`draft`、`requires_teacher_review=true`、`knowledge_status=unverified`。
+- Python入口 `run_prelesson(payload)`；CLI `PYTHONPATH=src .venv/bin/python -m integrations.prelesson --input docs/prelesson-workflow-v01.example-request.json`；独立HTTP工厂 `integrations.prelesson.api:create_app`，POST `/api/v1/lesson-plans/draft`，服务凭据配置缺失时关闭。
+- 不调用知识库/大模型/视频识别，不写数据库或批准教案；凭据仅授权草稿生成，不认证教师审核。Schema、OpenAPI、合成示例与Coze节点配置说明见 `docs/prelesson-workflow-v01.md`，平台未实际接通或部署。
+- 新测试 `tests/test_prelesson_workflow.py`，保留旧文本反馈流程回归，并与已有隔离PostgreSQL测试联合运行。

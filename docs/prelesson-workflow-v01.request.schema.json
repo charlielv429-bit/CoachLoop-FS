@@ -1,0 +1,117 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "class_label": {
+      "default": "匿名班级",
+      "description": "班级匿名标签；不填学生姓名或健康信息",
+      "maxLength": 80,
+      "minLength": 1,
+      "title": "Class Label",
+      "type": "string"
+    },
+    "student_count": {
+      "exclusiveMinimum": 0,
+      "maximum": 500,
+      "title": "Student Count",
+      "type": "integer"
+    },
+    "theme": {
+      "const": "冰上双足滑行与身体姿态控制",
+      "title": "Theme",
+      "type": "string"
+    },
+    "skill_level": {
+      "const": "零基础",
+      "title": "Skill Level",
+      "type": "string"
+    },
+    "total_minutes": {
+      "description": "当前模板仅45分钟",
+      "maximum": 45,
+      "minimum": 45,
+      "title": "Total Minutes",
+      "type": "integer"
+    },
+    "coach_count": {
+      "anyOf": [
+        {
+          "maximum": 50,
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "未知留空，不虚构人数",
+      "title": "Coach Count"
+    },
+    "teacher_count": {
+      "anyOf": [
+        {
+          "maximum": 50,
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Teacher Count"
+    },
+    "venue_conditions": {
+      "maxLength": 500,
+      "minLength": 1,
+      "title": "Venue Conditions",
+      "type": "string"
+    },
+    "equipment_conditions": {
+      "maxLength": 500,
+      "minLength": 1,
+      "title": "Equipment Conditions",
+      "type": "string"
+    },
+    "estimated_group_active_min": {
+      "default": 36,
+      "description": "预计设计值，非实测；缺省36分钟",
+      "maximum": 45,
+      "minimum": 0,
+      "title": "Estimated Group Active Min",
+      "type": "number",
+      "x-check-bounds-before-float-conversion": true,
+      "x-reject-nonzero-float-underflow": true
+    },
+    "estimated_individual_active_min": {
+      "default": 25,
+      "description": "预计设计值，非实测；缺省25分钟",
+      "maximum": 45,
+      "minimum": 0,
+      "title": "Estimated Individual Active Min",
+      "type": "number",
+      "x-check-bounds-before-float-conversion": true,
+      "x-reject-nonzero-float-underflow": true
+    },
+    "estimated_avg_hr": {
+      "default": 145,
+      "description": "预计输入，非医学目标；缺省145次/分",
+      "maximum": 250,
+      "minimum": 20,
+      "title": "Estimated Avg Hr",
+      "type": "number",
+      "x-check-bounds-before-float-conversion": true,
+      "x-reject-nonzero-float-underflow": true
+    }
+  },
+  "required": [
+    "student_count",
+    "theme",
+    "skill_level",
+    "total_minutes",
+    "venue_conditions",
+    "equipment_conditions"
+  ],
+  "title": "DraftRequest",
+  "type": "object"
+}
