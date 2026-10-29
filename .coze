@@ -9,4 +9,4 @@ pack = ["bash", "scripts/pack.sh"]
 
 [deploy]
 build = ["bash", "scripts/setup.sh"]
-run = ["bash", "scripts/http_run.sh"]
+run = ["bash", "scripts/coze_prelesson_run.sh"]

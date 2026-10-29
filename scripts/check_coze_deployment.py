@@ -6,10 +6,15 @@ import ipaddress
 import json
 import math
 import os
+from pathlib import Path
+import re
 import sys
 import urllib.request
 from urllib.error import HTTPError
 from urllib.parse import urlsplit
+from functools import lru_cache
+
+RESPONSE_CONTRACT=Path(__file__).resolve().parents[1]/'docs/prelesson-workflow-v01.response.schema.json'
 
 ROOT_FIELDS=('guiding_ideology','teaching_material_analysis','learner_analysis','venue_equipment',
              'safety_precautions','teaching_flow','load_accounting')
@@ -31,7 +36,8 @@ def preflight(environ=None):
     checks=[{'name':'python_3_12_or_later','passed':sys.version_info>=(3,12)},
         {'name':'prelesson_only_profile','passed':env.get('COACHLOOP_PRELESSON_ONLY')=='1'},
         {'name':'service_credential_format','passed':len(token)>=32 and token.isascii() and not any(c.isspace() or ord(c)<33 or ord(c)>126 for c in token)},
-        {'name':'explicit_postgresql_url_present','passed':bool(database_ok)}]
+        {'name':'explicit_postgresql_url_present','passed':bool(database_ok)},
+        {'name':'published_response_contract_present','passed':contract_available()}]
     for package in ('fastapi','pydantic','langgraph','uvicorn','coze-coding-utils','coze-coding-dev-sdk','psycopg','psycopg2-binary'):
         try:importlib.metadata.version(package);present=True
         except importlib.metadata.PackageNotFoundError:present=False
@@ -41,6 +47,8 @@ def preflight(environ=None):
 
 
 def validate_origin(value):
+    if any(c.isspace() or ord(c)<32 or ord(c)==127 for c in value) or '\\' in value:
+        raise ValueError('Origin must not contain whitespace, controls or backslashes')
     parsed=urlsplit(value)
     if (parsed.username is not None or parsed.password is not None or parsed.query or parsed.fragment
             or parsed.path not in ('','/') or not parsed.hostname):
@@ -90,9 +98,69 @@ class Transport:
             return response.status,json.loads(raw)
 
 
-def valid_draft(data):
+@lru_cache(maxsize=1)
+def response_contract():
+    return json.loads(RESPONSE_CONTRACT.read_text())
+
+
+def contract_available():
+    try:return response_contract().get('type')=='object'
+    except (OSError,ValueError):return False
+
+
+def contract_shape(value,schema,root):
+    """Check the published response's required structure/types without an SDK.
+
+    This is the subset used by our generated contract, not a general JSON Schema
+    engine. Business invariants below remain separate from structural checks.
+    """
+    if '$ref' in schema:
+        ref=schema['$ref']
+        if not ref.startswith('#/$defs/'):return False
+        return contract_shape(value,root['$defs'][ref.removeprefix('#/$defs/')],root)
+    if 'anyOf' in schema:return any(contract_shape(value,s,root) for s in schema['anyOf'])
+    kind=schema.get('type')
+    if kind=='object':
+        if not isinstance(value,dict) or not set(schema.get('required',[]))<=value.keys():return False
+        props=schema.get('properties',{})
+        if schema.get('additionalProperties') is False and not value.keys()<=props.keys():return False
+        return all(contract_shape(v,props[k],root) for k,v in value.items() if k in props)
+    if kind=='array':
+        return (isinstance(value,list) and len(value)>=schema.get('minItems',0)
+                and len(value)<=schema.get('maxItems',len(value))
+                and all(contract_shape(v,schema.get('items',{}),root) for v in value))
+    if kind=='string':
+        if not isinstance(value,str) or not schema.get('minLength',0)<=len(value)<=schema.get('maxLength',len(value)):return False
+        if 'pattern' in schema and re.search(schema['pattern'],value) is None:return False
+    elif kind=='integer':
+        if type(value) is not int:return False
+    elif kind=='number':
+        if type(value) not in (int,float) or not math.isfinite(value):return False
+    elif kind=='boolean':
+        if type(value) is not bool:return False
+    elif kind=='null':
+        if value is not None:return False
+    elif kind is not None:return False
+    if 'const' in schema and (value!=schema['const'] or type(value) is not type(schema['const'])):return False
+    if 'enum' in schema and value not in schema['enum']:return False
+    if kind in ('number','integer'):
+        if 'minimum' in schema and value<schema['minimum']:return False
+        if 'maximum' in schema and value>schema['maximum']:return False
+        if 'exclusiveMinimum' in schema and value<=schema['exclusiveMinimum']:return False
+        if 'exclusiveMaximum' in schema and value>=schema['exclusiveMaximum']:return False
+    return True
+
+
+def valid_draft(data,expected_request=None):
     try:
+        contract=response_contract()
+        if not contract_shape(data,contract,contract):return False
+        if data['schema_version']!='prelesson-draft-v1':return False
         p=data['lesson_plan'];flow=p['teaching_flow'];load=p['load_accounting']
+        if p['teacher_input']['theme']!=SAMPLE['theme'] or p['teacher_input']['class_data_available'] is not False:return False
+        if expected_request is not None:
+            audience=f"{expected_request['class_label']}·{expected_request['student_count']}人·初学者"
+            if p['teacher_input']['audience']!=audience:return False
         if not all(isinstance(p[k],dict) and p[k] for k in ROOT_FIELDS):return False
         phases=flow['phases']
         ranges={'prep':(8,10),'main':(28,30),'closing':(5,7)}
@@ -105,7 +173,8 @@ def valid_draft(data):
                 or p['venue_equipment']['organization_status']!='pending_confirmation'):return False
         if not p['learner_analysis']['tiered_plan'] or not all(p['safety_tip'] for p in phases):return False
         if not any(e['source']=='unverified' for e in p['evidence_log']):return False
-        if any(e.get('citation') is not None or e['source'] in ('kb_evidence','real_analysis') for e in p['evidence_log']):return False
+        if any(e.get('citation') is not None or e.get('event_ref') is not None
+               or e['source'] in ('kb_evidence','real_analysis') for e in p['evidence_log']):return False
         for name in ('group_density','individual_density','avg_hr'):
             m=load[name]
             if m['kind']!='estimated':return False
@@ -119,7 +188,7 @@ def valid_draft(data):
                 expected=m['numerator']/45*100
             if not math.isclose(m['result'],expected,rel_tol=1e-12,abs_tol=1e-12):return False
         return True
-    except (KeyError,TypeError,ValueError,OverflowError,ZeroDivisionError):return False
+    except (KeyError,TypeError,ValueError,OverflowError,ZeroDivisionError,OSError,RecursionError):return False
 
 
 def check_http(origin,token,requestor=None):
@@ -143,7 +212,7 @@ def check_http(origin,token,requestor=None):
         probe(label+'_missing_auth','POST',path,{401},SAMPLE)
         probe(label+'_wrong_auth','POST',path,{403},SAMPLE,'invalid-synthetic-probe-token')
         probe(label+'_spoofed_gateway','POST',path,{401},SAMPLE,extra={'X-Coze-Authenticated':'true','X-Authenticated-User':'teacher'})
-        probe(label+'_draft','POST',path,{200},SAMPLE,token,validator=valid_draft)
+        probe(label+'_draft','POST',path,{200},SAMPLE,token,validator=lambda d:valid_draft(d,SAMPLE))
         for key,value in (('total_minutes',40),('theme','不支持的主题'),('review_status','approved')):
             probe(label+'_reject_'+key,'POST',path,{422},{**SAMPLE,key:value},token,
                   validator=lambda d:'detail' in d and 'lesson_plan' not in d)

@@ -21,9 +21,12 @@ TOKEN='synthetic-deployment-token-at-least-32-characters'
 
 def deployment_app(enabled=True,token=TOKEN):
     app=FastAPI()
+    app.state.legacy_calls=0
     @app.get('/health')
     def health():return {'status':'ok'}
-    def legacy():return {'legacy_executed':True}
+    def legacy():
+        app.state.legacy_calls+=1
+        return {'legacy_executed':True}
     for path in ('/run','/async_run','/stream_run'):
         app.add_api_route(path,legacy,methods=['POST'])
     app.include_router(create_router(token,include_alias=True))
@@ -48,6 +51,7 @@ def test_public_profile_blocks_nonallowlisted_paths_before_handlers(path,method)
         assert r.status_code==404
         assert r.headers['cache-control']=='no-store'
         assert 'legacy_executed' not in r.text and TOKEN not in r.text
+        assert c.app.state.legacy_calls==0
 
 
 def test_full_smoke_passes_on_restricted_synthetic_app():
@@ -143,3 +147,87 @@ def test_launcher_refuses_missing_credential_before_main_start():
     assert result.returncode==1
     assert json.loads(result.stdout)['mode']=='local_preflight'
     assert 'synthetic' not in result.stdout+result.stderr
+
+
+def test_declared_production_command_cannot_bypass_checked_launcher():
+    import tomllib
+    config=tomllib.loads((ROOT/'.coze').read_text())
+    assert config['deploy']['run']==['bash','scripts/coze_prelesson_run.sh']
+    assert config['dev']['run']==['bash','scripts/http_run.sh']
+
+
+@pytest.mark.parametrize('mutation',['missing_required_element_fields','wrong_schema_version'])
+def test_smoke_rejects_incomplete_or_wrong_version_contract(mutation):
+    data=json.loads((ROOT/'docs/prelesson-workflow-v01.example-response.json').read_text())
+    if mutation=='missing_required_element_fields':data['lesson_plan']['guiding_ideology']={'placeholder':'not actual content'}
+    if mutation=='wrong_schema_version':data['schema_version']='unsupported-version'
+    assert not check.valid_draft(data)
+
+
+def test_smoke_rejects_a_valid_draft_for_another_classroom():
+    with TestClient(deployment_app()) as client:
+        original=requestor(client)
+        def stale(*args):
+            status,data=original(*args)
+            if status==200 and 'lesson_plan' in data:
+                data['lesson_plan']['teacher_input']['audience']='MOCK-OTHER·1人·初学者'
+            return status,data
+        report=check.check_http('http://127.0.0.1',TOKEN,stale)
+        assert not report['passed']
+        assert all(not c['passed'] for c in report['checks'] if c['name'].endswith('_draft'))
+
+
+@pytest.mark.parametrize('path',['/run','/%72un','/run%2f','/prelesson/../run','//run','/async_run','/stream_run'])
+def test_encoded_and_normalized_paths_never_execute_legacy_handlers(path):
+    app=deployment_app()
+    with TestClient(app) as c:
+        response=c.post(path,json={},headers={'Authorization':'Bearer '+TOKEN,'X-Coze-Authenticated':'true'},follow_redirects=True)
+        assert response.status_code==404
+        assert app.state.legacy_calls==0
+
+
+@pytest.mark.parametrize('field,value',[
+    ('COACHLOOP_PRELESSON_ONLY',None),('COACHLOOP_PRELESSON_ONLY','0'),('COACHLOOP_PRELESSON_ONLY','yes'),
+    ('COACHLOOP_PRELESSON_TOKEN','short'),('PGDATABASE_URL',''),
+    ('PGDATABASE_URL','postgresql://MOCK:synthetic@127.0.0.1:bad/mock'),
+])
+def test_production_launcher_stops_on_bad_configuration_without_binding(field,value):
+    env={**os.environ,'COZE_WORKSPACE_PATH':str(ROOT),'COACHLOOP_PRELESSON_ONLY':'1',
+         'COACHLOOP_PRELESSON_TOKEN':TOKEN,'PGDATABASE_URL':'postgresql://MOCK:synthetic@127.0.0.1:1/mock'}
+    if value is None:env.pop(field,None)
+    else:env[field]=value
+    result=subprocess.run(['bash',str(ROOT/'scripts/coze_prelesson_run.sh')],env=env,cwd=ROOT,
+                          capture_output=True,text=True,timeout=5)
+    assert result.returncode==1
+    report=json.loads(result.stdout)
+    assert not report['passed'] and report['mode']=='local_preflight'
+    assert TOKEN not in result.stdout+result.stderr
+    assert 'synthetic' not in result.stdout+result.stderr
+
+
+@pytest.mark.parametrize('origin',['https://example.invalid\n','https://example.invalid\t.evil.invalid','https://example.invalid\\path'])
+def test_origin_normalization_does_not_hide_control_characters(origin):
+    with pytest.raises(ValueError):check.validate_origin(origin)
+
+
+def test_transport_really_refuses_redirects_without_forwarding_bearer():
+    from http.server import BaseHTTPRequestHandler,HTTPServer
+    import threading
+    reached=[]
+    class Handler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            reached.append(self.path)
+            if self.path=='/redirect':
+                self.send_response(302)
+                self.send_header('Location',f'http://127.0.0.1:{self.server.server_port}/sink')
+            else:self.send_response(200)
+            self.send_header('Content-Type','application/json');self.end_headers()
+            self.wfile.write(b'{"detail":"synthetic"}')
+        def log_message(self,*_args):pass
+    server=HTTPServer(('127.0.0.1',0),Handler)
+    thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
+    try:
+        transport=check.Transport(f'http://127.0.0.1:{server.server_port}')
+        status,_=transport('GET','/redirect',token=TOKEN)
+        assert status==302 and reached==['/redirect']
+    finally:server.shutdown();server.server_close();thread.join(timeout=2)
