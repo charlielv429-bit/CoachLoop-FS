@@ -1,0 +1,1070 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "CoachLoop main prelesson routes",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/v1/lesson-plans/draft": {
+      "post": {
+        "summary": "Draft",
+        "operationId": "draft_api_v1_lesson_plans_draft_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DraftRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DraftResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request Entity Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/prelesson/draft": {
+      "post": {
+        "summary": "Draft",
+        "operationId": "draft_prelesson_draft_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DraftRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DraftResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request Entity Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DraftPlan": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Title",
+            "description": "教案标题"
+          },
+          "teacher_input": {
+            "$ref": "#/components/schemas/TeacherInput",
+            "description": "教学条件输入"
+          },
+          "guiding_ideology": {
+            "$ref": "#/components/schemas/GuidingIdeology",
+            "description": "要素1：指导思想"
+          },
+          "teaching_material_analysis": {
+            "$ref": "#/components/schemas/TeachingMaterialAnalysis",
+            "description": "要素2：教材分析"
+          },
+          "learner_analysis": {
+            "$ref": "#/components/schemas/LearnerAnalysis",
+            "description": "要素3：学情分析"
+          },
+          "venue_equipment": {
+            "$ref": "#/components/schemas/VenueEquipment",
+            "description": "要素4：场地器材布置"
+          },
+          "safety_precautions": {
+            "$ref": "#/components/schemas/SafetyPrecautions",
+            "description": "要素5：安全防范与禁忌"
+          },
+          "teaching_flow": {
+            "$ref": "#/components/schemas/TeachingFlow",
+            "description": "要素6：教学流程"
+          },
+          "load_accounting": {
+            "$ref": "#/components/schemas/LoadAccounting",
+            "description": "要素7：运动负荷与密度核算"
+          },
+          "evidence_log": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceEntry"
+            },
+            "type": "array",
+            "title": "Evidence Log",
+            "description": "证据来源/状态记录",
+            "default": []
+          },
+          "review_status": {
+            "type": "string",
+            "const": "draft",
+            "title": "Review Status",
+            "default": "draft"
+          },
+          "plan_version": {
+            "type": "string",
+            "title": "Plan Version",
+            "description": "教案版本",
+            "default": "1.0"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "teacher_input",
+          "guiding_ideology",
+          "teaching_material_analysis",
+          "learner_analysis",
+          "venue_equipment",
+          "safety_precautions",
+          "teaching_flow",
+          "load_accounting"
+        ],
+        "title": "DraftPlan"
+      },
+      "DraftRequest": {
+        "properties": {
+          "class_label": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Class Label",
+            "description": "班级匿名标签；不填学生姓名或健康信息",
+            "default": "匿名班级"
+          },
+          "student_count": {
+            "type": "integer",
+            "maximum": 500.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Student Count"
+          },
+          "theme": {
+            "type": "string",
+            "const": "冰上双足滑行与身体姿态控制",
+            "title": "Theme"
+          },
+          "skill_level": {
+            "type": "string",
+            "const": "零基础",
+            "title": "Skill Level"
+          },
+          "total_minutes": {
+            "type": "integer",
+            "maximum": 45.0,
+            "minimum": 45.0,
+            "title": "Total Minutes",
+            "description": "当前模板仅45分钟"
+          },
+          "coach_count": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 50.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coach Count",
+            "description": "未知留空，不虚构人数"
+          },
+          "teacher_count": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 50.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Teacher Count"
+          },
+          "venue_conditions": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Venue Conditions"
+          },
+          "equipment_conditions": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Equipment Conditions"
+          },
+          "estimated_group_active_min": {
+            "type": "number",
+            "maximum": 45.0,
+            "minimum": 0.0,
+            "title": "Estimated Group Active Min",
+            "description": "预计设计值，非实测；缺省36分钟",
+            "default": 36,
+            "x-check-bounds-before-float-conversion": true,
+            "x-reject-nonzero-float-underflow": true
+          },
+          "estimated_individual_active_min": {
+            "type": "number",
+            "maximum": 45.0,
+            "minimum": 0.0,
+            "title": "Estimated Individual Active Min",
+            "description": "预计设计值，非实测；缺省25分钟",
+            "default": 25,
+            "x-check-bounds-before-float-conversion": true,
+            "x-reject-nonzero-float-underflow": true
+          },
+          "estimated_avg_hr": {
+            "type": "number",
+            "maximum": 250.0,
+            "minimum": 20.0,
+            "title": "Estimated Avg Hr",
+            "description": "预计输入，非医学目标；缺省145次/分",
+            "default": 145,
+            "x-check-bounds-before-float-conversion": true,
+            "x-reject-nonzero-float-underflow": true
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "student_count",
+          "theme",
+          "skill_level",
+          "total_minutes",
+          "venue_conditions",
+          "equipment_conditions"
+        ],
+        "title": "DraftRequest"
+      },
+      "DraftResponse": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "prelesson-draft-v1",
+            "title": "Schema Version",
+            "default": "prelesson-draft-v1"
+          },
+          "status": {
+            "type": "string",
+            "const": "draft_ready",
+            "title": "Status",
+            "default": "draft_ready"
+          },
+          "requires_teacher_review": {
+            "type": "boolean",
+            "const": true,
+            "title": "Requires Teacher Review",
+            "default": true
+          },
+          "knowledge_status": {
+            "type": "string",
+            "const": "unverified",
+            "title": "Knowledge Status",
+            "default": "unverified"
+          },
+          "load_basis": {
+            "type": "string",
+            "const": "estimated_design_assumptions",
+            "title": "Load Basis",
+            "default": "estimated_design_assumptions"
+          },
+          "lesson_plan": {
+            "$ref": "#/components/schemas/DraftPlan"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "lesson_plan"
+        ],
+        "title": "DraftResponse"
+      },
+      "ErrorDetail": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Loc"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Msg"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "type",
+          "msg"
+        ],
+        "title": "ErrorDetail"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ErrorDetail"
+                },
+                "type": "array"
+              }
+            ],
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "required": [
+          "detail"
+        ],
+        "title": "ErrorResponse"
+      },
+      "EventClaim": {
+        "type": "string",
+        "enum": [
+          "observation",
+          "confirmed_error"
+        ],
+        "title": "EventClaim"
+      },
+      "EventRef": {
+        "properties": {
+          "event_id": {
+            "type": "string",
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+            "title": "Event Id",
+            "description": "V4事件标识；仅ASCII字母、数字、下划线和连字符，最多64字符"
+          },
+          "feature": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Feature",
+            "description": "特征名（knee_angle_deg 等）"
+          },
+          "frame_start": {
+            "type": "integer",
+            "title": "Frame Start",
+            "description": "起始帧"
+          },
+          "frame_end": {
+            "type": "integer",
+            "title": "Frame End",
+            "description": "结束帧"
+          },
+          "review_status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "confirmed",
+              "normal_movement",
+              "tracking_error",
+              "uncertain"
+            ],
+            "title": "Review Status",
+            "description": "事件人工审核状态"
+          },
+          "deviation_max": {
+            "type": "number",
+            "title": "Deviation Max",
+            "description": "偏离幅度（若 V4 提供）",
+            "default": 0.0
+          }
+        },
+        "type": "object",
+        "required": [
+          "event_id",
+          "feature",
+          "frame_start",
+          "frame_end",
+          "review_status"
+        ],
+        "title": "EventRef",
+        "description": "引用某条 V4 事件（不得描述为已确认技术错误，除非教练确认）。"
+      },
+      "EvidenceEntry": {
+        "properties": {
+          "statement": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Statement",
+            "description": "教案内的陈述/依据"
+          },
+          "source": {
+            "$ref": "#/components/schemas/EvidenceSource",
+            "description": "来源/数据状态标记"
+          },
+          "citation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Citation",
+            "description": "引用标注（文件·章节/页码）；未核实则必须为 None"
+          },
+          "event_ref": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EventRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "若引用 V4 事件，须填写以触发状态保护"
+          },
+          "event_claim": {
+            "$ref": "#/components/schemas/EventClaim",
+            "default": "observation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "statement",
+          "source"
+        ],
+        "title": "EvidenceEntry"
+      },
+      "EvidenceSource": {
+        "type": "string",
+        "enum": [
+          "teacher_input",
+          "kb_evidence",
+          "real_analysis",
+          "design_assumption",
+          "unverified"
+        ],
+        "title": "EvidenceSource",
+        "description": "证据来源/数据状态标记。"
+      },
+      "GuidingIdeology": {
+        "properties": {
+          "content": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Content",
+            "description": "指导思想内容"
+          },
+          "motor_competence": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Motor Competence",
+            "description": "运动能力维度可观察目标"
+          },
+          "healthy_behavior": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Healthy Behavior",
+            "description": "健康行为维度可观察目标"
+          },
+          "sports_ethics": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Sports Ethics",
+            "description": "体育品德维度可观察目标"
+          }
+        },
+        "type": "object",
+        "required": [
+          "content",
+          "motor_competence",
+          "healthy_behavior",
+          "sports_ethics"
+        ],
+        "title": "GuidingIdeology"
+      },
+      "LearnerAnalysis": {
+        "properties": {
+          "student_profile": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Student Profile",
+            "description": "学生基础（学段/人数/水平）"
+          },
+          "common_difficulties": {
+            "type": "string",
+            "title": "Common Difficulties",
+            "description": "常见学习困难",
+            "default": ""
+          },
+          "tiered_plan": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tiered Plan",
+            "description": "分层教学需求"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note",
+            "description": "数据区分说明",
+            "default": "已确认事实/未经审核姿态事件/待核实推测需在教案中以证据来源明确区分。"
+          }
+        },
+        "type": "object",
+        "required": [
+          "student_profile"
+        ],
+        "title": "LearnerAnalysis"
+      },
+      "LoadAccounting": {
+        "properties": {
+          "avg_hr": {
+            "$ref": "#/components/schemas/LoadMetric",
+            "description": "预计平均心率（次/分）"
+          },
+          "group_density": {
+            "$ref": "#/components/schemas/LoadMetric",
+            "description": "群体运动密度（%）"
+          },
+          "individual_density": {
+            "$ref": "#/components/schemas/LoadMetric",
+            "description": "个体练习密度（%）"
+          },
+          "total_minutes": {
+            "type": "integer",
+            "title": "Total Minutes",
+            "description": "总课时（分钟）"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note",
+            "description": "口径说明",
+            "default": "无真实心率/有效练习时间实测时，以上均为预计值，待课堂实测验证。"
+          }
+        },
+        "type": "object",
+        "required": [
+          "avg_hr",
+          "group_density",
+          "individual_density",
+          "total_minutes"
+        ],
+        "title": "LoadAccounting"
+      },
+      "LoadMetric": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "指标名"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/MeasurementKind",
+            "description": "预计值或实测值"
+          },
+          "formula": {
+            "type": "string",
+            "title": "Formula",
+            "description": "计算公式（含分子/分母/单位说明）"
+          },
+          "numerator": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Numerator",
+            "description": "原始精度分子"
+          },
+          "denominator": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Denominator",
+            "description": "原始精度分母"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit",
+            "description": "单位（如 % / 次/分）"
+          },
+          "result": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Result",
+            "description": "原始精度计算结果"
+          },
+          "target": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target",
+            "description": "可选目标/依据说明"
+          },
+          "display_result": {
+            "type": "number",
+            "title": "Display Result",
+            "description": "仅展示时舍入，不能作为后续计算输入。",
+            "readOnly": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "kind",
+          "formula",
+          "numerator",
+          "denominator",
+          "unit",
+          "result",
+          "display_result"
+        ],
+        "title": "LoadMetric"
+      },
+      "MeasurementKind": {
+        "type": "string",
+        "enum": [
+          "estimated",
+          "measured"
+        ],
+        "title": "MeasurementKind"
+      },
+      "Phase": {
+        "properties": {
+          "phase": {
+            "$ref": "#/components/schemas/TeachingPhase",
+            "description": "教学阶段"
+          },
+          "minutes": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Minutes",
+            "description": "该阶段分钟数（正整数）"
+          },
+          "content": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Content",
+            "description": "教学内容"
+          },
+          "teacher_activity": {
+            "type": "string",
+            "title": "Teacher Activity",
+            "description": "教师活动",
+            "default": ""
+          },
+          "student_activity": {
+            "type": "string",
+            "title": "Student Activity",
+            "description": "学生活动",
+            "default": ""
+          },
+          "organization": {
+            "type": "string",
+            "title": "Organization",
+            "description": "组织方法",
+            "default": ""
+          },
+          "safety_tip": {
+            "type": "string",
+            "title": "Safety Tip",
+            "description": "安全提示",
+            "default": ""
+          },
+          "evaluation": {
+            "type": "string",
+            "title": "Evaluation",
+            "description": "评价方式",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "phase",
+          "minutes",
+          "content"
+        ],
+        "title": "Phase"
+      },
+      "SafetyPrecautions": {
+        "properties": {
+          "safety_review_status": {
+            "type": "string",
+            "const": "unreviewed",
+            "title": "Safety Review Status",
+            "default": "unreviewed"
+          },
+          "risk_screening": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Risk Screening",
+            "description": "课前风险筛查"
+          },
+          "ice_check": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Ice Check",
+            "description": "冰面检查"
+          },
+          "equipment_check": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Equipment Check",
+            "description": "装备检查"
+          },
+          "staffing": {
+            "type": "string",
+            "title": "Staffing",
+            "description": "教学人员职责",
+            "default": ""
+          },
+          "zone_management": {
+            "type": "string",
+            "title": "Zone Management",
+            "description": "练习区管理",
+            "default": ""
+          },
+          "emergency_flow": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Emergency Flow",
+            "description": "紧急处置流程"
+          },
+          "medical_note": {
+            "type": "string",
+            "title": "Medical Note",
+            "description": "医疗边界声明",
+            "default": "涉及伤病/呼吸系统疾病/身体不适，仅提醒教师按学校既有制度核查，AI 不擅自诊断或处理医疗问题。"
+          }
+        },
+        "type": "object",
+        "required": [
+          "risk_screening",
+          "ice_check",
+          "equipment_check",
+          "emergency_flow"
+        ],
+        "title": "SafetyPrecautions"
+      },
+      "TeacherInput": {
+        "properties": {
+          "audience": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Audience",
+            "description": "教学对象"
+          },
+          "theme": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Theme",
+            "description": "教学主题/动作"
+          },
+          "conditions": {
+            "type": "string",
+            "title": "Conditions",
+            "description": "教学条件（场地/器材/人员）",
+            "default": ""
+          },
+          "class_data_available": {
+            "type": "boolean",
+            "title": "Class Data Available",
+            "description": "是否有经授权班级训练记录",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "audience",
+          "theme"
+        ],
+        "title": "TeacherInput",
+        "description": "教师提供的教学条件（非关键项可为空，但不虚构）。"
+      },
+      "TeachingFlow": {
+        "properties": {
+          "total_minutes": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Total Minutes",
+            "description": "总课时（分钟）",
+            "default": 45
+          },
+          "phases": {
+            "items": {
+              "$ref": "#/components/schemas/Phase"
+            },
+            "type": "array",
+            "title": "Phases",
+            "description": "教学阶段列表（必须恰含准备/基本/结束三段）",
+            "default": []
+          }
+        },
+        "type": "object",
+        "title": "TeachingFlow",
+        "description": "当前标准教案模式：严格45分钟；其他模式须显式使用通用模型另行定义。\n\nGeneralTeachingFlow 只负责通用三阶段完整性、正时长与合计约束，\n不可代替 LessonPlan 的标准模式校验。"
+      },
+      "TeachingMaterialAnalysis": {
+        "properties": {
+          "technical_composition": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Technical Composition",
+            "description": "技术构成"
+          },
+          "key_points": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Key Points",
+            "description": "教学重点"
+          },
+          "difficulties": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Difficulties",
+            "description": "教学难点"
+          },
+          "progression": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Progression",
+            "description": "与前后课程的联系"
+          },
+          "note_2d_limitation": {
+            "type": "string",
+            "title": "Note 2D Limitation",
+            "description": "二维测量的局限性说明（不得将探索性阈值当作合格标准）",
+            "default": "膝角/躯干倾角/髋踝偏移为二维视频可观测几何量，不等同于真实重心、冰刀用刃或经证实的专项技术错误。"
+          }
+        },
+        "type": "object",
+        "required": [
+          "technical_composition",
+          "key_points",
+          "difficulties",
+          "progression"
+        ],
+        "title": "TeachingMaterialAnalysis"
+      },
+      "TeachingPhase": {
+        "type": "string",
+        "enum": [
+          "prep",
+          "main",
+          "closing"
+        ],
+        "title": "TeachingPhase"
+      },
+      "VenueEquipment": {
+        "properties": {
+          "organization_status": {
+            "type": "string",
+            "const": "pending_confirmation",
+            "title": "Organization Status",
+            "default": "pending_confirmation"
+          },
+          "proposed_group_sizes": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Proposed Group Sizes"
+          },
+          "zones": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Zones",
+            "description": "冰场区域划分"
+          },
+          "route": {
+            "type": "string",
+            "title": "Route",
+            "description": "练习路线",
+            "default": ""
+          },
+          "observation_position": {
+            "type": "string",
+            "title": "Observation Position",
+            "description": "教师观察位置",
+            "default": ""
+          },
+          "grouping": {
+            "type": "string",
+            "title": "Grouping",
+            "description": "分组安排",
+            "default": ""
+          },
+          "equipment_list": {
+            "type": "string",
+            "title": "Equipment List",
+            "description": "器材数量",
+            "default": ""
+          },
+          "camera_position": {
+            "type": "string",
+            "title": "Camera Position",
+            "description": "视频拍摄机位",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "zones"
+        ],
+        "title": "VenueEquipment"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}
