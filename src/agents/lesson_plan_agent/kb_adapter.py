@@ -75,6 +75,24 @@ def _has_body(content: str) -> bool:
         return False
     if re.search(r"目\s*录|table\s+of\s+contents|[.…·]{2,}\s*\d+", body, re.I):
         return False
+    # Headings are metadata, even when long and punctuated. Remove complete
+    # Markdown ATX/Setext and HTML heading blocks before measuring prose.
+    body = re.sub(r"<h([1-6])\b[^>]*>.*?</h\1\s*>", "", body, flags=re.I | re.S)
+    lines = body.splitlines()
+    prose = []
+    index = 0
+    while index < len(lines):
+        line = lines[index]
+        if index + 1 < len(lines) and re.fullmatch(r"\s*(?:=+|-+)\s*", lines[index + 1]):
+            # A Setext heading can span the whole preceding paragraph.
+            while prose and prose[-1].strip():
+                prose.pop()
+            index += 2
+            continue
+        if not re.match(r"^\s{0,3}(?:>\s*)*#{1,6}(?:\s|$)", line):
+            prose.append(line)
+        index += 1
+    body = "\n".join(prose).strip()
     # 标题/章节名和只有来源的片段不能成为正文证据。
     return len(body) >= 20 and bool(re.search(r"[。！？.!?；;]", body))
 

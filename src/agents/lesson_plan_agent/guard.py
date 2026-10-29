@@ -14,6 +14,7 @@ def can_describe_as_confirmed(event_ref) -> bool:
 
 def event_observation_statement(event_ref) -> str:
     """不插入自由文本和未经确认的诊断结论。"""
+    event_ref.check_event_id()
     return (f"事件 {event_ref.event_id}：审核状态 {event_ref.review_status}，"
             "仅记录二维可观测变化，尚未确认为技术错误。")
 
@@ -25,6 +26,11 @@ def validate_event_claims(evidence_log: List[EvidenceEntry]) -> List[str]:
         if ref is None:
             if ent.source == EvidenceSource.REAL_ANALYSIS or ent.event_claim == EventClaim.CONFIRMED_ERROR:
                 violations.append("真实事件分析或已确认错误结论必须提供 event_ref")
+            continue
+        try:
+            ref.check_event_id()
+        except ValueError as error:
+            violations.append(str(error))
             continue
         if ref.review_status not in (*NON_CONFIRMED_EVENT_STATUSES, CONFIRMED_STATUS):
             violations.append(f"event_id={ref.event_id} 审核状态无效")

@@ -73,7 +73,7 @@ def _base_body():
             "group_density": {"name": "群体运动密度", "kind": "estimated", "formula": "f", "numerator": 36,
                               "denominator": 45, "unit": "%", "result": 80.0},
             "individual_density": {"name": "个体练习密度", "kind": "estimated", "formula": "g", "numerator": 24,
-                                   "denominator": 45, "unit": "%", "result": 53.33},
+                                   "denominator": 45, "unit": "%", "result": 24 / 45 * 100},
             "total_minutes": 45,
         },
     }

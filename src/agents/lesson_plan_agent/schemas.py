@@ -9,6 +9,9 @@
 本模块不依赖大模型、数据库、网页或插件；仅使用已有依赖。
 """
 from enum import Enum
+import math
+import re
+from numbers import Real
 from typing import List, Optional, Literal
 
 from pydantic import BaseModel, Field, ConfigDict, computed_field, model_serializer, model_validator
@@ -184,6 +187,25 @@ class LoadMetric(BaseModel):
     result: float = Field(..., ge=0, description="原始精度计算结果")
     target: Optional[str] = Field(default=None, description="可选目标/依据说明")
 
+    @model_validator(mode="after")
+    def check_calculation(self) -> "LoadMetric":
+        values = (self.numerator, self.denominator, self.result)
+        if any(isinstance(v, bool) or not isinstance(v, Real) or not math.isfinite(v) for v in values):
+            raise ValueError("负荷分子、分母和结果必须为有限数值")
+        if self.numerator < 0 or self.denominator <= 0 or self.result < 0:
+            raise ValueError("负荷分子与结果须非负，分母须大于零")
+        if self.unit not in ("%", "次/分"):
+            raise ValueError("负荷单位须为 % 或 次/分")
+        expected = self.numerator / self.denominator * (100 if self.unit == "%" else 1)
+        if not math.isfinite(expected) or not math.isclose(self.result, expected, rel_tol=1e-12, abs_tol=1e-12):
+            raise ValueError("负荷计算结果与分子/分母不一致；心率还须符合数据有效域")
+        return self
+
+    @model_serializer(mode="wrap")
+    def _guard_metric_output(self, handler):
+        self.check_calculation()
+        return handler(self)
+
     @computed_field
     @property
     def display_result(self) -> float:
@@ -207,7 +229,19 @@ class LoadAccounting(BaseModel):
         from .load_calc import validate_load_inputs
         validate_load_inputs(self.total_minutes, self.group_density.numerator,
                              self.individual_density.numerator, self.avg_hr.result)
+        for metric in (self.avg_hr, self.group_density, self.individual_density):
+            metric.check_calculation()
+        if self.avg_hr.denominator != 1 or self.avg_hr.unit != "次/分":
+            raise ValueError("平均心率分母须为1，单位须为次/分")
+        for metric in (self.group_density, self.individual_density):
+            if metric.denominator != self.total_minutes or metric.unit != "%":
+                raise ValueError("运动密度分母与负荷总课时必须一致，单位须为%")
         return self
+
+    @model_serializer(mode="wrap")
+    def _guard_load_output(self, handler):
+        self._valid_load_inputs()
+        return handler(self)
 
 
 # ---------- 证据与事件引用（来源/状态标记） ----------
@@ -218,12 +252,23 @@ class EventClaim(str, Enum):
 
 class EventRef(BaseModel):
     """引用某条 V4 事件（不得描述为已确认技术错误，除非教练确认）。"""
-    event_id: str = Field(..., min_length=1, description="V4 事件 event_id")
+    event_id: str = Field(..., pattern=r"^[A-Za-z0-9][A-Za-z0-9_-]*$", max_length=64,
+                          description="V4事件标识；仅ASCII字母、数字、下划线和连字符，最多64字符")
     feature: str = Field(..., min_length=1, description="特征名（knee_angle_deg 等）")
     frame_start: int = Field(..., description="起始帧")
     frame_end: int = Field(..., description="结束帧")
     review_status: Literal["pending", "confirmed", "normal_movement", "tracking_error", "uncertain"] = Field(..., description="事件人工审核状态")
     deviation_max: float = Field(default=0.0, description="偏离幅度（若 V4 提供）")
+
+    def check_event_id(self) -> None:
+        # Recheck mutations/model_copy before any interpolation or export.
+        if not isinstance(self.event_id, str) or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{0,63}", self.event_id) is None:
+            raise ValueError("event_id格式无效：须为不含自由文本的ASCII标识")
+
+    @model_serializer(mode="wrap")
+    def _guard_reference_output(self, handler):
+        self.check_event_id()
+        return handler(self)
 
 
 class EvidenceEntry(BaseModel):
@@ -235,13 +280,14 @@ class EvidenceEntry(BaseModel):
 
     @model_validator(mode="after")
     def _unverified_has_no_citation(self) -> "EvidenceEntry":
-        if self.source is EvidenceSource.UNVERIFIED and self.citation is not None:
+        if self.source == EvidenceSource.UNVERIFIED and self.citation is not None:
             raise ValueError("unverified 证据不得携带 citation")
         return self
 
     @model_serializer(mode="wrap")
     def _guard_entry_output(self, handler):
         from .guard import validate_event_claims
+        self._unverified_has_no_citation()
         violations = validate_event_claims([self])
         if violations:
             raise ValueError("；".join(violations))
@@ -280,10 +326,13 @@ class LessonPlan(BaseModel):
             raise ValueError("当前45分钟标准教案模式要求三阶段合计为45分钟")
         if self.load_accounting.total_minutes != self.teaching_flow.total_minutes:
             raise ValueError("教学流程与负荷核算总课时必须一致")
+        self.load_accounting._valid_load_inputs()
         return self
 
     def check_event_output(self) -> None:
         from .guard import validate_event_claims
+        for entry in self.evidence_log:
+            entry._unverified_has_no_citation()
         violations = validate_event_claims(self.evidence_log)
         if violations:
             raise ValueError("；".join(violations))
@@ -297,4 +346,5 @@ class LessonPlan(BaseModel):
     def _guard_output(self, handler):
         # 覆盖 model_dump/model_dump_json，防止构造后追加违规事件绕过校验。
         self.check_event_output()
+        self._standard_time_consistency()
         return handler(self)
