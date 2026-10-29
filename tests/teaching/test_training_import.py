@@ -323,3 +323,170 @@ def test_schema_and_live_example(database,tenant,client,payload):
         (directory/'request.json').write_text(encode(payload)+'\n')
         (directory/'response.json').write_bytes(response.content+b'\n')
         (directory/'idempotency-key.txt').write_text(str(key)+'\n')
+
+
+# The eight successful independent-review probes are retained as regressions.
+def test_independent_concurrent_different_keys(database,tenant,client,payload):
+    register(database,tenant,payload)
+    with ThreadPoolExecutor(2) as pool:
+        responses=list(pool.map(lambda _:send(client,payload),range(2)))
+    assert all(r.status_code==200 for r in responses)
+    ids={r.json()['events'][0]['event_id'] for r in responses}
+    assert len(ids)==1
+    with database[0].connect() as c:
+        assert c.scalar(text('SELECT count(*) FROM teaching_ingest.review_claims WHERE pose_event_id=:id'),{'id':next(iter(ids))})==1
+        assert c.scalar(text('SELECT count(*) FROM teaching_ingest.receipts WHERE tenant_id=:tenant AND analysis_run_id=:run'),{'tenant':tenant,'run':payload['analysis_run_id']})==2
+
+
+def test_independent_concurrent_conflicting_histories(database,tenant,client,payload):
+    changed=copy.deepcopy(payload)
+    changed['source']['artifact_id']=str(uuid4())
+    changed['events'][0]['review']['review_history'][0]['note']='Conflicting synthetic history'
+    for value in (payload,changed):register(database,tenant,value)
+    with ThreadPoolExecutor(2) as pool:
+        responses=list(pool.map(lambda value:send(client,value),(payload,changed)))
+    assert sorted(r.status_code for r in responses)==[200,409]
+    with database[0].connect() as c:
+        assert c.scalar(text('SELECT count(*) FROM teaching.pose_events WHERE analysis_run_id=:run'),{'run':payload['analysis_run_id']})==1
+        assert c.scalar(text('SELECT count(*) FROM teaching_ingest.receipts WHERE analysis_run_id=:run'),{'run':payload['analysis_run_id']})==1
+
+
+def test_independent_trusted_review_not_overwritten(database,tenant,client,payload,actors):
+    payload['events'][0]['review']['review_status']='tracking_error'
+    payload['events'][0]['review']['review_history'][0]['status']='tracking_error'
+    register(database,tenant,payload)
+    event_id=send(client,payload).json()['events'][0]['event_id']
+    with actors[tenant]['coach'].begin() as c:
+        c.execute(text("SELECT teaching.review_event(:id,'confirmed',0,:key)"),{'id':event_id,'key':uuid4()})
+    event=send(client,payload).json()['events'][0]
+    assert event['effective_review_status']=='confirmed'
+    assert event['effective_review_verification']=='authenticated'
+    assert event['technical_error_assessment']=='not_assessed'
+    assert event['imported_review_claims'][0]['source_status']=='tracking_error'
+
+
+def test_independent_importer_cannot_review_or_approve(identity_context):
+    for sql in ("SELECT teaching.review_event(:id,'confirmed',0,:key)","SELECT teaching.review_plan(:id,'approved',0,'')"):
+        with pytest.raises(DBAPIError) as error:
+            with identity_context.engine.begin() as c:
+                c.execute(text(sql),{'id':uuid4(),'key':uuid4()})
+        assert error.value.orig.sqlstate=='42501'
+
+
+def test_independent_intake_rls(database,tenant,client,payload,importers,actors):
+    register(database,tenant,payload)
+    assert send(client,payload).status_code==200
+    other=next(t for t in actors if t!=tenant)
+    with importers[other].connect() as c:
+        for table in ('receipts','review_claims'):
+            assert c.scalar(text(f'SELECT count(*) FROM teaching_ingest.{table} WHERE tenant_id=:tenant'),{'tenant':tenant})==0
+    with database[0].connect() as c:
+        rows=c.execute(text("SELECT relrowsecurity,relforcerowsecurity FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname IN ('teaching','teaching_ingest') AND c.relkind='r'")).all()
+        assert len(rows)==9 and all(enabled and forced for enabled,forced in rows)
+
+
+def test_independent_sql_changed_snapshot_rejected(database,tenant,payload,identity_context):
+    register(database,tenant,payload)
+    payload['events'][0]['original_event']['deviation_max']=999
+    with pytest.raises(DBAPIError) as error:
+        with identity_context.engine.begin() as c:
+            c.execute(text('SELECT * FROM teaching_ingest.import_results(:key,CAST(:p AS jsonb))'),{'key':uuid4(),'p':encode(payload)})
+    assert error.value.orig.sqlstate=='42501'
+
+
+def test_independent_tenant_and_role_spoofing_rejected(identity_context,actors,tenant):
+    other=next(t for t in actors if t!=tenant)
+    with identity_context.engine.begin() as c:
+        c.execute(text("SELECT set_config('app.tenant_id',:other,true)"),{'other':str(other)})
+        assert c.scalar(text('SELECT teaching.current_tenant()'))==tenant
+    with pytest.raises(DBAPIError) as error:
+        with identity_context.engine.begin() as c:c.execute(text('SET ROLE teaching_coach'))
+    assert error.value.orig.sqlstate=='42501'
+
+
+def test_independent_published_contracts():
+    from pathlib import Path
+    from integrations.reviewed_training.schemas import ImportResponse,ResultPage
+    directory=Path(__file__).resolve().parents[2]/'docs'
+    prefix='reviewed-training-import-v01'
+    for suffix,model in (('request',ImportRequest),('response',ImportResponse),('query-response',ResultPage)):
+        assert json.loads((directory/f'{prefix}.{suffix}.schema.json').read_text())==model.model_json_schema()
+    assert json.loads((directory/f'{prefix}.openapi.json').read_text())==create_app().openapi()
+    ImportRequest.model_validate_json((directory/f'{prefix}.example-request.json').read_text())
+    ImportResponse.model_validate_json((directory/f'{prefix}.example-response.json').read_text())
+
+
+def insert_exact_event(engine,tenant,session_id,run_id,field,value):
+    """Use the existing restricted teacher path; never amend stored evidence."""
+    fields=dict(start_time_ms=0,end_time_ms=1,deviation_max=12)
+    fields[field]=value
+    # Keep the interval ordered when testing a large start time.
+    if field=='start_time_ms':fields['end_time_ms']=value
+    with engine.begin() as c:
+        return c.scalar(text('''INSERT INTO teaching.pose_events(
+            tenant_id,training_session_id,analysis_run_id,feature,frame_start,frame_end,
+            start_time_ms,end_time_ms,deviation_max,original_event,source_snapshot)
+            VALUES(:tenant,:session,:run,'knee_angle_deg',0,1,:start_time_ms,:end_time_ms,:deviation_max,
+            jsonb_build_object('feature','knee_angle_deg','frame_start',0,'frame_end',1,
+              'start_time_ms',CAST(:start_time_ms AS numeric),'end_time_ms',CAST(:end_time_ms AS numeric),
+              'deviation_max',CAST(:deviation_max AS numeric)),
+            jsonb_build_object('is_mock',true,'source','mock://precision-regression')) RETURNING id'''),
+            dict(tenant=tenant,session=session_id,run=run_id,**fields))
+
+
+@pytest.mark.parametrize('field',['start_time_ms','end_time_ms','deviation_max'])
+@pytest.mark.parametrize('value',[
+    Decimal('0.'+'1'*61),Decimal('0.'+'1234567890'*20+'1'),
+    Decimal('1e-16383'),Decimal('0.'+'1'*16383),
+    Decimal('1e131071'),Decimal('9'*5000),
+    Decimal('9'*131072+'.'+'1'*16383),
+],ids=['61dp','201dp','minimum-fraction','maximum-scale','maximum-exponent','5000-digit-integer','maximum-integer-and-scale'])
+def test_independent_legacy_precision_query(actors,tenant,chain,field,value):
+    from integrations.reviewed_training.schemas import ResultPage
+    run_id=uuid4()
+    event_id=insert_exact_event(actors[tenant]['teacher'],tenant,chain['session_id'],run_id,field,value)
+    # Add an ordinary row in the same page to prove one historical record cannot
+    # make its neighbors inaccessible. Neither row has a trusted coach review.
+    with actors[tenant]['teacher'].begin() as c:
+        c.execute(text('''INSERT INTO teaching.pose_events(
+            tenant_id,training_session_id,analysis_run_id,feature,frame_start,frame_end,
+            start_time_ms,end_time_ms,deviation_max,original_event,source_snapshot)
+            VALUES(:tenant,:session,:run,'knee_angle_deg',2,3,2,3,1,
+            jsonb_build_object('feature','knee_angle_deg','frame_start',2,'frame_end',3,
+              'start_time_ms',2,'end_time_ms',3,'deviation_max',1),
+            jsonb_build_object('is_mock',true,'source','mock://ordinary-neighbor'))'''),
+            {'tenant':tenant,'session':chain['session_id'],'run':run_id})
+    identity=TrustedIdentity(tenant,f'tdb_{tenant.hex}_reader',actors[tenant]['reader'])
+    with TestClient(create_app(lambda _:identity),raise_server_exceptions=False) as c:
+        response=c.get(f"/api/v1/training-sessions/{chain['session_id']}/reviewed-training-results",params={'analysis_run_id':str(run_id)})
+    assert response.status_code==200,response.text
+    result=decode(response.content)
+    assert len(result['events'])==2
+    event=next(e for e in result['events'] if e['event_id']==str(event_id))
+    assert event[field]==value
+    assert event['effective_review_status']=='pending'
+    assert event['effective_review_verification']=='unreviewed'
+    assert not event['observation_summary_eligible']
+    assert event['technical_error_assessment']=='not_assessed'
+    # PostgreSQL -> JSON -> Decimal -> JSON -> PostgreSQL: value and immutable
+    # snapshot remain identical, even above Python's integer-string digit cap.
+    ResultPage.model_validate(result)
+    token=encode(event[field])
+    with actors[tenant]['reader'].connect() as c:
+        row=c.execute(text(f'''SELECT {field} AS scalar,(original_event->>'{field}')::numeric AS snapshot,
+            CAST(:token AS jsonb)=to_jsonb({field}) AS same_json FROM teaching.pose_events WHERE id=:id'''),
+            {'id':event_id,'token':token}).mappings().one()
+    assert row['scalar']==row['snapshot']==value and row['same_json']
+
+
+@pytest.mark.parametrize('value',[Decimal('-1'),Decimal('NaN'),Decimal('Infinity'),Decimal('-Infinity')])
+def test_illegal_numeric_events_rejected_by_restricted_teacher(actors,tenant,chain,value):
+    with pytest.raises(DBAPIError) as error:
+        insert_exact_event(actors[tenant]['teacher'],tenant,chain['session_id'],uuid4(),'deviation_max',value)
+    assert error.value.orig.sqlstate=='23514'
+
+
+@pytest.mark.parametrize('value',[Decimal('0.'+'1'*61),Decimal('0.'+'1'*201),Decimal('1e13'),Decimal('-1')])
+def test_historical_output_policy_does_not_widen_import(client,payload,value):
+    for obj in (payload['events'][0],payload['events'][0]['original_event']):obj['deviation_max']=value
+    assert send(client,payload).status_code==422

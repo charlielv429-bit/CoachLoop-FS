@@ -5,16 +5,27 @@ from decimal import Decimal
 from uuid import UUID
 
 
+def postgres_numeric(value):
+    """Validate a finite unconstrained PostgreSQL NUMERIC without rounding.
+
+    Bound the exponent before rendering, independently of Decimal's ambient
+    arithmetic context. Import admission has its own, narrower limits.
+    """
+    if isinstance(value,bool) or not isinstance(value,(int,float,Decimal)):
+        raise ValueError('JSON number required')
+    value=value if isinstance(value,Decimal) else Decimal(str(value))
+    if not value.is_finite(): raise ValueError('Finite JSON number required')
+    if value==0: return Decimal(0)
+    if value.adjusted()+1>131072 or -value.as_tuple().exponent>16383:
+        raise ValueError('Number exceeds PostgreSQL NUMERIC limits')
+    return value
+
+
 def encode(value):
     if isinstance(value,Decimal):
-        if not value.is_finite(): raise ValueError('Finite JSON number required')
-        if value==0: return '0'
-        parts=value.as_tuple()
-        if max(0,-parts.exponent)>60 or len(parts.digits)+max(0,parts.exponent)>80:
-            raise ValueError('Numeric precision exceeds interchange limits')
-        token=format(value,'f')
-        if '.' in token: token=token.rstrip('0').rstrip('.')
-        return '0' if value==0 else token
+        # str(Decimal) is exact and may use a compact JSON exponent. Never use
+        # float(), normalize() or arithmetic: all can discard evidence digits.
+        return str(postgres_numeric(value))
     if isinstance(value,UUID): value=str(value)
     if isinstance(value,datetime): value=value.astimezone(timezone.utc).isoformat(timespec='microseconds').replace('+00:00','Z')
     if isinstance(value,dict): return '{'+','.join(json.dumps(str(k))+':'+encode(v) for k,v in sorted(value.items()))+'}'
@@ -30,4 +41,8 @@ def decode(raw):
             if key in result: raise ValueError('Duplicate JSON object key')
             result[key]=value
         return result
-    return json.loads(raw,parse_float=Decimal,parse_constant=invalid,object_pairs_hook=unique)
+    # Preserve ordinary ints for strict frame/sequence fields, but avoid Python's
+    # integer-string digit cap when reading a legal large NUMERIC JSON token.
+    def integer(token): return int(token) if len(token.lstrip('-'))<=640 else Decimal(token)
+    return json.loads(raw,parse_float=Decimal,parse_int=integer,
+                      parse_constant=invalid,object_pairs_hook=unique)

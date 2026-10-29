@@ -7,6 +7,8 @@ from uuid import UUID
 from pydantic import (BaseModel, BeforeValidator, ConfigDict, Field, WithJsonSchema,
                       field_validator, model_validator)
 
+from .json_codec import postgres_numeric
+
 
 def numeric(value):
     if isinstance(value, bool) or not isinstance(value, (int, float, Decimal)):
@@ -26,6 +28,10 @@ def numeric(value):
 Number = Annotated[Decimal, BeforeValidator(numeric), Field(ge=0, le=Decimal('1e12'), max_digits=80, decimal_places=60, allow_inf_nan=False),
                    WithJsonSchema({'type':'number','minimum':0,'maximum':1000000000000,
                                    'x-max-digits':80,'x-max-decimal-places':60})]
+OutputNumber = Annotated[Decimal, BeforeValidator(postgres_numeric), Field(ge=0),
+                        WithJsonSchema({'type':'number','minimum':0,
+                            'description':'Exact finite PostgreSQL NUMERIC; parse with arbitrary precision, not binary float.',
+                            'x-max-integer-digits':131072,'x-max-decimal-places':16383})]
 Status = Literal['pending','confirmed','normal_movement','tracking_error','uncertain']
 Feature = Literal['knee_angle_deg','torso_pitch_deg','hip_ankle_offset_norm']
 LegacyID = Annotated[str, Field(pattern=r'^evt_[0-9a-f]{12}$', max_length=16)]
@@ -162,6 +168,11 @@ class ImportedClaimSummary(StrictModel):
 
 
 class EventSummary(EventFields):
+    # Response admission follows the existing database, not the narrower import
+    # policy. Keep JSON numbers and every stored digit for historical records.
+    start_time_ms: OutputNumber
+    end_time_ms: OutputNumber
+    deviation_max: OutputNumber
     event_id: UUID
     source_event_id: LegacyID | None
     analysis_run_id: UUID

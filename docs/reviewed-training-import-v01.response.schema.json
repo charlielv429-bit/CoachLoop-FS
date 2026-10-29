@@ -25,28 +25,28 @@
           "type": "integer"
         },
         "start_time_ms": {
-          "maximum": 1000000000000,
+          "description": "Exact finite PostgreSQL NUMERIC; parse with arbitrary precision, not binary float.",
           "minimum": 0,
           "title": "Start Time Ms",
           "type": "number",
-          "x-max-decimal-places": 60,
-          "x-max-digits": 80
+          "x-max-decimal-places": 16383,
+          "x-max-integer-digits": 131072
         },
         "end_time_ms": {
-          "maximum": 1000000000000,
+          "description": "Exact finite PostgreSQL NUMERIC; parse with arbitrary precision, not binary float.",
           "minimum": 0,
           "title": "End Time Ms",
           "type": "number",
-          "x-max-decimal-places": 60,
-          "x-max-digits": 80
+          "x-max-decimal-places": 16383,
+          "x-max-integer-digits": 131072
         },
         "deviation_max": {
-          "maximum": 1000000000000,
+          "description": "Exact finite PostgreSQL NUMERIC; parse with arbitrary precision, not binary float.",
           "minimum": 0,
           "title": "Deviation Max",
           "type": "number",
-          "x-max-decimal-places": 60,
-          "x-max-digits": 80
+          "x-max-decimal-places": 16383,
+          "x-max-integer-digits": 131072
         },
         "event_id": {
           "format": "uuid",

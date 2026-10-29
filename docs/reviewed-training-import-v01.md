@@ -36,7 +36,35 @@ These IDs belong to the disposable test run, not a deployed service. Requests ar
 
 Native V5 JSON has no sequence field; a future adapter may number its existing history in array order, but must not invent history or authenticate a reviewer string. The wrapper `{review: ..., demo: ...}` from V5.2 is not accepted directly. Use the published normalized contract. No raw video, URL, face identity, student name or health fields are accepted.
 
-All numbers must be JSON numbers, finite, nonnegative, <=1e12, at most 80 digits / 60 fractional places. These are interchange/resource bounds, not medical or technical performance thresholds. Frames are strict nonnegative integers. Missing/contradictory values, invalid IDs, false mock markers, unexpected fields, duplicate JSON keys, malformed UTC conversion and oversized bodies fail. A unit tag cannot prove the physical time unit; the trusted synthetic manifest must have correct units.
+Import-request numbers must be JSON numbers, finite, nonnegative, <=1e12, at most 80 digits / 60 fractional places. These are admission/resource bounds, not medical or technical performance thresholds. Frames are strict nonnegative integers. Missing/contradictory values, invalid IDs, false mock markers, unexpected fields, duplicate JSON keys, malformed UTC conversion and oversized bodies fail. A unit tag cannot prove the physical time unit; the trusted synthetic manifest must have correct units.
+
+### Historical NUMERIC output compatibility
+
+Responses retain JSON **number** tokens; no field changes to a string or binary float. The three decimal event fields (`start_time_ms`, `end_time_ms`, `deviation_max`) accept the existing database's finite nonnegative unconstrained PostgreSQL NUMERIC range: up to 131072 integer digits and 16383 fractional places. The narrower POST limits do not apply to historical GET results. Response JSON Schema and OpenAPI describe this distinction. No migration, evidence rewrite, truncation or rounding occurs.
+
+The encoder validates PostgreSQL bounds before rendering and emits exact Decimal tokens, optionally in JSON scientific notation (for example `1E+131071`). It uses neither float conversion nor Decimal-context arithmetic. The decoder preserves large integer tokens as Decimal instead of hitting Python's integer-string digit limit. NaN and infinities are rejected; negative event metrics are rejected by both response validation and the existing database checks. Enormous exponents beyond PostgreSQL bounds are rejected before expansion.
+
+Client compatibility: field names, JSON types and schema version remain unchanged. Clients must parse numeric tokens with arbitrary precision, for example Python `json.loads(body, parse_float=Decimal, parse_int=Decimal)`. JavaScript's ordinary `JSON.parse`/Number cannot preserve all digits and can overflow on large legal numbers; use a lossless JSON parser. The service cannot recover digits discarded by a client's parser. Existing synthetic POST examples remain valid; POST still rejects a 61-place input.
+
+High-precision historical query example (synthetic IDs; insert is through the existing restricted teacher database role, not by relaxing POST):
+
+```http
+GET /api/v1/training-sessions/11111111-1111-4111-8111-111111111111/reviewed-training-results?analysis_run_id=22222222-2222-4222-8222-222222222222
+```
+
+Response event excerpt, HTTP 200, with the 61-place value identical to both the stored scalar and `original_event`:
+
+```json
+{
+  "deviation_max": 0.1111111111111111111111111111111111111111111111111111111111111,
+  "effective_review_status": "pending",
+  "effective_review_verification": "unreviewed",
+  "observation_summary_eligible": false,
+  "technical_error_assessment": "not_assessed"
+}
+```
+
+This is a response excerpt, not a complete import body. The original trust and movement-status semantics remain unchanged. Database-to-HTTP-to-database round trips cover 61/201/16383 fractional places, 5000-digit integers, the maximum integer exponent and simultaneous integer/fractional boundaries. A second ordinary event remains readable in the same page.
 
 ## Trust boundary: receipt is not human approval
 
@@ -103,4 +131,11 @@ Not implemented: real data admission, source/human signature verification, a reg
 
 ## Acceptance evidence
 
-Isolated PostgreSQL 16.15: **190 passed, 0 failed, 0 skipped** (the retained database/video baseline of 140 plus 50 HTTP/PostgreSQL integration cases). Original V2–V5.2 suite separately: **41 passed**. Head revision: `0003_training_import`. No external Coze/video/model API was called. Schema upgrades, full downgrade/re-upgrade and populated legacy database upgrades remain covered by the retained migration tests.
+High-precision fix verification on a fresh isolated PostgreSQL 16.15: **247 passed, 0 failed, 0 skipped**, including all original 190 cases and 57 added regressions/boundary cases. Original V2–V5.2 suite separately: **41 passed**. The nine independent-review scenarios are retained as **29 passing cases** after expanding historical precision coverage. Head revision remains `0003_training_import`; no migration changed. No external Coze/video/model API was called. Schema upgrades, full downgrade/re-upgrade and populated legacy database upgrades remain covered by the retained migration tests.
+
+```bash
+.venv/bin/python -B -m pytest -q -p no:cacheprovider
+.venv/bin/python -B -m pytest -q -p no:cacheprovider tests/teaching/test_training_import.py -k independent
+.venv/bin/python -B -m pytest -q -p no:cacheprovider tests/test_video_analysis.py tests/test_mp_mapping.py tests/test_event_detection.py tests/test_event_review.py
+git diff --check
+```
