@@ -290,6 +290,8 @@ app = FastAPI(lifespan=lifespan)
 # guards. No platform/forwarded header is accepted as proof of authentication.
 from integrations.prelesson.api import create_router as create_prelesson_router
 app.include_router(create_prelesson_router(include_alias=True))
+from integrations.prelesson.exposure import PrelessonExposureGuard, prelesson_only_enabled
+app.add_middleware(PrelessonExposureGuard, enabled=prelesson_only_enabled())
 
 # OpenAI 兼容接口处理器
 openai_handler = OpenAIChatHandler(service)
