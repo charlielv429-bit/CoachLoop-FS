@@ -31,6 +31,7 @@ from agents.lesson_plan_agent.schemas import (  # noqa: E402
     MeasurementKind,
     Phase,
     TeachingFlow,
+    GeneralTeachingFlow,
     TeachingPhase,
 )
 
@@ -128,9 +129,12 @@ class TestTeachingFlowTime:
         with pytest.raises(ValidationError, match="分钟数须在"):
             TeachingFlow(total_minutes=45, phases=_phases(prep=5, main=30, closing=10))  # 5+30+10=45
 
-    def test_different_total_default_45_ok(self):
-        # 若自定义 total_minutes 与合计一致则通过
-        tf = TeachingFlow(total_minutes=46, phases=_phases(prep=9, main=30, closing=7))  # 9+30+7=46
+    def test_different_total_requires_explicit_general_model(self):
+        # 标准模型拒绝非45分钟，通用模型保留扩展能力
+        with pytest.raises(ValidationError, match="45分钟标准"):
+            TeachingFlow(total_minutes=46, phases=_phases(prep=9, main=30, closing=7))
+        # 通用模型允许扩展；当前 LessonPlan 不接受它代替标准模式。
+        tf = GeneralTeachingFlow(total_minutes=46, phases=_phases(prep=9, main=30, closing=7))
         assert tf.total_minutes == 46
 
 
@@ -219,3 +223,52 @@ class TestPlanWithEvidence:
         out_path = tmp_path / "plan.json"
         out_path.write_text(payload, encoding="utf-8")
         assert out_path.exists()
+
+@pytest.mark.parametrize("total, phases", [
+    (41, _phases(8, 28, 5)), (46, _phases(9, 30, 7)),
+])
+def test_non45_cannot_bypass_standard_mode(total, phases):
+    with pytest.raises(ValidationError, match="45分钟标准"):
+        TeachingFlow(total_minutes=total, phases=phases)
+    body = _base_body()
+    body["teaching_flow"] = {"total_minutes": total, "phases": phases}
+    body["load_accounting"]["total_minutes"] = total
+    with pytest.raises(ValidationError, match="45分钟标准"):
+        LessonPlan(**body)
+
+
+@pytest.mark.parametrize("citation", ["虚构文献 第1页", "", "真实文献 第1页"])
+def test_unverified_cannot_have_any_citation(citation):
+    with pytest.raises(ValidationError, match="unverified"):
+        EvidenceEntry(statement="尚未核实", source=EvidenceSource.UNVERIFIED, citation=citation)
+
+
+def test_load_and_flow_time_must_match():
+    body = _base_body()
+    body["load_accounting"]["total_minutes"] = 46
+    with pytest.raises(ValidationError, match="总课时必须一致"):
+        LessonPlan(**body)
+
+
+def test_standard_plan_rechecks_unvalidated_nested_flow():
+    body = _base_body()
+    flow = TeachingFlow(phases=_phases())
+    body["teaching_flow"] = flow.model_copy(update={"total_minutes": 46})
+    with pytest.raises(ValidationError, match="时间合计"):
+        LessonPlan(**body)
+
+
+def test_general_flow_cannot_be_used_as_standard_plan():
+    body = _base_body()
+    flow = GeneralTeachingFlow(total_minutes=46, phases=_phases(9, 30, 7))
+    body["teaching_flow"] = flow.model_dump()
+    with pytest.raises(ValidationError, match="45分钟标准"):
+        LessonPlan(**body)
+
+
+def test_general_flow_does_not_inherit_standard_phase_ranges():
+    flow = GeneralTeachingFlow(total_minutes=60, phases=_phases(12, 40, 8))
+    assert flow.total_minutes == 60
+    assert sum(p.minutes for p in flow.phases) == 60
+    with pytest.raises(ValidationError):
+        TeachingFlow(**flow.model_dump())

@@ -1,28 +1,23 @@
-"""教案生成 Agent —— 最小知识库检索适配器（任务2A）。
+"""知识库候选检索与证据分级；检索分数、出处标记均不等于事实核验。
 
-仅封装一次真实检索：调用 Coze 知识库语义搜索，且**只把带【原文出处】来源标记、
-非图像块(png)的文本命中视为可核验**，产出结构化引用（文件 | 原PDF第N页）。
-
-不可核验情形一律返回空（不虚构引用）：
-- 知识库返回图像块（content 以 `![img](...)` 开头，无文字）；
-- 无【原文出处】来源标记的内容（如纯标题、平台分割碎片）；
-- SDK 初始化/调用异常。
+A: 正文、出处一致，且有人工核验记录直接支持当前陈述。
+B: 可定位的候选正文，尚未确认支持关系。C: 无效或不可定位的片段。
+只有 A 可形成正式教学依据。人工核验记录须由可信的人审流程提供，
+本模块不调用 LLM、不从检索内容或分数生成核验记录。
 """
+import math
 import re
+from enum import Enum
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
-
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from coze_coding_dev_sdk import Config, KnowledgeClient
 
-# 来源标记：例如 【原文出处】Part1A_Core_Health.pdf | 原PDF第6页 | 文件p6
 _SRC_MARKER = re.compile(
-    r"【原文出处】\s*(?P<file>[^｜|]+?)\s*[｜|]\s*原PDF第(?P<page>\d+)页"
+    r"【原文出处】\s*(?P<file>[^｜|\n]+?)\s*[｜|]\s*原PDF第(?P<page>\d+)页"
 )
-# 阈值：低于该相似度的命中视为弱相关/噪声，不纳入（可配置）
 _MIN_SCORE = 0.5
-
-# 使用教案时实际检索的问题（供 CLI/集成默认调用）
+DEFAULT_STATEMENT = "体育与健康课程核心素养包括运动能力、健康行为和体育品德。"
 DEFAULT_QUERIES = [
     "体育与健康学科核心素养包括什么？",
     "运动能力在体育教学中如何体现？",
@@ -30,68 +25,122 @@ DEFAULT_QUERIES = [
 ]
 
 
+class EvidenceGrade(str, Enum):
+    A = "A"
+    B = "B"
+    C = "C"
+
+
+class HumanVerification(BaseModel):
+    """可信人审流程提供的记录；绑定原始全文、出处与被支持的确切陈述。
+
+    这是人审结果的输入契约，不是身份认证接口。不得从知识库片段自动构造。
+    """
+    model_config = ConfigDict(str_strip_whitespace=True)
+    reviewer: str = Field(min_length=1)
+    source_file: str = Field(min_length=1)
+    page: str = Field(pattern=r"^[1-9]\d*$")
+    content: str = Field(min_length=1)
+    supported_statement: str = Field(min_length=1)
+    supports_statement: bool
+
+
 class KBHit(BaseModel):
-    """一条可核验的知识库命中（含来源页码，可回溯）。"""
+    """检索候选，不代表已核实；新增人审字段默认空以兼容旧调用。"""
+    query: str = Field(..., min_length=1)
+    content: str = Field(..., min_length=1)
+    source_file: str = Field(..., min_length=1)
+    page: str = Field(..., min_length=1)
+    score: float
+    human_verification: Optional[HumanVerification] = None
 
-    query: str = Field(..., min_length=1, description="触发的检索问题")
-    content: str = Field(..., min_length=1, description="命中文本")
-    source_file: str = Field(..., min_length=1, description="来源文件名称")
-    page: str = Field(..., min_length=1, description="原PDF页码")
-    score: float = Field(..., description="相似度得分")
 
-
-def _parse_citation(content: str) -> tuple:
-    """从内容中提取 (文件, 页码)；无可信来源标记返回 None。"""
-    m = _SRC_MARKER.search(content or "")
-    if not m:
+def _parse_citation(content: str) -> Optional[tuple]:
+    markers = list(_SRC_MARKER.finditer(content or ""))
+    if len(markers) != 1 or int(markers[0].group("page")) <= 0:
         return None
-    return (m.group("file").strip(), m.group("page"))
+    return markers[0].group("file").strip(), markers[0].group("page")
 
 
 def _is_image_chunk(content: str) -> bool:
-    c = (content or "").lstrip()
-    return c.startswith("![img]") or c.startswith("![](http")
+    # 标记前后、任意 alt 文本的图片块均不可当作正文；保守降级。
+    return bool(re.search(r"!\[[^\]]*\]\s*\(|<img\b", content or "", re.I))
 
 
-def retrieve_kb(
-    queries: Optional[List[str]] = None,
-    top_k: int = 6,
-    min_score: float = _MIN_SCORE,
-) -> dict:
-    """查询知识库，返回 {ok, hits:{query: [KBHit, ...]}}。
+def _has_body(content: str) -> bool:
+    """保守筛选正文候选；通过本筛选仍不代表支持某个论断。"""
+    body = _SRC_MARKER.sub("", content or "")
+    body = re.sub(r"[｜|]?\s*文件\s*p\d+", "", body).strip()
+    if _is_image_chunk(body):
+        return False
+    if re.search(r"目\s*录|table\s+of\s+contents|[.…·]{2,}\s*\d+", body, re.I):
+        return False
+    # 标题/章节名和只有来源的片段不能成为正文证据。
+    return len(body) >= 20 and bool(re.search(r"[。！？.!?；;]", body))
 
-    仅返回可核验（有来源标记、非图像块、且 score ≥ min_score）的命中；
-    任一异常/不可核验都安全降级为空，绝不虚构引用。
+
+def classify_evidence(entry, statement: str = DEFAULT_STATEMENT,
+                      min_score: float = _MIN_SCORE) -> EvidenceGrade:
+    """分级不可由输入的 grade 或 LLM 判断覆盖；A级必须绑定可信人审记录。"""
+    if not isinstance(entry, KBHit):
+        return EvidenceGrade.C
+    parsed = _parse_citation(entry.content)
+    if (parsed != (entry.source_file, entry.page)
+            or not math.isfinite(entry.score) or entry.score < min_score
+            or not _has_body(entry.content)):
+        return EvidenceGrade.C
+    review = entry.human_verification
+    if (review is not None and review.supports_statement
+            and review.supported_statement == statement
+            and review.source_file == entry.source_file and review.page == entry.page
+            and review.content == entry.content):
+        return EvidenceGrade.A
+    return EvidenceGrade.B
+
+
+def retrieve_kb(queries: Optional[List[str]] = None, top_k: int = 6,
+                min_score: float = _MIN_SCORE, *, client=None,
+                client_factory=None, config_factory=None) -> dict:
+    """保留 ok/hits，另加 status/errors 以区分无命中、配置失败与检索失败。
+
+    client 可直接注入以完全避免凭据和网络；默认初始化延迟到调用时。
+    检索只返回 B 级正文候选，绝不从远端返回值读取人工核验记录。
+    errors 只记录错误类型，不暴露凭据或原始服务异常内容。
     """
     qs = queries if queries else list(DEFAULT_QUERIES)
-    result: dict = {}
-    ok = False
-    try:
-        client = KnowledgeClient(config=Config())
-    except Exception:
-        return {"ok": False, "hits": {}}
-
+    result, errors = {}, []
+    if client is None:
+        try:
+            config = (config_factory or Config)()
+        except Exception as exc:
+            return {"ok": False, "hits": {}, "status": "configuration_error",
+                    "errors": [{"stage": "configuration", "type": type(exc).__name__}]}
+        try:
+            client = (client_factory or KnowledgeClient)(config=config)
+        except Exception as exc:
+            return {"ok": False, "hits": {}, "status": "client_error",
+                    "errors": [{"stage": "client", "type": type(exc).__name__}]}
     for q in qs:
-        hits: List[KBHit] = []
+        hits = []
         try:
             resp = client.search(query=q, top_k=top_k, min_score=0.0)
             chunks = getattr(resp, "chunks", None) or []
-        except Exception:
+        except Exception as exc:
+            errors.append({"stage": "search", "type": type(exc).__name__})
             chunks = []
         for c in chunks:
-            content = c.content or ""
-            if _is_image_chunk(content):
-                continue
-            parsed = _parse_citation(content)
-            if parsed is None:
-                continue  # 无来源标记：不可核验，跳过
-            src_file, page = parsed
-            score = float(getattr(c, "score", 0.0) or 0.0)
-            if score < min_score:
-                continue
-            hits.append(
-                KBHit(query=q, content=content, source_file=src_file, page=page, score=score)
-            )
-            ok = True
+            try:
+                content = c.content or ""
+                parsed = _parse_citation(content)
+                if parsed is None:
+                    continue
+                hit = KBHit(query=q, content=content, source_file=parsed[0],
+                            page=parsed[1], score=getattr(c, "score", 0.0) or 0.0)
+                if classify_evidence(hit, min_score=min_score) is EvidenceGrade.B:
+                    hits.append(hit)
+            except (AttributeError, TypeError, ValueError, ValidationError):
+                continue  # 单条坏数据不影响其余结果
         result[q] = hits
-    return {"ok": ok, "hits": result}
+    ok = any(result.values())
+    status = "partial" if errors and ok else "search_error" if errors else "ok" if ok else "no_evidence"
+    return {"ok": ok, "hits": result, "status": status, "errors": errors}

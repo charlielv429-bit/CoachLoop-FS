@@ -41,7 +41,6 @@ except Exception:  # pragma: no cover
 
 _TOTAL_MIN = 45  # 默认总课时
 _KB_MIN_SCORE = 0.5  # 纳入教案的知识库命中最低相似度
-_KB_SRC_RE = re.compile(r"【原文出处】\s*[^｜|]+?\s*[｜|]\s*原PDF第\d+页")  # 校验命中是否带可回溯来源标记
 
 # 师资解析：从教师输入条件中提取人数（未明确时不得自行增设）
 _STAFF_RE = {
@@ -164,22 +163,14 @@ def _build_load(total: int, group: float, indiv: float, avg_hr: float) -> LoadAc
 
 
 def _is_verified_kb_entry(entry, min_score: float = _KB_MIN_SCORE) -> bool:
-    """仅接受可核验的知识库命中：内容带【原文出处】来源标记、含文件与页码、达到相似度阈值。"""
-    if entry is None:
-        return False
-    score = getattr(entry, "score", 0.0)
-    content = getattr(entry, "content", "") or ""
-    if score < min_score:
-        return False
-    if not _KB_SRC_RE.search(content):
-        return False  # 无来源标记：不可核验
-    src = getattr(entry, "source_file", "") or ""
-    page = getattr(entry, "page", "") or ""
-    return bool(src and page)
+    """只有可信人审已确认支持当前教学陈述的 A 级正文才可采用。"""
+    return (kb_adapter is not None and
+            kb_adapter.classify_evidence(entry, min_score=min_score)
+            is kb_adapter.EvidenceGrade.A)
 
 
 def _build_kb_evidence(entries) -> list:
-    """把可核验的知识库命中转换为教案证据条目；未核验一律不产生虚构引用。"""
+    """仅将人审确认支持当前陈述的 A 级证据纳入教案。"""
     evs = []
     for e in entries or []:
         if not _is_verified_kb_entry(e):
@@ -189,7 +180,7 @@ def _build_kb_evidence(entries) -> list:
             continue
         citation = f"{getattr(e, 'source_file')} | 原PDF第{getattr(e, 'page')}页"
         evs.append(EvidenceEntry(
-            statement=f"【知识库已核实】命中：{content[:200]}",
+            statement=f"【人工核验A级教学依据】{kb_adapter.DEFAULT_STATEMENT}",
             source=EvidenceSource.KB_EVIDENCE,
             citation=citation,
         ))
@@ -220,7 +211,11 @@ def build_draft(inp: LessonPlanDraftInput, kb_evidence: Optional[list] = None) -
             statement=f"教学对象：{audience_full}；教学主题：{inp.theme}；教学条件：{inp.conditions}。",
             source=EvidenceSource.TEACHER_INPUT,
         ),
-        EvidenceEntry(statement=unverified_kb(), source=EvidenceSource.UNVERIFIED, citation=None),
+        EvidenceEntry(
+            statement=("除已列明的人审A级陈述外，其他课程标准和冰场安全规范依据尚未核实。"
+                       if kb_evs else unverified_kb()),
+            source=EvidenceSource.UNVERIFIED, citation=None,
+        ),
         EvidenceEntry(
             statement="45分钟三段式时间分配与负荷比例为本方案设计假设，须经教师按班级实际复核；"
                       "预计心率/活动时间均为预计值，待课堂实测验证。",
@@ -231,7 +226,7 @@ def build_draft(inp: LessonPlanDraftInput, kb_evidence: Optional[list] = None) -
                       "未经教练审核的姿态事件不得描述为已确认技术错误。",
             source=EvidenceSource.DESIGN_ASSUMPTION,
         ),
-    ] + kb_evs  # 真实且来源核实的检索命中才标记 kb_evidence；否则维持 unverified
+    ] + kb_evs  # 仅人工核验支持当前陈述的A级证据标记 kb_evidence；否则维持 unverified
     violations = validate_event_claims(evidence_log)
     if violations:
         raise ValueError("；".join(violations))  # 防御：不允许任何未审核事件被写成已确认错误
@@ -247,7 +242,7 @@ def build_draft(inp: LessonPlanDraftInput, kb_evidence: Optional[list] = None) -
         guiding_ideology=GuidingIdeology(
             content=(
                 "围绕“健康第一”理念，通过冰上双足滑行与身体姿态控制学习，落实运动能力、健康行为与体育品德三个维度的可观察目标。"
-                + ("（课程标准引用见证据清单 kb_evidence，来源可核查。）" if kb_evs else "（课标依据：知识库未核实，不虚构出处。）")
+                + ("（核心素养三维度的人工核验依据见证据清单 kb_evidence；不代表其他教学论断已核实。）" if kb_evs else "（课标依据：知识库未核实，不虚构出处。）")
             ),
             motor_competence="掌握安全基本站姿与短距双足滑行，能保持重心平稳、目视前方（具体技术标准待专业教练确认）。",
             healthy_behavior="养成课前热身与装备/冰面检查习惯，学会摔倒后原地待援的安全行为。",
@@ -328,9 +323,9 @@ def main() -> None:  # CLI 演示入口
     if args.kb and kb_adapter is not None:
         try:
             resp = kb_adapter.retrieve_kb()
-            # 汇总所有问题的可核验命中，交给 build_draft 过滤(阈值+来源)
+            # 检索仅产生候选正文；build_draft 仍要求独立可信人审记录
             kb_evidence = [h for hl in resp["hits"].values() for h in hl]
-            print(f"[kb] 检索完成：{len(kb_evidence)} 条可核验命中")
+            print(f"[kb] 检索完成：{len(kb_evidence)} 条候选正文（未经人工核验不用于正式教学论断）")
         except Exception as exc:  # 知识库不可用→降级，不虚构
             print(f"[kb] 检索不可用，降级为未核实：{exc}")
             kb_evidence = None

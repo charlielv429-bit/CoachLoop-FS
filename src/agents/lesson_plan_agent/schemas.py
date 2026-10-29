@@ -110,7 +110,7 @@ PHASE_CN = {TeachingPhase.PREP: "准备", TeachingPhase.MAIN: "基本", Teaching
 
 class Phase(BaseModel):
     phase: TeachingPhase = Field(..., description="教学阶段")
-    minutes: int = Field(..., description="该阶段分钟数（整数）")
+    minutes: int = Field(..., gt=0, description="该阶段分钟数（正整数）")
     content: str = Field(..., min_length=1, description="教学内容")
     teacher_activity: str = Field(default="", description="教师活动")
     student_activity: str = Field(default="", description="学生活动")
@@ -119,13 +119,13 @@ class Phase(BaseModel):
     evaluation: str = Field(default="", description="评价方式")
 
 
-class TeachingFlow(BaseModel):
+class GeneralTeachingFlow(BaseModel):
     """三段式课时结构：准备/基本/结束，合计严格等于 total_minutes。"""
-    total_minutes: int = Field(default=45, description="总课时（分钟）")
+    total_minutes: int = Field(default=45, gt=0, description="总课时（分钟）")
     phases: List[Phase] = Field(default=[], description="教学阶段列表（必须恰含准备/基本/结束三段）")
 
     @model_validator(mode="after")
-    def _check_three_phases_and_time(self) -> "TeachingFlow":
+    def _check_three_phases_and_time(self) -> "GeneralTeachingFlow":
         seen = set()
         total = 0
         for p in self.phases:
@@ -142,6 +142,19 @@ class TeachingFlow(BaseModel):
             raise ValueError(
                 f"三段式时间合计须严格等于 {self.total_minutes} 分钟，实际合计 {total} 分钟"
             )
+        return self
+
+
+class TeachingFlow(GeneralTeachingFlow):
+    """当前标准教案模式：严格45分钟；其他模式须显式使用通用模型另行定义。
+
+    GeneralTeachingFlow 只负责通用三阶段完整性、正时长与合计约束，
+    不可代替 LessonPlan 的标准模式校验。
+    """
+    @model_validator(mode="after")
+    def _standard_45(self) -> "TeachingFlow":
+        if self.total_minutes != 45:
+            raise ValueError("当前45分钟标准教案模式要求总课时为45分钟")
         for p in self.phases:
             lo, hi = PHASE_RANGE_MINUTES[p.phase]
             if not (lo <= p.minutes <= hi):
@@ -196,6 +209,12 @@ class EvidenceEntry(BaseModel):
     citation: Optional[str] = Field(default=None, description="引用标注（文件·章节/页码）；未核实则必须为 None")
     event_ref: Optional[EventRef] = Field(default=None, description="若引用 V4 事件，须填写以触发状态保护")
 
+    @model_validator(mode="after")
+    def _unverified_has_no_citation(self) -> "EvidenceEntry":
+        if self.source is EvidenceSource.UNVERIFIED and self.citation is not None:
+            raise ValueError("unverified 证据不得携带 citation")
+        return self
+
 
 # ---------- 顶层：七要素教案 ----------
 class TeacherInput(BaseModel):
@@ -220,3 +239,13 @@ class LessonPlan(BaseModel):
     evidence_log: List[EvidenceEntry] = Field(default=[], description="证据来源/状态记录")
     review_status: ReviewStatus = Field(default=ReviewStatus.DRAFT, description="教案审核状态（人员审核）")
     plan_version: str = Field(default="1.0", description="教案版本")
+
+    @model_validator(mode="after")
+    def _standard_time_consistency(self) -> "LessonPlan":
+        # 在顶层重复核对，防止嵌套模型被 model_copy/model_construct 绕过。
+        if (self.teaching_flow.total_minutes != 45
+                or sum(p.minutes for p in self.teaching_flow.phases) != 45):
+            raise ValueError("当前45分钟标准教案模式要求三阶段合计为45分钟")
+        if self.load_accounting.total_minutes != self.teaching_flow.total_minutes:
+            raise ValueError("教学流程与负荷核算总课时必须一致")
+        return self
