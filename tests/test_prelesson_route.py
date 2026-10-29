@@ -1,5 +1,5 @@
 """Main-app route tests: stub only the DB lifespan; real routes/auth/graph run."""
-import importlib
+import importlib.util
 import json
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -17,10 +17,21 @@ TOKEN='synthetic-main-route-token'
 def payload():return json.loads((ROOT/'docs/prelesson-workflow-v01.example-request.json').read_text())
 
 
+@pytest.fixture(scope='module')
+def isolated_main():
+    # main constructs its router at import time. Never reuse a process-global
+    # cached app whose credential belongs to another test/import environment.
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setenv('COACHLOOP_PRELESSON_TOKEN',TOKEN)
+        spec=importlib.util.spec_from_file_location('coachloop_route_test_main',ROOT/'src/main.py')
+        main=importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(main)
+        yield main
+
+
 @pytest.fixture
-def main_client(monkeypatch):
-    monkeypatch.setenv('COACHLOOP_PRELESSON_TOKEN',TOKEN)
-    main=importlib.import_module('main')
+def main_client(monkeypatch,isolated_main):
+    main=isolated_main
     @asynccontextmanager
     async def offline(_app):yield
     monkeypatch.setattr(main.app.router,'lifespan_context',offline)
@@ -100,8 +111,8 @@ def test_installation_does_not_replace_legacy_routes_or_validation():
         assert c.post('/old',json={'count':1},headers={'Content-Type':'application/json'}).status_code==200
 
 
-def test_main_legacy_graph_still_runs_and_prelesson_nodes_are_not_in_old_graph():
-    main=importlib.import_module('main')
+def test_main_legacy_graph_still_runs_and_prelesson_nodes_are_not_in_old_graph(isolated_main):
+    main=isolated_main
     from graphs.graph import main_graph
     from graphs.prelesson_graph import prelesson_graph
     assert 'generate_prelesson_draft' not in main_graph.get_graph().nodes
@@ -110,3 +121,43 @@ def test_main_legacy_graph_still_runs_and_prelesson_nodes_are_not_in_old_graph()
     assert {'/run','/stream_run','/node_run/{node_id}','/async_run','/health'}<=routes
     result=main_graph.invoke({'student_id':'MOCK-01','skill_code':'MOCK','duration_min':30,'observation':'合成观察'})
     assert result['run_status']=='valid' and result['mock']
+
+
+@pytest.mark.parametrize('path',PATHS)
+@pytest.mark.parametrize('attack',['query_token','cookie_token','wrong_suffix','trailing_slash'])
+def test_alternate_credential_locations_and_path_redirects_do_not_bypass(main_client,payload,path,attack):
+    headers={}
+    suffix=''
+    if attack=='query_token':suffix='?access_token='+TOKEN
+    if attack=='cookie_token':headers['Cookie']='access_token='+TOKEN
+    if attack=='wrong_suffix':headers['Authorization']='Bearer '+TOKEN+'-wrong'
+    if attack=='trailing_slash':suffix='/'
+    response=main_client.post(path+suffix,json=payload,headers=headers,follow_redirects=True)
+    assert response.status_code in (401,403)
+    assert TOKEN not in response.text
+
+
+@pytest.mark.parametrize('path',PATHS)
+def test_approval_and_unverified_flags_are_output_only(main_client,payload,path):
+    for changes in ({'requires_teacher_review':False},{'knowledge_status':'verified'},
+                    {'lesson_plan':{'review_status':'approved'}},{'total_minutes':45.0}):
+        response=main_client.post(path,json={**payload,**changes},headers={'Authorization':'Bearer '+TOKEN})
+        assert response.status_code==422
+
+
+def test_existing_run_request_still_reaches_original_workflow(main_client,monkeypatch,isolated_main):
+    from graphs.graph import main_graph
+    # Keep real /run parsing/context/task handling and original graph execution;
+    # replace only external telemetry configuration/flush, never its node logic.
+    monkeypatch.setattr(isolated_main,'init_run_config',lambda _g,_ctx:{})
+    monkeypatch.setattr(isolated_main.cozeloop,'flush',lambda:None)
+    isolated_main.service.set_graph(main_graph)
+    payload={'student_id':'MOCK-01','skill_code':'MOCK','duration_min':'30','observation':'合成观察'}
+    response=main_client.post('/run',json=payload)
+    assert response.status_code==200,response.text
+    result=response.json()
+    assert result['run_status']=='valid' and result['mock'] is True
+    assert result['feedback']['observation']==payload['observation']
+    assert result['run_id']
+    invalid=main_client.post('/run',json={})
+    assert invalid.status_code==200 and invalid.json()['run_status']=='invalid'

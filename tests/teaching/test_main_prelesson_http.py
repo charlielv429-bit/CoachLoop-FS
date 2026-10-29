@@ -9,26 +9,30 @@ import sys
 import time
 import urllib.request
 from urllib.error import HTTPError,URLError
+import pytest
 
 from integrations.prelesson.schemas import DraftResponse
 
 ROOT=Path(__file__).resolve().parents[2]
 
 
-def test_real_uvicorn_main_routes_with_isolated_postgres(database):
+@pytest.mark.parametrize('configured',[True,False],ids=['configured-bearer','missing-bearer-config'])
+def test_real_uvicorn_main_routes_with_isolated_postgres(database,configured):
     admin,_actors=database
     token=secrets.token_urlsafe(32)
     # Never use inherited production URLs or print URLs/credentials/process env.
     env={**os.environ,'PYTHONPATH':str(ROOT/'src'),'PYTHONDONTWRITEBYTECODE':'1',
          'PGDATABASE_URL':admin.url.set(drivername='postgresql').render_as_string(hide_password=False),
-         'COACHLOOP_PRELESSON_TOKEN':token,'LANGSMITH_TRACING':'false','LANGCHAIN_TRACING_V2':'false'}
+         'COACHLOOP_PRELESSON_TOKEN':token if configured else '',
+         'LANGSMITH_TRACING':'false','LANGCHAIN_TRACING_V2':'false'}
     with socket.socket() as s:s.bind(('127.0.0.1',0));port=s.getsockname()[1]
     process=subprocess.Popen([sys.executable,'-B','-m','uvicorn','main:app','--host','127.0.0.1','--port',str(port),'--log-level','warning'],
         cwd=ROOT,env=env,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
     base=f'http://127.0.0.1:{port}'
-    def request(path,payload=None,authorized=False):
+    def request(path,payload=None,authorized=False,extra_headers=None):
         headers={'Content-Type':'application/json'}
         if authorized:headers['Authorization']='Bearer '+token
+        if extra_headers:headers.update(extra_headers)
         req=urllib.request.Request(base+path,data=json.dumps(payload).encode() if payload is not None else None,headers=headers)
         # Loopback test transport: no external proxy/service is contacted.
         opener=urllib.request.build_opener(urllib.request.ProxyHandler({}))
@@ -47,8 +51,13 @@ def test_real_uvicorn_main_routes_with_isolated_postgres(database):
         payload=json.loads((ROOT/'docs/prelesson-workflow-v01.example-request.json').read_text())
         outputs=[]
         for path in ('/api/v1/lesson-plans/draft','/prelesson/draft'):
-            assert request(path,payload)[0]==401
+            assert request(path,payload)[0]==(401 if configured else 503)
             status,data=request(path,payload,True)
+            if not configured:
+                assert status==503
+                assert request(path,payload,extra_headers={'X-Coze-Authenticated':'true','X-Authenticated-User':'teacher'})[0]==503
+                assert token not in json.dumps(data)
+                continue
             assert status==200
             result=DraftResponse.model_validate(data)
             assert result.requires_teacher_review and result.lesson_plan.review_status=='draft'
@@ -56,7 +65,7 @@ def test_real_uvicorn_main_routes_with_isolated_postgres(database):
             assert result.knowledge_status=='unverified'
             assert request(path,{**payload,'total_minutes':40},True)[0]==422
             outputs.append(data)
-        assert outputs[0]==outputs[1]
+        if configured:assert outputs[0]==outputs[1]
         status,spec=request('/openapi.json')
         assert status==200 and '/prelesson/draft' in spec['paths']
         assert token not in json.dumps(spec)
