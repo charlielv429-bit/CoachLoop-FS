@@ -61,5 +61,16 @@
 - `duration_min` / `stability_score`：接受**整数**或**可无歧义转整数的纯数字字符串**（如 "30"、"3"），在工作流入口标准化为 `int`；拒绝小数/`abc`/空串/布尔
 - `stability_score` 为空时允许通过；不将候选评分范围或训练时长范围作为正式拦截条件
 - 非法输入不生成模拟反馈，仅返回 `errors` 与 `validation_result`
+
+### 教案生成 Agent（独立确定性模块）
+- 目录 `src/agents/lesson_plan_agent/`，使用主 `.venv`；草稿生成和测试不调用大模型、视频识别或付费 API。
+  - `schemas.py`：七要素结构；当前 `TeachingFlow` 严格45分钟，准备8–10、基本28–30、结束5–7；`GeneralTeachingFlow` 保留其他课时扩展边界。
+  - `load_calc.py`：原始精度计算群体/个体密度和平均心率；仅 `display_result` 舍入。共享模型及导出边界复核分母、总课时、单位和计算结果；非法心率/非有限数值拒绝。
+  - `guard.py`：基于结构化审核状态保护未确认事件；事件ID仅允许最多64位ASCII字母、数字、下划线和连字符。构造后修改也须在插入观察句、条目及教案导出前重新检查。
+  - `generate_draft.py`：仅支持初学者《冰上双足滑行与身体姿态控制》；师资与分组依据显式输入，组织安排仍待确认，安全要求仍待专项审核。`build_draft()` 生成草稿，`draft_to_json()` 执行输出检查；CLI `python -m agents.lesson_plan_agent.generate_draft`。
+  - `kb_adapter.py`：检索客户端/配置可注入；分数和来源可定位不等于证据支持。目录、纯标题、图片和来源不一致片段为C；未确认支持关系的正文为B；只有来源、原文与当前陈述完全绑定的可信人工核验记录才可形成A级教学依据。无A级证据维持 `unverified`，构造后添加 citation 也禁止导出。检索不会自动制造人工核验记录；不运行OCR、不修改在线知识库。
+- 教案测试：`tests/test_lesson_plan_agent.py`、`test_generate_draft.py`、`test_generate_draft_consistency.py`、`test_kb_adapter.py`、`test_lesson_reliability_round2.py`、`test_lesson_final_reliability.py`；全部使用合成数据或注入客户端，不依赖真实Coze凭据或网络。
+- 与数据库及训练归档模块联合测试：隔离PostgreSQL 16，显式设置专用 `TEACHING_DATABASE_URL` 与 `TEACHING_ALLOW_MIGRATION=mock-only`，运行 `.venv/bin/python -B -m pytest -q -p no:cacheprovider`；不得连接生产库。参考 `docs/teaching-db-v01.md` 与 `docs/reviewed-training-import-v01.md`。
+- 边界：人工核验记录真实性依赖可信上游，尚未实现真实Coze来源认证；本模块不自动部署、不推断专项技术合格线，也不替代教师/教练审核。
 - `errors` 为结构化列表，`code` 区分 `missing_field` / `invalid_type` / `empty`
 - 无知识库依据：`evidence_overall = "insufficient"`，`mock = true`
