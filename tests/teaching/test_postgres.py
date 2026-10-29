@@ -25,7 +25,7 @@ def test_migration_six_tables_and_orm_alignment(database):
     with admin.connect() as conn:
         tables=inspect(conn).get_table_names(schema='teaching')
         assert set(tables)=={t.name for t in Base.metadata.tables.values()}
-        assert conn.scalar(text('SELECT version_num FROM teaching_alembic_version'))=='0001_teaching'
+        assert conn.scalar(text('SELECT version_num FROM teaching_alembic_version'))=='0002_event_snapshot'
         for table in Base.metadata.tables.values():
             actual={c['name'] for c in inspect(conn).get_columns(table.name,schema='teaching')}
             assert actual==set(table.columns.keys())
@@ -68,7 +68,7 @@ def test_cross_tenant_read_write_and_guc_spoof(actors,tenant,chain):
     (Lesson,{'class_id':uuid4(),'lesson_code':'MOCK-PILOT'}),
     (LessonPlan,{'lesson_id':uuid4(),'version_no':1,'payload':{},'prep_minutes':9,'main_minutes':29,'closing_minutes':7,'load_total_minutes':45,'group_active_minutes':30,'individual_active_minutes':25,'avg_hr':140}),
     (TrainingSession,{'lesson_id':uuid4(),'session_code':'MOCK-PILOT','participant_code':'MOCK-P001'}),
-    (PoseEvent,{'training_session_id':uuid4(),'analysis_run_id':uuid4(),'feature':'knee_angle_deg','frame_start':1,'frame_end':2,'start_time_ms':0,'end_time_ms':1,'deviation_max':1,'original_event':{'feature':'knee_angle_deg','frame_start':1,'frame_end':2},'source_snapshot':{'is_mock':True,'source':'mock://synthetic'}}),
+    (PoseEvent,{'training_session_id':uuid4(),'analysis_run_id':uuid4(),'feature':'knee_angle_deg','frame_start':1,'frame_end':2,'start_time_ms':0,'end_time_ms':1,'deviation_max':1,'original_event':{'feature':'knee_angle_deg','frame_start':1,'frame_end':2,'start_time_ms':0,'end_time_ms':1,'deviation_max':1},'source_snapshot':{'is_mock':True,'source':'mock://synthetic'}}),
     (CoachReview,{'pose_event_id':uuid4(),'review_seq':1,'status':'pending','reviewer_id':'synthetic','idempotency_key':uuid4()}),
 ])
 def test_pilot_rejected_even_for_admin(database,tenant,model,values):
@@ -205,7 +205,8 @@ def test_new_candidate_is_pending_and_cannot_claim_technical_error(actors,tenant
         event=conn.execute(insert(PoseEvent).values(tenant_id=tenant,training_session_id=chain['session_id'],
             analysis_run_id=uuid4(),feature='torso_pitch_deg',frame_start=1,frame_end=2,
             start_time_ms=0,end_time_ms=1,deviation_max=2,
-            original_event={'feature':'torso_pitch_deg','frame_start':1,'frame_end':2},
+            original_event={'feature':'torso_pitch_deg','frame_start':1,'frame_end':2,
+                            'start_time_ms':0,'end_time_ms':1,'deviation_max':2},
             source_snapshot={'is_mock':True,'source':'mock://synthetic'}).returning(PoseEvent.id)).scalar_one()
     with actors[tenant]['agent'].connect() as conn:
         state=conn.execute(text('SELECT * FROM teaching.event_review_state WHERE id=:id'),{'id':event}).mappings().one()

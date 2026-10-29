@@ -9,6 +9,27 @@ from sqlalchemy.dialects.postgresql import JSONB, UUID as PGUUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
+# Exact NUMERIC equality: no float tolerance and no cast-to-integer rounding.
+# CASE keeps malformed JSON types away from numeric casts; missing/null keys fail.
+EVENT_SNAPSHOT_CHECK = (
+    "CASE WHEN jsonb_typeof(original_event->'feature') = 'string' "
+    "AND jsonb_typeof(original_event->'frame_start') = 'number' "
+    "AND jsonb_typeof(original_event->'frame_end') = 'number' "
+    "AND jsonb_typeof(original_event->'start_time_ms') = 'number' "
+    "AND jsonb_typeof(original_event->'end_time_ms') = 'number' "
+    "AND jsonb_typeof(original_event->'deviation_max') = 'number' "
+    "AND original_event->>'frame_start' ~ '^[0-9]+$' "
+    "AND original_event->>'frame_end' ~ '^[0-9]+$' "
+    "THEN COALESCE(original_event->>'feature' = feature "
+    "AND (original_event->>'frame_start')::numeric = frame_start "
+    "AND (original_event->>'frame_end')::numeric = frame_end "
+    "AND (original_event->>'start_time_ms')::numeric = start_time_ms "
+    "AND (original_event->>'end_time_ms')::numeric = end_time_ms "
+    "AND (original_event->>'deviation_max')::numeric = deviation_max, false) "
+    "ELSE false END"
+)
+
+
 class Base(DeclarativeBase):
     metadata = MetaData(schema="teaching")
 
@@ -140,7 +161,7 @@ class PoseEvent(Record, Base):
         CheckConstraint("quality_status IN ('candidate','quarantined')", name="ck_quality"),
         CheckConstraint("jsonb_typeof(original_event) = 'object' AND jsonb_typeof(source_snapshot) = 'object'", name="ck_snapshots"),
         CheckConstraint("COALESCE(source_snapshot->'is_mock' = 'true'::jsonb AND source_snapshot->>'source' LIKE 'mock://%', false)", name="ck_mock_snapshot"),
-        CheckConstraint("COALESCE(original_event->>'feature' = feature AND (original_event->>'frame_start')::int = frame_start AND (original_event->>'frame_end')::int = frame_end, false)", name="ck_event_snapshot"),
+        CheckConstraint(EVENT_SNAPSHOT_CHECK, name="ck_event_snapshot"),
         Index("ix_events_time", "tenant_id", "data_domain", "training_session_id", "frame_start"))
 
 

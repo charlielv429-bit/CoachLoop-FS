@@ -68,6 +68,19 @@ Tests cover actual migration round-trip, table/model alignment, all composite ch
 
 Not production-ready: tenant LOGIN provisioning and secret lifecycle remain administrator-managed; same-tenant per-class permissions, school authentication, retention/deletion workflow, production audit export, PR #1 evidence/output repairs and real JSON import are not implemented in DB-A. Do not enable pilot or auto-start DB-B.
 
-## Local acceptance result
+## Initial DB-A acceptance result (903fc6a)
 
 PostgreSQL 16 disposable instance, no production data: full suite **90 passed** (41 unchanged main/V2–V5.2 tests + 49 DB-A tests: 46 PostgreSQL integration and 3 offline). Migration round-trip and revision `0001_teaching` verified. No dependency declarations, lockfiles, main.py, graph or existing video modules changed.
+
+
+## PR #2 targeted snapshot consistency fix
+
+Revision `0002_event_snapshot` replaces only the event snapshot CHECK; revision 0001 SQL and all RLS/permission/history definitions remain unchanged. The ORM and migration use identical frozen expressions. `feature`, `frame_start`, `frame_end`, `start_time_ms`, `end_time_ms`, and `deviation_max` must be present and match their scalar columns. Feature must be a JSON string, numeric evidence must be JSON numbers, and frame tokens must be nonnegative integers (retaining the old integer-token compatibility for downgrade). Equality uses NUMERIC without tolerance, so a small discrepancy is rejected too.
+
+A missing, null, malformed or contradictory value raises a database CHECK violation even for a directly authenticated, non-superuser teacher INSERT. Matching decimal values preserve precision. Prior fixtures that omitted time/deviation values now include the complete synthetic snapshot; no existing test was removed.
+
+Upgrade validates existing rows transactionally. If any legacy snapshot is missing or contradictory, the upgrade aborts, retaining revision 0001, its original CHECK and all original data. It never fills missing evidence from scalar columns or silently edits immutable snapshots. Such data requires separate source verification and an explicitly authorized remediation plan before retrying. Downgrade restores the former weaker CHECK without rewriting records; it is not a safety-preserving way to retain the fix.
+
+Validation covers fresh upgrade → base downgrade → head upgrade, populated 0001 → 0002 → 0001 → 0002, and rollback on incomplete/conflicting legacy evidence. All old permission, RLS, concurrency, idempotency and history tests remain enabled. This change does not enable pilot or connect to production.
+
+Targeted fix acceptance on isolated PostgreSQL 16.15: **140 pytest tests passed** (the retained 90 plus 50 new cases), no failures/skips. The previous independent review's unchanged 10 temporary probes also passed, including the formerly failing restricted-teacher snapshot INSERT. Current revision: `0002_event_snapshot`.
