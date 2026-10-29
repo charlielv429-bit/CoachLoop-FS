@@ -1,0 +1,353 @@
+{
+  "$defs": {
+    "ImportedEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "feature": {
+          "enum": [
+            "knee_angle_deg",
+            "torso_pitch_deg",
+            "hip_ankle_offset_norm"
+          ],
+          "title": "Feature",
+          "type": "string"
+        },
+        "frame_start": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Frame Start",
+          "type": "integer"
+        },
+        "frame_end": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Frame End",
+          "type": "integer"
+        },
+        "start_time_ms": {
+          "maximum": 1000000000000,
+          "minimum": 0,
+          "title": "Start Time Ms",
+          "type": "number",
+          "x-max-decimal-places": 60,
+          "x-max-digits": 80
+        },
+        "end_time_ms": {
+          "maximum": 1000000000000,
+          "minimum": 0,
+          "title": "End Time Ms",
+          "type": "number",
+          "x-max-decimal-places": 60,
+          "x-max-digits": 80
+        },
+        "deviation_max": {
+          "maximum": 1000000000000,
+          "minimum": 0,
+          "title": "Deviation Max",
+          "type": "number",
+          "x-max-decimal-places": 60,
+          "x-max-digits": 80
+        },
+        "event_id": {
+          "maxLength": 16,
+          "pattern": "^evt_[0-9a-f]{12}$",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "original_event": {
+          "$ref": "#/$defs/OriginalEvent"
+        },
+        "review": {
+          "$ref": "#/$defs/Review"
+        }
+      },
+      "required": [
+        "feature",
+        "frame_start",
+        "frame_end",
+        "start_time_ms",
+        "end_time_ms",
+        "deviation_max",
+        "event_id",
+        "original_event"
+      ],
+      "title": "ImportedEvent",
+      "type": "object"
+    },
+    "OriginalEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "feature": {
+          "enum": [
+            "knee_angle_deg",
+            "torso_pitch_deg",
+            "hip_ankle_offset_norm"
+          ],
+          "title": "Feature",
+          "type": "string"
+        },
+        "frame_start": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Frame Start",
+          "type": "integer"
+        },
+        "frame_end": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Frame End",
+          "type": "integer"
+        },
+        "start_time_ms": {
+          "maximum": 1000000000000,
+          "minimum": 0,
+          "title": "Start Time Ms",
+          "type": "number",
+          "x-max-decimal-places": 60,
+          "x-max-digits": 80
+        },
+        "end_time_ms": {
+          "maximum": 1000000000000,
+          "minimum": 0,
+          "title": "End Time Ms",
+          "type": "number",
+          "x-max-decimal-places": 60,
+          "x-max-digits": 80
+        },
+        "deviation_max": {
+          "maximum": 1000000000000,
+          "minimum": 0,
+          "title": "Deviation Max",
+          "type": "number",
+          "x-max-decimal-places": 60,
+          "x-max-digits": 80
+        },
+        "duration_ms": {
+          "anyOf": [
+            {
+              "maximum": 1000000000000,
+              "minimum": 0,
+              "type": "number",
+              "x-max-decimal-places": 60,
+              "x-max-digits": 80
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Duration Ms"
+        },
+        "n_frames": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "N Frames"
+        },
+        "swing": {
+          "anyOf": [
+            {
+              "maximum": 1000000000000,
+              "minimum": 0,
+              "type": "number",
+              "x-max-decimal-places": 60,
+              "x-max-digits": 80
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Swing"
+        }
+      },
+      "required": [
+        "feature",
+        "frame_start",
+        "frame_end",
+        "start_time_ms",
+        "end_time_ms",
+        "deviation_max"
+      ],
+      "title": "OriginalEvent",
+      "type": "object"
+    },
+    "Review": {
+      "additionalProperties": false,
+      "properties": {
+        "review_status": {
+          "default": "pending",
+          "enum": [
+            "pending",
+            "confirmed",
+            "normal_movement",
+            "tracking_error",
+            "uncertain"
+          ],
+          "title": "Review Status",
+          "type": "string"
+        },
+        "review_history": {
+          "items": {
+            "$ref": "#/$defs/ReviewClaim"
+          },
+          "maxItems": 100,
+          "title": "Review History",
+          "type": "array"
+        }
+      },
+      "title": "Review",
+      "type": "object"
+    },
+    "ReviewClaim": {
+      "additionalProperties": false,
+      "properties": {
+        "sequence": {
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Sequence",
+          "type": "integer"
+        },
+        "status": {
+          "enum": [
+            "pending",
+            "confirmed",
+            "normal_movement",
+            "tracking_error",
+            "uncertain"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "reviewed_by": {
+          "maxLength": 53,
+          "pattern": "^MOCK-[A-Z0-9_-]{1,48}$",
+          "title": "Reviewed By",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "format": "date-time",
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "note": {
+          "default": "",
+          "maxLength": 1000,
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sequence",
+        "status",
+        "reviewed_by",
+        "reviewed_at"
+      ],
+      "title": "ReviewClaim",
+      "type": "object"
+    },
+    "Source": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "synthetic",
+          "title": "Kind",
+          "type": "string"
+        },
+        "is_mock": {
+          "const": true,
+          "title": "Is Mock",
+          "type": "boolean"
+        },
+        "artifact_id": {
+          "format": "uuid",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "source_stream_id": {
+          "format": "uuid",
+          "title": "Source Stream Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "is_mock",
+        "artifact_id",
+        "source_stream_id"
+      ],
+      "title": "Source",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "reviewed-training-import-v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "data_domain": {
+      "const": "mock",
+      "title": "Data Domain",
+      "type": "string"
+    },
+    "time_unit": {
+      "const": "ms",
+      "title": "Time Unit",
+      "type": "string"
+    },
+    "class_id": {
+      "format": "uuid",
+      "title": "Class Id",
+      "type": "string"
+    },
+    "lesson_id": {
+      "format": "uuid",
+      "title": "Lesson Id",
+      "type": "string"
+    },
+    "training_session_id": {
+      "format": "uuid",
+      "title": "Training Session Id",
+      "type": "string"
+    },
+    "analysis_run_id": {
+      "format": "uuid",
+      "title": "Analysis Run Id",
+      "type": "string"
+    },
+    "source": {
+      "$ref": "#/$defs/Source"
+    },
+    "events": {
+      "items": {
+        "$ref": "#/$defs/ImportedEvent"
+      },
+      "maxItems": 100,
+      "minItems": 1,
+      "title": "Events",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "data_domain",
+    "time_unit",
+    "class_id",
+    "lesson_id",
+    "training_session_id",
+    "analysis_run_id",
+    "source",
+    "events"
+  ],
+  "title": "ImportRequest",
+  "type": "object"
+}

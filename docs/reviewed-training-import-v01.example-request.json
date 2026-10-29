@@ -1,0 +1,46 @@
+{
+  "analysis_run_id": "ff6dc32c-784c-4ef0-b105-0f5ba7299954",
+  "class_id": "b026fe5c-bafb-4950-98f7-e77c7008b9a1",
+  "data_domain": "mock",
+  "events": [
+    {
+      "deviation_max": 12,
+      "end_time_ms": 2000,
+      "event_id": "evt_d69f5e50bfa9",
+      "feature": "knee_angle_deg",
+      "frame_end": 60,
+      "frame_start": 30,
+      "original_event": {
+        "deviation_max": 12,
+        "end_time_ms": 2000,
+        "feature": "knee_angle_deg",
+        "frame_end": 60,
+        "frame_start": 30,
+        "start_time_ms": 1000
+      },
+      "review": {
+        "review_history": [
+          {
+            "note": "Synthetic observation",
+            "reviewed_at": "2026-10-29T01:00:00Z",
+            "reviewed_by": "MOCK-COACH-1",
+            "sequence": 1,
+            "status": "confirmed"
+          }
+        ],
+        "review_status": "confirmed"
+      },
+      "start_time_ms": 1000
+    }
+  ],
+  "lesson_id": "2911d2a5-5ed4-4700-9052-256b1d1ed6be",
+  "schema_version": "reviewed-training-import-v1",
+  "source": {
+    "artifact_id": "d5bb010f-cd37-447d-808a-d64e4d75b405",
+    "is_mock": true,
+    "kind": "synthetic",
+    "source_stream_id": "9bb1cc24-5cb5-47b0-80db-807bf1250fc2"
+  },
+  "time_unit": "ms",
+  "training_session_id": "32b8e806-3162-483c-b83b-1ba3a0c79e39"
+}

@@ -1,0 +1,905 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "CoachLoop reviewed training handoff",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/v1/reviewed-training-results/import": {
+      "post": {
+        "summary": "Import Result",
+        "operationId": "import_result_api_v1_reviewed_training_results_import_post",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/training-sessions/{training_session_id}/reviewed-training-results": {
+      "get": {
+        "summary": "Read Result",
+        "operationId": "read_result_api_v1_training_sessions__training_session_id__reviewed_training_results_get",
+        "parameters": [
+          {
+            "name": "training_session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Training Session Id"
+            }
+          },
+          {
+            "name": "analysis_run_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Analysis Run Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultPage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "EventSummary": {
+        "properties": {
+          "feature": {
+            "type": "string",
+            "enum": [
+              "knee_angle_deg",
+              "torso_pitch_deg",
+              "hip_ankle_offset_norm"
+            ],
+            "title": "Feature"
+          },
+          "frame_start": {
+            "type": "integer",
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Frame Start"
+          },
+          "frame_end": {
+            "type": "integer",
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Frame End"
+          },
+          "start_time_ms": {
+            "type": "number",
+            "maximum": 1000000000000.0,
+            "minimum": 0.0,
+            "title": "Start Time Ms",
+            "x-max-decimal-places": 60,
+            "x-max-digits": 80
+          },
+          "end_time_ms": {
+            "type": "number",
+            "maximum": 1000000000000.0,
+            "minimum": 0.0,
+            "title": "End Time Ms",
+            "x-max-decimal-places": 60,
+            "x-max-digits": 80
+          },
+          "deviation_max": {
+            "type": "number",
+            "maximum": 1000000000000.0,
+            "minimum": 0.0,
+            "title": "Deviation Max",
+            "x-max-decimal-places": 60,
+            "x-max-digits": 80
+          },
+          "event_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Event Id"
+          },
+          "source_event_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 16,
+                "pattern": "^evt_[0-9a-f]{12}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Event Id"
+          },
+          "analysis_run_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Analysis Run Id"
+          },
+          "effective_review_status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "confirmed",
+              "normal_movement",
+              "tracking_error",
+              "uncertain"
+            ],
+            "title": "Effective Review Status"
+          },
+          "effective_review_verification": {
+            "type": "string",
+            "enum": [
+              "authenticated",
+              "unreviewed"
+            ],
+            "title": "Effective Review Verification"
+          },
+          "trusted_review_sequence": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trusted Review Sequence"
+          },
+          "observation_summary_eligible": {
+            "type": "boolean",
+            "title": "Observation Summary Eligible"
+          },
+          "technical_error_assessment": {
+            "type": "string",
+            "const": "not_assessed",
+            "title": "Technical Error Assessment"
+          },
+          "imported_review_claims": {
+            "items": {
+              "$ref": "#/components/schemas/ImportedClaimSummary"
+            },
+            "type": "array",
+            "title": "Imported Review Claims"
+          },
+          "claim_streams_truncated": {
+            "type": "boolean",
+            "title": "Claim Streams Truncated"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "feature",
+          "frame_start",
+          "frame_end",
+          "start_time_ms",
+          "end_time_ms",
+          "deviation_max",
+          "event_id",
+          "source_event_id",
+          "analysis_run_id",
+          "effective_review_status",
+          "effective_review_verification",
+          "trusted_review_sequence",
+          "observation_summary_eligible",
+          "technical_error_assessment",
+          "imported_review_claims",
+          "claim_streams_truncated"
+        ],
+        "title": "EventSummary"
+      },
+      "EvidenceSummary": {
+        "properties": {
+          "event_count": {
+            "type": "integer",
+            "title": "Event Count"
+          },
+          "trusted_reviewed_event_count": {
+            "type": "integer",
+            "title": "Trusted Reviewed Event Count"
+          },
+          "observation_summary_eligible_count": {
+            "type": "integer",
+            "title": "Observation Summary Eligible Count"
+          },
+          "technical_error_assessment": {
+            "type": "string",
+            "const": "not_assessed",
+            "title": "Technical Error Assessment"
+          },
+          "scope": {
+            "type": "string",
+            "const": "returned_page",
+            "title": "Scope"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "event_count",
+          "trusted_reviewed_event_count",
+          "observation_summary_eligible_count",
+          "technical_error_assessment",
+          "scope"
+        ],
+        "title": "EvidenceSummary"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "ImportRequest": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "reviewed-training-import-v1",
+            "title": "Schema Version"
+          },
+          "data_domain": {
+            "type": "string",
+            "const": "mock",
+            "title": "Data Domain"
+          },
+          "time_unit": {
+            "type": "string",
+            "const": "ms",
+            "title": "Time Unit"
+          },
+          "class_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Class Id"
+          },
+          "lesson_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Lesson Id"
+          },
+          "training_session_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Training Session Id"
+          },
+          "analysis_run_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Analysis Run Id"
+          },
+          "source": {
+            "$ref": "#/components/schemas/Source"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/ImportedEvent"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "minItems": 1,
+            "title": "Events"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "schema_version",
+          "data_domain",
+          "time_unit",
+          "class_id",
+          "lesson_id",
+          "training_session_id",
+          "analysis_run_id",
+          "source",
+          "events"
+        ],
+        "title": "ImportRequest"
+      },
+      "ImportResponse": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "reviewed-training-results-v1",
+            "title": "Schema Version"
+          },
+          "data_domain": {
+            "type": "string",
+            "const": "mock",
+            "title": "Data Domain"
+          },
+          "training_session_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Training Session Id"
+          },
+          "analysis_run_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Analysis Run Id"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/EventSummary"
+            },
+            "type": "array",
+            "title": "Events"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/EvidenceSummary"
+          },
+          "receipt_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Receipt Id"
+          },
+          "replayed": {
+            "type": "boolean",
+            "title": "Replayed"
+          },
+          "data_received": {
+            "type": "boolean",
+            "const": true,
+            "title": "Data Received"
+          },
+          "upstream_reviews_authenticated": {
+            "type": "boolean",
+            "const": false,
+            "title": "Upstream Reviews Authenticated"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "schema_version",
+          "data_domain",
+          "training_session_id",
+          "analysis_run_id",
+          "events",
+          "next_cursor",
+          "summary",
+          "receipt_id",
+          "replayed",
+          "data_received",
+          "upstream_reviews_authenticated"
+        ],
+        "title": "ImportResponse"
+      },
+      "ImportedClaimSummary": {
+        "properties": {
+          "source_stream_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Source Stream Id"
+          },
+          "source_sequence": {
+            "type": "integer",
+            "title": "Source Sequence"
+          },
+          "source_status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "confirmed",
+              "normal_movement",
+              "tracking_error",
+              "uncertain"
+            ],
+            "title": "Source Status"
+          },
+          "verification_status": {
+            "type": "string",
+            "const": "imported_unverified",
+            "title": "Verification Status"
+          },
+          "text_status": {
+            "type": "string",
+            "const": "quarantined",
+            "title": "Text Status"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source_stream_id",
+          "source_sequence",
+          "source_status",
+          "verification_status",
+          "text_status"
+        ],
+        "title": "ImportedClaimSummary"
+      },
+      "ImportedEvent": {
+        "properties": {
+          "feature": {
+            "type": "string",
+            "enum": [
+              "knee_angle_deg",
+              "torso_pitch_deg",
+              "hip_ankle_offset_norm"
+            ],
+            "title": "Feature"
+          },
+          "frame_start": {
+            "type": "integer",
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Frame Start"
+          },
+          "frame_end": {
+            "type": "integer",
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Frame End"
+          },
+          "start_time_ms": {
+            "type": "number",
+            "maximum": 1000000000000.0,
+            "minimum": 0.0,
+            "title": "Start Time Ms",
+            "x-max-decimal-places": 60,
+            "x-max-digits": 80
+          },
+          "end_time_ms": {
+            "type": "number",
+            "maximum": 1000000000000.0,
+            "minimum": 0.0,
+            "title": "End Time Ms",
+            "x-max-decimal-places": 60,
+            "x-max-digits": 80
+          },
+          "deviation_max": {
+            "type": "number",
+            "maximum": 1000000000000.0,
+            "minimum": 0.0,
+            "title": "Deviation Max",
+            "x-max-decimal-places": 60,
+            "x-max-digits": 80
+          },
+          "event_id": {
+            "type": "string",
+            "maxLength": 16,
+            "pattern": "^evt_[0-9a-f]{12}$",
+            "title": "Event Id"
+          },
+          "original_event": {
+            "$ref": "#/components/schemas/OriginalEvent"
+          },
+          "review": {
+            "$ref": "#/components/schemas/Review"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "feature",
+          "frame_start",
+          "frame_end",
+          "start_time_ms",
+          "end_time_ms",
+          "deviation_max",
+          "event_id",
+          "original_event"
+        ],
+        "title": "ImportedEvent"
+      },
+      "OriginalEvent": {
+        "properties": {
+          "feature": {
+            "type": "string",
+            "enum": [
+              "knee_angle_deg",
+              "torso_pitch_deg",
+              "hip_ankle_offset_norm"
+            ],
+            "title": "Feature"
+          },
+          "frame_start": {
+            "type": "integer",
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Frame Start"
+          },
+          "frame_end": {
+            "type": "integer",
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Frame End"
+          },
+          "start_time_ms": {
+            "type": "number",
+            "maximum": 1000000000000.0,
+            "minimum": 0.0,
+            "title": "Start Time Ms",
+            "x-max-decimal-places": 60,
+            "x-max-digits": 80
+          },
+          "end_time_ms": {
+            "type": "number",
+            "maximum": 1000000000000.0,
+            "minimum": 0.0,
+            "title": "End Time Ms",
+            "x-max-decimal-places": 60,
+            "x-max-digits": 80
+          },
+          "deviation_max": {
+            "type": "number",
+            "maximum": 1000000000000.0,
+            "minimum": 0.0,
+            "title": "Deviation Max",
+            "x-max-decimal-places": 60,
+            "x-max-digits": 80
+          },
+          "duration_ms": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1000000000000.0,
+                "minimum": 0.0,
+                "x-max-decimal-places": 60,
+                "x-max-digits": 80
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Ms"
+          },
+          "n_frames": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "N Frames"
+          },
+          "swing": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1000000000000.0,
+                "minimum": 0.0,
+                "x-max-decimal-places": 60,
+                "x-max-digits": 80
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Swing"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "feature",
+          "frame_start",
+          "frame_end",
+          "start_time_ms",
+          "end_time_ms",
+          "deviation_max"
+        ],
+        "title": "OriginalEvent"
+      },
+      "ResultPage": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "reviewed-training-results-v1",
+            "title": "Schema Version"
+          },
+          "data_domain": {
+            "type": "string",
+            "const": "mock",
+            "title": "Data Domain"
+          },
+          "training_session_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Training Session Id"
+          },
+          "analysis_run_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Analysis Run Id"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/EventSummary"
+            },
+            "type": "array",
+            "title": "Events"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/EvidenceSummary"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "schema_version",
+          "data_domain",
+          "training_session_id",
+          "analysis_run_id",
+          "events",
+          "next_cursor",
+          "summary"
+        ],
+        "title": "ResultPage"
+      },
+      "Review": {
+        "properties": {
+          "review_status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "confirmed",
+              "normal_movement",
+              "tracking_error",
+              "uncertain"
+            ],
+            "title": "Review Status",
+            "default": "pending"
+          },
+          "review_history": {
+            "items": {
+              "$ref": "#/components/schemas/ReviewClaim"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "title": "Review History"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "Review"
+      },
+      "ReviewClaim": {
+        "properties": {
+          "sequence": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Sequence"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "confirmed",
+              "normal_movement",
+              "tracking_error",
+              "uncertain"
+            ],
+            "title": "Status"
+          },
+          "reviewed_by": {
+            "type": "string",
+            "maxLength": 53,
+            "pattern": "^MOCK-[A-Z0-9_-]{1,48}$",
+            "title": "Reviewed By"
+          },
+          "reviewed_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Reviewed At"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 1000,
+            "title": "Note",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "sequence",
+          "status",
+          "reviewed_by",
+          "reviewed_at"
+        ],
+        "title": "ReviewClaim"
+      },
+      "Source": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "synthetic",
+            "title": "Kind"
+          },
+          "is_mock": {
+            "type": "boolean",
+            "const": true,
+            "title": "Is Mock"
+          },
+          "artifact_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Artifact Id"
+          },
+          "source_stream_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Source Stream Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kind",
+          "is_mock",
+          "artifact_id",
+          "source_stream_id"
+        ],
+        "title": "Source"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
