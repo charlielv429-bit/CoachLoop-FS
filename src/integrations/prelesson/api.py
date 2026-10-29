@@ -10,7 +10,7 @@ from starlette.responses import JSONResponse,Response
 
 from graphs.prelesson_graph import run_prelesson
 from integrations.reviewed_training.api import BodyLimit,ExactJSONRoute
-from .schemas import DraftRequest,DraftResponse
+from .schemas import DraftRequest,DraftResponse,ErrorResponse
 
 
 def create_app(access_token: str | None=None):
@@ -39,7 +39,8 @@ def create_app(access_token: str | None=None):
 
     router=APIRouter(route_class=ExactJSONRoute)
 
-    @router.post('/api/v1/lesson-plans/draft',response_model=DraftResponse,dependencies=[Depends(caller)])
+    @router.post('/api/v1/lesson-plans/draft',response_model=DraftResponse,dependencies=[Depends(caller)],
+                 responses={code:{'model':ErrorResponse} for code in (401,403,413,422,503)})
     def draft(payload: DraftRequest):
         result=run_prelesson(payload.model_dump())
         return Response(content=result.model_dump_json(),media_type='application/json',headers={'Cache-Control':'no-store'})

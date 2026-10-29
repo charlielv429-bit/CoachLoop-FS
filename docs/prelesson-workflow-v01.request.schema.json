@@ -79,7 +79,9 @@
       "maximum": 45,
       "minimum": 0,
       "title": "Estimated Group Active Min",
-      "type": "number"
+      "type": "number",
+      "x-check-bounds-before-float-conversion": true,
+      "x-reject-nonzero-float-underflow": true
     },
     "estimated_individual_active_min": {
       "default": 25,
@@ -87,7 +89,9 @@
       "maximum": 45,
       "minimum": 0,
       "title": "Estimated Individual Active Min",
-      "type": "number"
+      "type": "number",
+      "x-check-bounds-before-float-conversion": true,
+      "x-reject-nonzero-float-underflow": true
     },
     "estimated_avg_hr": {
       "default": 145,
@@ -95,7 +99,9 @@
       "maximum": 250,
       "minimum": 20,
       "title": "Estimated Avg Hr",
-      "type": "number"
+      "type": "number",
+      "x-check-bounds-before-float-conversion": true,
+      "x-reject-nonzero-float-underflow": true
     }
   },
   "required": [

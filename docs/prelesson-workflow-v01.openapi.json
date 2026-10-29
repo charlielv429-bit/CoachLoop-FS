@@ -30,12 +30,52 @@
               }
             }
           },
-          "422": {
-            "description": "Validation Error",
+          "401": {
+            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request Entity Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -205,7 +245,9 @@
             "minimum": 0.0,
             "title": "Estimated Group Active Min",
             "description": "预计设计值，非实测；缺省36分钟",
-            "default": 36
+            "default": 36,
+            "x-check-bounds-before-float-conversion": true,
+            "x-reject-nonzero-float-underflow": true
           },
           "estimated_individual_active_min": {
             "type": "number",
@@ -213,7 +255,9 @@
             "minimum": 0.0,
             "title": "Estimated Individual Active Min",
             "description": "预计设计值，非实测；缺省25分钟",
-            "default": 25
+            "default": 25,
+            "x-check-bounds-before-float-conversion": true,
+            "x-reject-nonzero-float-underflow": true
           },
           "estimated_avg_hr": {
             "type": "number",
@@ -221,7 +265,9 @@
             "minimum": 20.0,
             "title": "Estimated Avg Hr",
             "description": "预计输入，非医学目标；缺省145次/分",
-            "default": 145
+            "default": 145,
+            "x-check-bounds-before-float-conversion": true,
+            "x-reject-nonzero-float-underflow": true
           }
         },
         "additionalProperties": false,
@@ -278,6 +324,62 @@
           "lesson_plan"
         ],
         "title": "DraftResponse"
+      },
+      "ErrorDetail": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Loc"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Msg"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "type",
+          "msg"
+        ],
+        "title": "ErrorDetail"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ErrorDetail"
+                },
+                "type": "array"
+              }
+            ],
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "required": [
+          "detail"
+        ],
+        "title": "ErrorResponse"
       },
       "EventClaim": {
         "type": "string",
@@ -436,19 +538,6 @@
           "sports_ethics"
         ],
         "title": "GuidingIdeology"
-      },
-      "HTTPValidationError": {
-        "properties": {
-          "detail": {
-            "items": {
-              "$ref": "#/components/schemas/ValidationError"
-            },
-            "type": "array",
-            "title": "Detail"
-          }
-        },
-        "type": "object",
-        "title": "HTTPValidationError"
       },
       "LearnerAnalysis": {
         "properties": {
@@ -828,46 +917,6 @@
           "closing"
         ],
         "title": "TeachingPhase"
-      },
-      "ValidationError": {
-        "properties": {
-          "loc": {
-            "items": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "integer"
-                }
-              ]
-            },
-            "type": "array",
-            "title": "Location"
-          },
-          "msg": {
-            "type": "string",
-            "title": "Message"
-          },
-          "type": {
-            "type": "string",
-            "title": "Error Type"
-          },
-          "input": {
-            "title": "Input"
-          },
-          "ctx": {
-            "type": "object",
-            "title": "Context"
-          }
-        },
-        "type": "object",
-        "required": [
-          "loc",
-          "msg",
-          "type"
-        ],
-        "title": "ValidationError"
       },
       "VenueEquipment": {
         "properties": {
