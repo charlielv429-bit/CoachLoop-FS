@@ -1,0 +1,46 @@
+{
+  "analysis_run_id": "ff6dc32c-784c-4ef0-b105-0f5ba7299954",
+  "data_domain": "mock",
+  "data_received": true,
+  "events": [
+    {
+      "analysis_run_id": "ff6dc32c-784c-4ef0-b105-0f5ba7299954",
+      "claim_streams_truncated": false,
+      "deviation_max": 12,
+      "effective_review_status": "pending",
+      "effective_review_verification": "unreviewed",
+      "end_time_ms": 2000,
+      "event_id": "2f5548c1-87d9-4faa-80af-7538cad2a6d3",
+      "feature": "knee_angle_deg",
+      "frame_end": 60,
+      "frame_start": 30,
+      "imported_review_claims": [
+        {
+          "source_sequence": 1,
+          "source_status": "confirmed",
+          "source_stream_id": "9bb1cc24-5cb5-47b0-80db-807bf1250fc2",
+          "text_status": "quarantined",
+          "verification_status": "imported_unverified"
+        }
+      ],
+      "observation_summary_eligible": false,
+      "source_event_id": "evt_d69f5e50bfa9",
+      "start_time_ms": 1000,
+      "technical_error_assessment": "not_assessed",
+      "trusted_review_sequence": null
+    }
+  ],
+  "next_cursor": null,
+  "receipt_id": "0379168b-2e17-4857-9da3-213518b9ba9d",
+  "replayed": false,
+  "schema_version": "reviewed-training-results-v1",
+  "summary": {
+    "event_count": 1,
+    "observation_summary_eligible_count": 0,
+    "scope": "returned_page",
+    "technical_error_assessment": "not_assessed",
+    "trusted_reviewed_event_count": 0
+  },
+  "training_session_id": "32b8e806-3162-483c-b83b-1ba3a0c79e39",
+  "upstream_reviews_authenticated": false
+}

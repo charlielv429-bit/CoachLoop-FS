@@ -25,7 +25,7 @@ def test_migration_six_tables_and_orm_alignment(database):
     with admin.connect() as conn:
         tables=inspect(conn).get_table_names(schema='teaching')
         assert set(tables)=={t.name for t in Base.metadata.tables.values()}
-        assert conn.scalar(text('SELECT version_num FROM teaching_alembic_version'))=='0002_event_snapshot'
+        assert conn.scalar(text('SELECT version_num FROM teaching_alembic_version'))=='0003_training_import'
         for table in Base.metadata.tables.values():
             actual={c['name'] for c in inspect(conn).get_columns(table.name,schema='teaching')}
             assert actual==set(table.columns.keys())

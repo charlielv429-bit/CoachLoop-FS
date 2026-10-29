@@ -1,0 +1,306 @@
+{
+  "$defs": {
+    "EventSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "feature": {
+          "enum": [
+            "knee_angle_deg",
+            "torso_pitch_deg",
+            "hip_ankle_offset_norm"
+          ],
+          "title": "Feature",
+          "type": "string"
+        },
+        "frame_start": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Frame Start",
+          "type": "integer"
+        },
+        "frame_end": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Frame End",
+          "type": "integer"
+        },
+        "start_time_ms": {
+          "description": "Exact finite PostgreSQL NUMERIC; parse with arbitrary precision, not binary float.",
+          "minimum": 0,
+          "title": "Start Time Ms",
+          "type": "number",
+          "x-max-decimal-places": 16383,
+          "x-max-integer-digits": 131072
+        },
+        "end_time_ms": {
+          "description": "Exact finite PostgreSQL NUMERIC; parse with arbitrary precision, not binary float.",
+          "minimum": 0,
+          "title": "End Time Ms",
+          "type": "number",
+          "x-max-decimal-places": 16383,
+          "x-max-integer-digits": 131072
+        },
+        "deviation_max": {
+          "description": "Exact finite PostgreSQL NUMERIC; parse with arbitrary precision, not binary float.",
+          "minimum": 0,
+          "title": "Deviation Max",
+          "type": "number",
+          "x-max-decimal-places": 16383,
+          "x-max-integer-digits": 131072
+        },
+        "event_id": {
+          "format": "uuid",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "source_event_id": {
+          "anyOf": [
+            {
+              "maxLength": 16,
+              "pattern": "^evt_[0-9a-f]{12}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Source Event Id"
+        },
+        "analysis_run_id": {
+          "format": "uuid",
+          "title": "Analysis Run Id",
+          "type": "string"
+        },
+        "effective_review_status": {
+          "enum": [
+            "pending",
+            "confirmed",
+            "normal_movement",
+            "tracking_error",
+            "uncertain"
+          ],
+          "title": "Effective Review Status",
+          "type": "string"
+        },
+        "effective_review_verification": {
+          "enum": [
+            "authenticated",
+            "unreviewed"
+          ],
+          "title": "Effective Review Verification",
+          "type": "string"
+        },
+        "trusted_review_sequence": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Trusted Review Sequence"
+        },
+        "observation_summary_eligible": {
+          "title": "Observation Summary Eligible",
+          "type": "boolean"
+        },
+        "technical_error_assessment": {
+          "const": "not_assessed",
+          "title": "Technical Error Assessment",
+          "type": "string"
+        },
+        "imported_review_claims": {
+          "items": {
+            "$ref": "#/$defs/ImportedClaimSummary"
+          },
+          "title": "Imported Review Claims",
+          "type": "array"
+        },
+        "claim_streams_truncated": {
+          "title": "Claim Streams Truncated",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "feature",
+        "frame_start",
+        "frame_end",
+        "start_time_ms",
+        "end_time_ms",
+        "deviation_max",
+        "event_id",
+        "source_event_id",
+        "analysis_run_id",
+        "effective_review_status",
+        "effective_review_verification",
+        "trusted_review_sequence",
+        "observation_summary_eligible",
+        "technical_error_assessment",
+        "imported_review_claims",
+        "claim_streams_truncated"
+      ],
+      "title": "EventSummary",
+      "type": "object"
+    },
+    "EvidenceSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "event_count": {
+          "title": "Event Count",
+          "type": "integer"
+        },
+        "trusted_reviewed_event_count": {
+          "title": "Trusted Reviewed Event Count",
+          "type": "integer"
+        },
+        "observation_summary_eligible_count": {
+          "title": "Observation Summary Eligible Count",
+          "type": "integer"
+        },
+        "technical_error_assessment": {
+          "const": "not_assessed",
+          "title": "Technical Error Assessment",
+          "type": "string"
+        },
+        "scope": {
+          "const": "returned_page",
+          "title": "Scope",
+          "type": "string"
+        }
+      },
+      "required": [
+        "event_count",
+        "trusted_reviewed_event_count",
+        "observation_summary_eligible_count",
+        "technical_error_assessment",
+        "scope"
+      ],
+      "title": "EvidenceSummary",
+      "type": "object"
+    },
+    "ImportedClaimSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "source_stream_id": {
+          "format": "uuid",
+          "title": "Source Stream Id",
+          "type": "string"
+        },
+        "source_sequence": {
+          "title": "Source Sequence",
+          "type": "integer"
+        },
+        "source_status": {
+          "enum": [
+            "pending",
+            "confirmed",
+            "normal_movement",
+            "tracking_error",
+            "uncertain"
+          ],
+          "title": "Source Status",
+          "type": "string"
+        },
+        "verification_status": {
+          "const": "imported_unverified",
+          "title": "Verification Status",
+          "type": "string"
+        },
+        "text_status": {
+          "const": "quarantined",
+          "title": "Text Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_stream_id",
+        "source_sequence",
+        "source_status",
+        "verification_status",
+        "text_status"
+      ],
+      "title": "ImportedClaimSummary",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "reviewed-training-results-v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "data_domain": {
+      "const": "mock",
+      "title": "Data Domain",
+      "type": "string"
+    },
+    "training_session_id": {
+      "format": "uuid",
+      "title": "Training Session Id",
+      "type": "string"
+    },
+    "analysis_run_id": {
+      "format": "uuid",
+      "title": "Analysis Run Id",
+      "type": "string"
+    },
+    "events": {
+      "items": {
+        "$ref": "#/$defs/EventSummary"
+      },
+      "title": "Events",
+      "type": "array"
+    },
+    "next_cursor": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Next Cursor"
+    },
+    "summary": {
+      "$ref": "#/$defs/EvidenceSummary"
+    },
+    "receipt_id": {
+      "format": "uuid",
+      "title": "Receipt Id",
+      "type": "string"
+    },
+    "replayed": {
+      "title": "Replayed",
+      "type": "boolean"
+    },
+    "data_received": {
+      "const": true,
+      "title": "Data Received",
+      "type": "boolean"
+    },
+    "upstream_reviews_authenticated": {
+      "const": false,
+      "title": "Upstream Reviews Authenticated",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema_version",
+    "data_domain",
+    "training_session_id",
+    "analysis_run_id",
+    "events",
+    "next_cursor",
+    "summary",
+    "receipt_id",
+    "replayed",
+    "data_received",
+    "upstream_reviews_authenticated"
+  ],
+  "title": "ImportResponse",
+  "type": "object"
+}

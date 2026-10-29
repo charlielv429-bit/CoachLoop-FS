@@ -139,7 +139,7 @@ def test_forward_migration_and_downgrade_preserve_consistent_rows(legacy_databas
     id,snapshot=seed_legacy_event(engine)
     command.upgrade(config,'head')
     with engine.connect() as conn:
-        assert conn.scalar(text('SELECT version_num FROM teaching_alembic_version'))=='0002_event_snapshot'
+        assert conn.scalar(text('SELECT version_num FROM teaching_alembic_version'))=='0003_training_import'
         assert conn.scalar(select(PoseEvent.original_event).where(PoseEvent.id==id))==snapshot
         policies=conn.execute(text("SELECT relrowsecurity,relforcerowsecurity FROM pg_class WHERE oid='teaching.pose_events'::regclass")).one()
         assert tuple(policies)==(True,True)
