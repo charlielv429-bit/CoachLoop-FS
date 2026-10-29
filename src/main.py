@@ -286,6 +286,11 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+# Independent pre-class routes reuse the same fail-closed Bearer and output
+# guards. No platform/forwarded header is accepted as proof of authentication.
+from integrations.prelesson.api import create_router as create_prelesson_router
+app.include_router(create_prelesson_router(include_alias=True))
+
 # OpenAI 兼容接口处理器
 openai_handler = OpenAIChatHandler(service)
 

@@ -80,3 +80,10 @@
 - Python入口 `run_prelesson(payload)`；CLI `PYTHONPATH=src .venv/bin/python -m integrations.prelesson --input docs/prelesson-workflow-v01.example-request.json`；独立HTTP工厂 `integrations.prelesson.api:create_app`，POST `/api/v1/lesson-plans/draft`，服务凭据配置缺失时关闭。
 - 不调用知识库/大模型/视频识别，不写数据库或批准教案；凭据仅授权草稿生成，不认证教师审核。Schema、OpenAPI、合成示例与Coze节点配置说明见 `docs/prelesson-workflow-v01.md`，平台未实际接通或部署。
 - 新测试 `tests/test_prelesson_workflow.py`，保留旧文本反馈流程回归，并与已有隔离PostgreSQL测试联合运行。
+
+### INTEGRATION-03 主服务课前路由
+- `src/main.py` 通过 `integrations.prelesson.api.create_router(include_alias=True)` 挂载 POST `/api/v1/lesson-plans/draft` 和 `/prelesson/draft`，复用 `run_prelesson`，不删除旧工作流节点。
+- 两个路径均强制应用Bearer验证；配置缺失默认关闭，不信任未经验证的平台网关身份头。服务凭据不证明教师审核身份，draft/unverified/45分钟保护不变。
+- JSON限制与错误脱敏通过 `PrelessonRoute` 局部生效，不替换主服务旧接口的全局处理。旧主服务接口并未自动获得新鉴权，公网发布必须单独验证路由访问策略。
+- 新测试 `tests/test_prelesson_route.py`（lifespan替换的单元测试）和 `tests/teaching/test_main_prelesson_http.py`（真实uvicorn/main lifespan＋隔离PostgreSQL），后者必须在专用数据库中实际执行。
+- 安全方案、181项跳过说明、主服务OpenAPI切片和下一阶段最小边界见 `docs/coze-integration-v01.md`；不覆盖Coze本地未提交文件，不部署。
