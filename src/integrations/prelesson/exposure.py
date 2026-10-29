@@ -14,7 +14,7 @@ class PrelessonExposureGuard:
     """Deny all other paths/methods before legacy handlers can run.
 
     This is a route boundary, not teacher identity or upstream gateway proof.
-    Lifespan still delegates to main's existing database startup mechanism.
+    Main uses the same frozen profile to skip its legacy database lifespan.
     """
     ALLOWED={('GET','/health'),('POST','/api/v1/lesson-plans/draft'),('POST','/prelesson/draft')}
 

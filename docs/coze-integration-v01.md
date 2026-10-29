@@ -1,5 +1,7 @@
 # INTEGRATION-03：主服务课前入口收尾与安全审查
 
+> 后续DEPLOY-FIX-01更新：`COACHLOOP_PRELESSON_ONLY=1` 时真实main lifespan已跳过数据库/检查点/旧工作流/异步运行时，无需数据库变量；普通模式保持原逻辑。以下数据库启动描述是INTEGRATION-03历史记录，当前部署要求以 [部署说明](coze-deploy-readiness-v01.md) 为准。
+
 ## 基线与远程事实
 
 开发基于 main `051811bd1bff8b39a8d024362e438cc3e68d264e`。开始时远程没有 `feature/coze-integration-v01`，main 没有主服务课前路由、别名或 `tests/test_prelesson_route.py`。Coze本地未上传文件不在本工作区，未读取或覆盖，不能验证其字节内容、测试日志或网关配置。本实现复用已合并的 `run_prelesson` 和PR #4认证/Schema/保护，提供等价主服务能力。

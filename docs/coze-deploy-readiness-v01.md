@@ -4,7 +4,7 @@
 
 ## 审查结论与部署边界
 
-仓库生产链路已修正为 `.coze [deploy] → scripts/setup.sh → scripts/coze_prelesson_run.sh → 预检 → src/main.py`；开发 `[dev]` 仍使用原 `scripts/http_run.sh`。这只是分支内配置变更，不是平台部署。`.coze`声明Python 3.12。main原lifespan连接 `PGDATABASE_URL`，设置UTC并初始化memory检查点；不能把不运行lifespan的TestClient测试当作部署验收。main的 `PGDATABASE_URL` 也有既有SDK读取路径，但本轮专用启动器明确要求安全注入进程环境，避免未经验证的平台变量机制。
+仓库生产链路为 `.coze [deploy] → scripts/setup.sh → scripts/coze_prelesson_run.sh → 预检 → src/main.py`；开发 `[dev]` 仍使用原 `scripts/http_run.sh`。配置变更不等于平台部署，`.coze`声明Python 3.12。DEPLOY-FIX-01后，main与路径白名单共用导入时固定的profile：`COACHLOOP_PRELESSON_ONLY=1` 的真实lifespan跳过数据库连接、memory schema/PostgresSaver.setup、旧工作流构建和异步运行时；**无需任何数据库变量，也不使用注入的数据库连接**。普通模式保留原初始化路径。不能把替换lifespan的路由单测当作真实启动证据。
 
 - 两个课前POST复用既有Bearer、输入/响应Schema和 `run_prelesson`，仍只有零基础固定主题、45分钟、七要素、预计负荷、draft、教师审核必需和unverified。
 - 原 `/run`、`/async_run`、`/stream_run` 等没有统一应用认证，旧入口会产生工作流或异步任务；不可直接公开整个main。
@@ -24,12 +24,31 @@
 |---|---|---|
 | COACHLOOP_PRELESSON_ONLY | 非秘密，必须为 `1` | 本地可验证；平台注入待实测 |
 | COACHLOOP_PRELESSON_TOKEN | 秘密，建议安全生成至少32随机字节；预检只检查至少32个可见ASCII字符且无空白，不证明随机性 | 只放秘密配置，启动前注入；平台机制待实测 |
-| PGDATABASE_URL | 秘密，明确的 `postgresql://` 连接串，使用获批准托管库/最小权限账号 | 不打印值；托管连接与memory初始化权限待实测 |
+| PGDATABASE_URL / DATABASE_URL / PGHOST等 | 课前受限模式不需要，也不用于连接数据库 | 不复制开发连接，不依赖平台自动注入；无需业务迁移或种子数据 |
 | COZE_WORKSPACE_PATH | 平台工作目录；本地缺省`.` | 平台值待实测 |
 | DEPLOY_RUN_PORT | 平台运行端口；项目缺省5000 | 平台分配/健康检查策略待实测 |
 | PIP_TARGET | 平台可选依赖安装目录 | 构建及运行可见性待实测 |
 
 凭据只授权生成草稿，不能证明教师审核。服务不接受“平台已认证”等自报头替代Bearer。用TLS和平台秘密管理；不要将Token放URL、普通表单、示例JSON、日志或Git。秘密轮换需重建应用/重启，因为认证闭包在路由构建时读取配置。禁止为了联调关闭认证或打印环境变量全集。
+
+## DEPLOY-FIX-01：课前无数据库启动
+
+基于main `50f958e`。只有课前受限模式跳过原lifespan，未删除旧路由、未修改数据库模型/迁移/视频/教案Agent。数据库变量即使存在或格式错误，也不会用于课前启动；不进行变量名称适配，不读取SDK数据库配置，不建立数据库连接或执行DDL。普通模式（缺省/0）仍走原数据库、检查点、旧工作流及异步运行时路径，不能将普通模式直接公开公网。
+
+部署所需应用配置只有 `COACHLOOP_PRELESSON_ONLY=1` 与安全注入的 `COACHLOOP_PRELESSON_TOKEN`；另需平台提供或核对工作目录、运行端口和依赖可见性。模式在导入时固定，修改模式或密钥后都需重启。原服务仍导入数据库SDK/驱动模块，因此无数据库运行不等于可以从现有依赖中卸载驱动。
+
+`tests/test_prelesson_db_free_startup.py` 包含真实 `bash scripts/coze_prelesson_run.sh → 预检 → python src/main.py → uvicorn main:app` 测试，不替换lifespan。它清除数据库相关变量，在子进程Python初始化阶段安装拒绝探针，禁止数据库URL解析/引擎创建/连接、PostgresSaver.setup、旧工作流构建和异步运行时初始化，并通过审计钩子拒绝出站socket连接；任何尝试即使被调用方吞掉异常也记录失败。探针就绪标记确认预检与主服务两个Python进程均已安装。验证健康检查、两个POST的Bearer与草稿保护、旧路由阻断和18项真实HTTP烟测；另测注入无效数据库变量仍无连接，以及普通模式原初始化/关闭逻辑不变。运行命令：
+
+```bash
+.venv/bin/python -B -m pytest -q -p no:cacheprovider \
+  tests/test_prelesson_db_free_startup.py tests/test_deploy_readiness.py tests/test_deploy_error_responses.py
+```
+
+旧预检中“缺少/非法数据库URL必须阻止课前启动”的两项断言按新契约移除，替换为无DB/无效DB可启动的正向测试；认证、非法profile和错误响应结构拒绝断言保持。没有放宽401/403/422错误响应检查。
+
+Coze尚需验证实际构建镜像、启动器是否被采用、生产模式/端口与健康探针要求、环境变量与安全凭据注入、HTTPS与插件认证转发。若平台要求被白名单封闭的控制面路径，不能直接放开旧接口；先明确平台隔离机制。本轮没有部署或接触生产数据库。
+
+DEPLOY-FIX-01本地实际验收：新启动模块9 passed；启动/部署/错误响应专项116 passed；全量在全新隔离PostgreSQL16.15上710 passed、0 failed、0 skipped（34.03秒），包含原视频41项、真实普通模式启动、数据库迁移往返/RLS及训练归档。两个无DB真实启动场景各通过18项HTTP烟测，数据库/旧初始化/出站连接拒绝探针零触发。仅有既有Coze SDK的Pydantic弃用警告1项。`git diff --check`及启动器shell语法检查通过。全量数据库仅用于验证普通模式和既有业务模块，课前部署不需要它。
 
 ## 专用启动器与检查工具
 
@@ -39,7 +58,7 @@
 bash scripts/coze_prelesson_run.sh
 ```
 
-它先运行本地预检，不满足profile/凭据/明确数据库URL/依赖/成功与错误契约文件条件就退出；成功后使用原main入口及平台端口。平台若覆盖启动命令，必须核对其仍为受检入口，不能回退旧脚本跳过检查。修改仓库部署配置不等于执行发布，本轮没有触发平台部署。
+它先运行本地预检，不满足profile/凭据/依赖/成功与错误契约文件条件就退出；成功后使用main入口及平台端口。预检报告明确标记 `database_mode=disabled`，不解析或校验数据库变量。平台若覆盖启动命令，必须核对其仍为受检入口，不能回退旧脚本跳过检查。修改仓库部署配置不等于执行发布，本轮没有触发平台部署。
 
 本地预检（只读环境与包版本存在性；不连接数据库、不输出任何值）：
 
@@ -75,7 +94,7 @@ profile=1不暴露main完整OpenAPI，请使用上述文件配置插件；Coze�
 ## 最少GUI操作（全部由你在获批准后进行）
 
 1. 在代码来源界面同步已审查提交；不要启动AI Coding重新生成代码。GitHub同步/分支选择控件名称**待 Coze 实测**。
-2. 在安全配置中设置上述必需变量，仅部署环境启用profile；确认托管PostgreSQL与memory启动权限。不要把秘密发到聊天或普通配置文件。变量是否进入进程环境**待 Coze 实测**。
+2. 在安全配置中设置profile=1与课前Bearer秘密，并核对工作目录/端口；课前模式不配置数据库，也不需要memory建表权限。不要把秘密发到聊天或普通配置文件。变量是否进入进程环境**待 Coze 实测**。
 3. 核对平台实际使用仓库声明的专用生产启动器；若被界面配置覆盖，先修正并停止发布。确认构建、预检和启动日志后，由你决定是否发布；构建镜像、端口及控制面兼容性**待 Coze 实测**。本轮没有点击发布。
 4. 平台给出实际HTTPS地址后，从受控环境运行18项烟测，保存脱敏通过/失败报告。未通过时不开放旧入口、不关闭认证。
 5. 在插件/HTTP节点导入现有OpenAPI并配置安全Bearer，映射匿名示例，接上状态判断和教师审核交接，运行一次合成班级工作流并保存脱敏结果。插件安全头转发及在线端到端行为**待 Coze 实测**。

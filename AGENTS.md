@@ -89,6 +89,8 @@
 - 安全方案、181项跳过说明、主服务OpenAPI切片和下一阶段最小边界见 `docs/coze-integration-v01.md`；不覆盖Coze本地未提交文件，不部署。
 
 ### INTEGRATION-04 部署准备（未部署）
+
+- DEPLOY-FIX-01：`main.PRELESSON_ONLY` 在导入时固定，同时用于lifespan与访问白名单；profile=1跳过数据库、memory检查点、旧工作流与异步运行时初始化。启动器预检不再要求/解析数据库变量，普通模式初始化不变。真实启动器无DB、出站连接及初始化禁止探针、18项HTTP烟测和普通模式行为测试见 `tests/test_prelesson_db_free_startup.py`；当前部署要求见 `docs/coze-deploy-readiness-v01.md`。下述原启动链路描述以该更新为准。
 - 显式 `COACHLOOP_PRELESSON_ONLY=1` 在main安装课前公开面白名单：仅GET健康检查和两个POST课前入口；其他路径/方法在处理器前404，旧流程仍在默认/0模式保留。配置值非法则启动失败。
 - `src/integrations/prelesson/exposure.py` 不替代Bearer或教师身份认证；公网部署不能依赖未验证的Coze网关。平台控制面与系统依赖兼容性待Coze实测。
 - `scripts/coze_prelesson_run.sh` 是可选受控启动器，先执行 `scripts/check_coze_deployment.py --preflight`，不满足条件退出；PR #6审查后 `.coze [deploy].run` 已强制使用该启动器；`[dev]` 保留原入口。配置变更不等于执行部署，平台实际命令仍待实测。
