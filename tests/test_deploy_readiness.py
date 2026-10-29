@@ -188,8 +188,7 @@ def test_encoded_and_normalized_paths_never_execute_legacy_handlers(path):
 
 @pytest.mark.parametrize('field,value',[
     ('COACHLOOP_PRELESSON_ONLY',None),('COACHLOOP_PRELESSON_ONLY','0'),('COACHLOOP_PRELESSON_ONLY','yes'),
-    ('COACHLOOP_PRELESSON_TOKEN','short'),('PGDATABASE_URL',''),
-    ('PGDATABASE_URL','postgresql://MOCK:synthetic@127.0.0.1:bad/mock'),
+    ('COACHLOOP_PRELESSON_TOKEN','short'),
 ])
 def test_production_launcher_stops_on_bad_configuration_without_binding(field,value):
     env={**os.environ,'COZE_WORKSPACE_PATH':str(ROOT),'COACHLOOP_PRELESSON_ONLY':'1',

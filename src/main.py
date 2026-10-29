@@ -35,6 +35,11 @@ from coze_coding_utils.async_tasks import config as async_task_config
 from coze_coding_utils.async_tasks.headers import HEADER_X_RUN_ID as _ASYNC_HEADER_X_RUN_ID
 from coze_coding_utils.runtime_ctx.context import new_context as _new_async_ctx
 from sqlalchemy import event
+from integrations.prelesson.exposure import PrelessonExposureGuard, prelesson_only_enabled
+
+# Freeze one profile for both startup and the HTTP/WebSocket boundary. A later
+# environment mutation must not leave a legacy public surface with no runtime.
+PRELESSON_ONLY = prelesson_only_enabled()
 
 setup_logging(
     log_file=LOG_FILE,
@@ -261,6 +266,12 @@ async_graph: Optional[CompiledStateGraph] = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    if PRELESSON_ONLY:
+        # The independent prelesson graph has no persistence or legacy runtime.
+        # Do not resolve a DB URL, connect, create memory tables, or build the old
+        # workflow, even if database variables happen to be injected by Coze.
+        yield
+        return
     engine = get_engine()
     @event.listens_for(engine, "connect")
     def _set_utc(dbapi_conn, _):
@@ -290,8 +301,7 @@ app = FastAPI(lifespan=lifespan)
 # guards. No platform/forwarded header is accepted as proof of authentication.
 from integrations.prelesson.api import create_router as create_prelesson_router
 app.include_router(create_prelesson_router(include_alias=True))
-from integrations.prelesson.exposure import PrelessonExposureGuard, prelesson_only_enabled
-app.add_middleware(PrelessonExposureGuard, enabled=prelesson_only_enabled())
+app.add_middleware(PrelessonExposureGuard, enabled=PRELESSON_ONLY)
 
 # OpenAI 兼容接口处理器
 openai_handler = OpenAIChatHandler(service)

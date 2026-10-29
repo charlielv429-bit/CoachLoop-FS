@@ -29,15 +29,10 @@ SAMPLE={'class_label':'MOCK-DEPLOY-01','student_count':20,'theme':'冰上双足�
 def preflight(environ=None):
     env=os.environ if environ is None else environ
     token=env.get('COACHLOOP_PRELESSON_TOKEN','')
-    try:
-        db=urlsplit(env.get('PGDATABASE_URL',''))
-        database_ok=(db.scheme=='postgresql' and bool(db.hostname) and bool(db.path.strip('/'))
-                     and (db.port is None or 1<=db.port<=65535))
-    except ValueError:database_ok=False
     checks=[{'name':'python_3_12_or_later','passed':sys.version_info>=(3,12)},
         {'name':'prelesson_only_profile','passed':env.get('COACHLOOP_PRELESSON_ONLY')=='1'},
         {'name':'service_credential_format','passed':len(token)>=32 and token.isascii() and not any(c.isspace() or ord(c)<33 or ord(c)>126 for c in token)},
-        {'name':'explicit_postgresql_url_present','passed':bool(database_ok)},
+        {'name':'database_disabled_in_prelesson_only_profile','passed':env.get('COACHLOOP_PRELESSON_ONLY')=='1'},
         {'name':'published_response_contract_present','passed':contract_available()},
         {'name':'published_error_contract_present','passed':error_contract_available()}]
     for package in ('fastapi','pydantic','langgraph','uvicorn','coze-coding-utils','coze-coding-dev-sdk','psycopg','psycopg2-binary'):
@@ -45,6 +40,7 @@ def preflight(environ=None):
         except importlib.metadata.PackageNotFoundError:present=False
         checks.append({'name':'dependency_'+package,'passed':present})
     return {'mode':'local_preflight','passed':all(c['passed'] for c in checks),'checks':checks,
+            'database_mode':'disabled' if env.get('COACHLOOP_PRELESSON_ONLY')=='1' else 'unsupported_profile',
             'coze_platform_status':'待 Coze 实测'}
 
 
