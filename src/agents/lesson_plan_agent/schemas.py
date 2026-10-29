@@ -9,9 +9,9 @@
 本模块不依赖大模型、数据库、网页或插件；仅使用已有依赖。
 """
 from enum import Enum
-from typing import List, Optional
+from typing import List, Optional, Literal
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, ConfigDict, computed_field, model_serializer, model_validator
 
 
 class EvidenceSource(str, Enum):
@@ -69,6 +69,8 @@ class LearnerAnalysis(BaseModel):
 
 # ---------- 七要素：第 4 要素 场地器材布置 ----------
 class VenueEquipment(BaseModel):
+    organization_status: Literal["pending_confirmation"] = "pending_confirmation"
+    proposed_group_sizes: List[int] = Field(default_factory=list)
     zones: str = Field(..., min_length=1, description="冰场区域划分")
     route: str = Field(default="", description="练习路线")
     observation_position: str = Field(default="", description="教师观察位置")
@@ -79,6 +81,7 @@ class VenueEquipment(BaseModel):
 
 # ---------- 七要素：第 5 要素 安全防范与禁忌 ----------
 class SafetyPrecautions(BaseModel):
+    safety_review_status: Literal["unreviewed"] = "unreviewed"
     risk_screening: str = Field(..., min_length=1, description="课前风险筛查")
     ice_check: str = Field(..., min_length=1, description="冰面检查")
     equipment_check: str = Field(..., min_length=1, description="装备检查")
@@ -171,14 +174,21 @@ class MeasurementKind(str, Enum):
 
 
 class LoadMetric(BaseModel):
+    model_config = ConfigDict(allow_inf_nan=False)
     name: str = Field(..., description="指标名")
     kind: MeasurementKind = Field(..., description="预计值或实测值")
     formula: str = Field(..., description="计算公式（含分子/分母/单位说明）")
-    numerator: float = Field(..., description="分子")
-    denominator: float = Field(..., description="分母")
+    numerator: float = Field(..., ge=0, description="原始精度分子")
+    denominator: float = Field(..., gt=0, description="原始精度分母")
     unit: str = Field(..., description="单位（如 % / 次/分）")
-    result: float = Field(..., description="计算结果（保留 2 位）")
+    result: float = Field(..., ge=0, description="原始精度计算结果")
     target: Optional[str] = Field(default=None, description="可选目标/依据说明")
+
+    @computed_field
+    @property
+    def display_result(self) -> float:
+        """仅展示时舍入，不能作为后续计算输入。"""
+        return round(self.result, 2)
 
 
 class LoadAccounting(BaseModel):
@@ -192,14 +202,27 @@ class LoadAccounting(BaseModel):
     )
 
 
+    @model_validator(mode="after")
+    def _valid_load_inputs(self) -> "LoadAccounting":
+        from .load_calc import validate_load_inputs
+        validate_load_inputs(self.total_minutes, self.group_density.numerator,
+                             self.individual_density.numerator, self.avg_hr.result)
+        return self
+
+
 # ---------- 证据与事件引用（来源/状态标记） ----------
+class EventClaim(str, Enum):
+    OBSERVATION = "observation"
+    CONFIRMED_ERROR = "confirmed_error"
+
+
 class EventRef(BaseModel):
     """引用某条 V4 事件（不得描述为已确认技术错误，除非教练确认）。"""
     event_id: str = Field(..., min_length=1, description="V4 事件 event_id")
     feature: str = Field(..., min_length=1, description="特征名（knee_angle_deg 等）")
     frame_start: int = Field(..., description="起始帧")
     frame_end: int = Field(..., description="结束帧")
-    review_status: str = Field(..., description="事件人工审核状态（pending/confirmed/normal_movement/tracking_error/uncertain）")
+    review_status: Literal["pending", "confirmed", "normal_movement", "tracking_error", "uncertain"] = Field(..., description="事件人工审核状态")
     deviation_max: float = Field(default=0.0, description="偏离幅度（若 V4 提供）")
 
 
@@ -208,12 +231,21 @@ class EvidenceEntry(BaseModel):
     source: EvidenceSource = Field(..., description="来源/数据状态标记")
     citation: Optional[str] = Field(default=None, description="引用标注（文件·章节/页码）；未核实则必须为 None")
     event_ref: Optional[EventRef] = Field(default=None, description="若引用 V4 事件，须填写以触发状态保护")
+    event_claim: EventClaim = EventClaim.OBSERVATION
 
     @model_validator(mode="after")
     def _unverified_has_no_citation(self) -> "EvidenceEntry":
         if self.source is EvidenceSource.UNVERIFIED and self.citation is not None:
             raise ValueError("unverified 证据不得携带 citation")
         return self
+
+    @model_serializer(mode="wrap")
+    def _guard_entry_output(self, handler):
+        from .guard import validate_event_claims
+        violations = validate_event_claims([self])
+        if violations:
+            raise ValueError("；".join(violations))
+        return handler(self)
 
 
 # ---------- 顶层：七要素教案 ----------
@@ -249,3 +281,20 @@ class LessonPlan(BaseModel):
         if self.load_accounting.total_minutes != self.teaching_flow.total_minutes:
             raise ValueError("教学流程与负荷核算总课时必须一致")
         return self
+
+    def check_event_output(self) -> None:
+        from .guard import validate_event_claims
+        violations = validate_event_claims(self.evidence_log)
+        if violations:
+            raise ValueError("；".join(violations))
+
+    @model_validator(mode="after")
+    def _event_claims_are_reviewed(self) -> "LessonPlan":
+        self.check_event_output()
+        return self
+
+    @model_serializer(mode="wrap")
+    def _guard_output(self, handler):
+        # 覆盖 model_dump/model_dump_json，防止构造后追加违规事件绕过校验。
+        self.check_event_output()
+        return handler(self)

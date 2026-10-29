@@ -14,7 +14,7 @@ import re
 from typing import Optional
 
 from .guard import unverified_kb, validate_event_claims
-from .load_calc import calc_load, min_activity_for_targets
+from .load_calc import calc_load, validate_load_inputs
 from .schemas import (
     EvidenceEntry,
     EvidenceSource,
@@ -32,7 +32,7 @@ from .schemas import (
     TeachingPhase,
     VenueEquipment,
 )
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 try:  # 知识库适配器为可选依赖；缺失时安全降级（教案仍可生成，转入 unverified）
     from . import kb_adapter
@@ -40,6 +40,11 @@ except Exception:  # pragma: no cover
     kb_adapter = None
 
 _TOTAL_MIN = 45  # 默认总课时
+_SUPPORTED_THEME = "冰上双足滑行与身体姿态控制"
+_SUPPORTED_LEVEL = "初学者"
+_FALL_POLICY = ("摔倒、起身与制动的具体处置方式待专项教练确认，按现场风险和学校应急预案执行；"
+                "本稿不提供统一处置指令。")
+_TIP_LABEL = "普通教学提示（未经专项安全审核）："
 _KB_MIN_SCORE = 0.5  # 纳入教案的知识库命中最低相似度
 
 # 师资解析：从教师输入条件中提取人数（未明确时不得自行增设）
@@ -53,8 +58,10 @@ def _parse_staffing(conditions: str) -> dict:
     """解析教师输入中的教练/教师人数；未明确时返回 None。"""
     out: dict = {}
     for role, pat in _STAFF_RE.items():
-        m = pat.search(conditions or "")
-        out[role] = int(m.group(1)) if m else None
+        counts = {int(m.group(1)) for m in pat.finditer(conditions or "")}
+        if len(counts) > 1:
+            raise ValueError(f"{role}人数存在冲突，须先确认")
+        out[role] = counts.pop() if counts else None
     return out
 
 
@@ -67,38 +74,67 @@ def _build_staffing(conditions: str) -> str:
     if st["教师"] is not None:
         parts.append(f"教师{st['教师']}名")
     if parts:
-        base = "+".join(parts) + "；岗位分工（巡视/随组/观照全局）按现场由教师核定，不虚构新增人员"
+        base = "+".join(parts) + "；岗位分工待现场教学负责人按实际师资核定，不虚构新增人员"
     else:
         base = "教学人员配置以输入与现场核定为准，本稿不自行增设人员"
-    return base + "；涉学生安全分工须由教师按班级实际统筹。"
+    return base + "；安全职责与教练覆盖均待确认，未核定前不实施本稿。"
 
 
-def _build_grouping_and_tiers() -> tuple:
-    """能力分层(3级)与轮换分组(4组)的对应关系，避免含糊/冲突。"""
+def _proposed_group_sizes(student_count: int, conditions: str) -> list[int]:
+    st = _parse_staffing(conditions)
+    if any(v is None for v in st.values()) or st["教练"] <= 0:
+        return []
+    # 只做人数拆分，人数不能证明安全师生比，也不表示教师可替代教练。
+    groups = min(student_count, st["教练"] + st["教师"])
+    size, remainder = divmod(student_count, groups)
+    return [size + (i < remainder) for i in range(groups)]
+
+
+def _build_grouping_and_tiers(student_count: int, conditions: str) -> tuple:
     tier_plan = (
-        "按站稳程度分 3 个能力层级：层级①仍扶栏者加固站稳；层级②可站稳者练短距滑行；"
-        "层级③较稳者可尝试增大滑距（须教师确认后再加入重心转移小练）。"
+        "3 个能力层级仅为待观察的教学分类，不代表实际各层人数："
+        "层级①扶栏站稳；层级②短距滑行；层级③姿态巩固（均待专项教练确认）。"
+        "能力分类不固定绑定轮换组，按到场观察调整。"
     )
-    grouping = (
-        "轮换组 4 组（A/B/C/D）用于场地轮换；能力分层 3 级与之对应——层级①→组A，"
-        "层级②→组B、组C，层级③→组D；具体人数与分组由教师按到场名册现场核定。"
-    )
+    sizes = _proposed_group_sizes(student_count, conditions)
+    if not sizes:
+        grouping = "待确认：师资缺失、不完整或无明确教练，暂不制定可执行分组；确认前不实施冰上练习。"
+    else:
+        grouping = (f"待确认：{student_count}名学生建议分 {len(sizes)} 组，"
+                    f"各组人数为 {'/'.join(map(str, sizes))}；仅作人数拆分建议，不表示各组可同时上冰。"
+                    "须核定教练覆盖、教师职责、场地容量与安全师生比后制定轮换；确认前不实施。")
     return tier_plan, grouping
 
 
 class LessonPlanDraftInput(BaseModel):
     """教师输入的教学条件（用于生成教案草稿）。"""
 
+    model_config = ConfigDict(allow_inf_nan=False)
+
     audience: str = Field(..., min_length=1, description="教学对象（如：小学三年级）")
     student_count: int = Field(..., gt=0, description="学生人数（>0）")
     skill_level: str = Field(..., min_length=1, description="技术水平（如：初学者）")
     theme: str = Field(default="冰上双足滑行与身体姿态控制", min_length=1, description="教学主题/动作")
-    conditions: str = Field(default="标准冰场1片；教练2人+教师1人；冰鞋/护具/标志桶若干", description="教学条件（场地/器材/人员）")
+    conditions: str = Field(default="", description="教学条件（场地/器材/人员）")
     total_minutes: int = Field(default=45, gt=0, description="总课时（分钟）")
     group_active_min: float = Field(default=36.0, ge=0.0, description="群体活动时间（分钟）")
     individual_active_min: float = Field(default=25.0, ge=0.0, description="个体有效练习时间（分钟）")
     avg_hr: float = Field(default=145.0, ge=0.0, description="预计平均心率（次/分）")
     class_data_available: bool = Field(default=False, description="是否有经授权班级训练记录")
+
+    @field_validator("theme")
+    @classmethod
+    def _supported_theme(cls, value):
+        if value != _SUPPORTED_THEME:
+            raise ValueError(f"未支持的教学主题：当前仅支持《{_SUPPORTED_THEME}》")
+        return value
+
+    @field_validator("skill_level")
+    @classmethod
+    def _supported_level(cls, value):
+        if value != _SUPPORTED_LEVEL:
+            raise ValueError("未支持的技术水平：当前仅支持初学者")
+        return value
 
     @model_validator(mode="after")
     def _check_total_minutes(self) -> "LessonPlanDraftInput":
@@ -108,24 +144,23 @@ class LessonPlanDraftInput(BaseModel):
 
     @model_validator(mode="after")
     def _check_load_times_within(self) -> "LessonPlanDraftInput":
-        if self.group_active_min > self.total_minutes:
-            raise ValueError("群体活动时间不能超过总课时")
-        if self.individual_active_min > self.total_minutes:
-            raise ValueError("个体练习时间不能超过总课时")
+        validate_load_inputs(self.total_minutes, self.group_active_min,
+                             self.individual_active_min, self.avg_hr)
+        _parse_staffing(self.conditions)
         return self
 
 
-def _build_phases() -> list:
+def _build_phases(grouping: str, student_count: int) -> list:
     """三段式（准备9 / 基本29 / 结束7 = 45 分钟）：冰上双足滑行与身体姿态控制。"""
     return [
         Phase(
             phase=TeachingPhase.PREP,
             minutes=9,
             content="课堂常规、健康与装备检查；陆地关节激活（踝/膝/髋）；冰上适应性热身（扶栏站立、原地踏步、小步随行）。",
-            teacher_activity="整队点名、讲解本课目标；示范扶栏站立与热身动作；巡回检查装备与健康状态（由教师按学校制度执行）。",
+            teacher_activity="整队点名、讲解本课目标；示范扶栏站立与热身动作；巡回检查装备与健康状态（由实际教学人员按学校制度执行）。",
             student_activity="着装与护具检查；跟随完成陆地踝膝髋活动；冰上扶栏站立、原地踏步与小步热身。",
-            organization="冰场边沿分 4 组，护栏辅助；教师位于入口中区观察全局。",
-            safety_tip="全程佩戴护具；冰面防滑、禁止奔跑；感到不适立即示意教师。",
+            organization=grouping,
+            safety_tip=_TIP_LABEL + "护具与冰面状况由现场负责人员核查，不适时的沟通方式课前确认；" + _FALL_POLICY,
             evaluation="口头评定装备检查与热身完成度。",
         ),
         Phase(
@@ -133,10 +168,12 @@ def _build_phases() -> list:
             minutes=29,
             content="讲解示范双足滑行与身体姿态控制（基本站姿）；扶栏→放手短距滑行；重心小步转移与制动小练习；分段巩固，录像留存。",
             teacher_activity="示范「稳定基本站姿」：膝微屈、躯干适度前倾、头平视前方、双脚平刃着冰（具体技术要点待专业教练确认）；组织分组轮换练习与辅助练习；设置拍摄机位，巡回纠正身体姿态。",
-            student_activity="模仿基本站姿；扶栏滑行→放手短距滑行；两人一组互看姿态并小声提示；完成短距双足滑行练习。",
-            organization="分 4 组循环（练习区/缓冲/观察区），教师位于场地短边中区，各组间隔拉开。",
-            safety_tip="练习区内并行抢道/嬉闹：教师依现场情况制止并重申依次出发；摔倒保护、起身与制动停住的技术要领待专项教练确认后用于教学；保持间距、依次出发。",
-            evaluation="分层观察评价（教师拟定的过程性观察目标，非官方技术合格线）：层级①能在扶栏辅助下保持基本站姿；层级②能放手完成短距滑行并保持目视前方；层级③能在较大滑距内保持姿态稳定；另以录像留存供课后 CoachLoop-FS 复核。",
+            student_activity=("模仿基本站姿；扶栏滑行→放手短距滑行；"
+                              + ("由实际教学人员观察姿态；" if student_count == 1 else "同伴观察安排待现场人员确认；")
+                              + "完成短距双足滑行练习（待现场安全方案确认后实施）。"),
+            organization=grouping,
+            safety_tip=_TIP_LABEL + "出发顺序与间距须按现场条件核定；" + _FALL_POLICY,
+            evaluation="分层观察评价（实际教学人员拟定的过程性观察目标，非官方技术合格线）：层级①能在扶栏辅助下保持基本站姿；层级②能放手完成短距滑行并保持目视前方；层级③能在较大滑距内保持姿态稳定；另以录像留存供课后 CoachLoop-FS 复核。",
         ),
         Phase(
             phase=TeachingPhase.CLOSING,
@@ -144,9 +181,9 @@ def _build_phases() -> list:
             content="陆地整理放松；课堂小结；学习评价；器材回收与后续练习提示。",
             teacher_activity="带领放松整理；总结「稳定站姿 / 双足滑行」要点并预告下节课；组织器材回收与有序离场。",
             student_activity="跟随放松；自评本课参与与收获；回收器材、有序离场。",
-            organization="集合成圈；教师居中。",
-            safety_tip="离场前检查冰面；有序离场，不奔跑。",
-            evaluation="学生自评+教师按三层级逐项口头点评（过程性评价，不作成绩判定，不设定官方合格线）。",
+            organization="集合位置与现场负责人职责待核定；" + grouping,
+            safety_tip=_TIP_LABEL + "离场路线与秩序由现场负责人员确认；" + _FALL_POLICY,
+            evaluation="学生自评+实际教学人员按三层级逐项口头点评（过程性评价，不作成绩判定，不设定官方合格线）。",
         ),
     ]
 
@@ -189,10 +226,14 @@ def _build_kb_evidence(entries) -> list:
 
 def build_draft(inp: LessonPlanDraftInput, kb_evidence: Optional[list] = None) -> LessonPlan:
     """确定性生成七要素教案草稿。"""
+    # 防止调用方通过 model_copy 构造未校验主题、水平或负荷后直接生成。
+    inp = LessonPlanDraftInput.model_validate(inp.model_dump())
     total = inp.total_minutes
+    tier_plan, grouping = _build_grouping_and_tiers(inp.student_count, inp.conditions)
+    sizes = _proposed_group_sizes(inp.student_count, inp.conditions)
     audience_full = f"{inp.audience}·{inp.student_count}人·{inp.skill_level}"
 
-    flow = TeachingFlow(total_minutes=total, phases=_build_phases())
+    flow = TeachingFlow(total_minutes=total, phases=_build_phases(grouping, inp.student_count))
     load = _build_load(total, inp.group_active_min, inp.individual_active_min, inp.avg_hr)
     # 密度/心率数值为依据输入活动时间推算的设计目标，尚未由课堂环节安排实测验证（保留"预计值"口径）
     load = load.model_copy(
@@ -201,7 +242,6 @@ def build_draft(inp: LessonPlanDraftInput, kb_evidence: Optional[list] = None) -
                     "尚未由课堂环节安排实测验证，不得声称必然达标；待课堂实测后按实际活动时间/心率复核。"
         }
     )
-    tier_plan, grouping = _build_grouping_and_tiers()
     staffing = _build_staffing(inp.conditions)
 
     # 证据来源/状态记录：课标未接入→unverified，不虚构引用；无已审核事件→不引入事件证据，且经 guard 复校验。
@@ -245,7 +285,7 @@ def build_draft(inp: LessonPlanDraftInput, kb_evidence: Optional[list] = None) -
                 + ("（核心素养三维度的人工核验依据见证据清单 kb_evidence；不代表其他教学论断已核实。）" if kb_evs else "（课标依据：知识库未核实，不虚构出处。）")
             ),
             motor_competence="掌握安全基本站姿与短距双足滑行，能保持重心平稳、目视前方（具体技术标准待专业教练确认）。",
-            healthy_behavior="养成课前热身与装备/冰面检查习惯，学会摔倒后原地待援的安全行为。",
+            healthy_behavior=_TIP_LABEL + "养成课前热身与装备/冰面检查习惯；" + _FALL_POLICY,
             sports_ethics="遵守冰场秩序与器材管理规定，尊重同伴、互相提示。",
         ),
         teaching_material_analysis=TeachingMaterialAnalysis(
@@ -264,19 +304,20 @@ def build_draft(inp: LessonPlanDraftInput, kb_evidence: Optional[list] = None) -
         venue_equipment=VenueEquipment(
             zones="练习区/缓冲停区/观察区（冰场货物区域按现场实际划分）。",
             route="绕固定标志桶单向短距滑行路线。",
-            observation_position="教师位于场地短边中区，便于同时观察 4 组。",
+            observation_position="观察岗位按实际教学人员与场地核定，不假定额外教师；" + grouping,
             grouping=grouping,
+            proposed_group_sizes=sizes,
             equipment_list="冰鞋、护具（头盔/护膝/护腕）、标志桶若干、备用护栏（按冰场实际配置）。",
             camera_position="固定支架对角机位，录制全体练习画面（可选，用于课后 CoachLoop-FS 反馈）。",
         ),
         safety_precautions=SafetyPrecautions(
-            risk_screening="课前由教师按学校制度做健康问询与身体不适筛查（本 AI 不进行医疗判断）。",
+            risk_screening="课前由实际教学人员按学校制度做健康问询与身体不适筛查（本 AI 不进行医疗判断）。",
             ice_check="开课前检查冰面平整、无裂缝异物、护栏完好。",
             equipment_check="逐人检查冰鞋刀刃、护具系带，尺码合适。",
             staffing=staffing,
-            zone_management="练习区与缓冲区隔离，组间保持间距；教师依现场情况管理并行抢道并强调依次出发。",
-            emergency_flow="摔倒后先原地待援或依教练指示扶栏等待；若受伤或无法起身，保持原地并立即示意教师，由教师按学校应急预案处置。",
-            medical_note="涉及伤病/呼吸系统疾病/身体不适，仅提醒教师按学校既有制度核查，AI 不擅自诊断或处理医疗问题；摔倒保护、起身方式与制动停住等技术要领待专项教练确认后用于教学。",
+            zone_management=_TIP_LABEL + "练习区、缓冲区与轮换路线须由现场负责人员核定；" + grouping,
+            emergency_flow=_TIP_LABEL + _FALL_POLICY,
+            medical_note="涉及伤病或身体不适由现场负责人员按学校既有制度核查，AI 不作医疗判断；" + _FALL_POLICY,
         ),
         teaching_flow=flow,
         load_accounting=load,
@@ -289,6 +330,7 @@ def build_draft(inp: LessonPlanDraftInput, kb_evidence: Optional[list] = None) -
 
 def draft_to_json(plan: LessonPlan) -> str:
     """输出可序列化 JSON（供后续接入 Coze 工作流/教师审核界面）。"""
+    plan.check_event_output()
     return plan.model_dump_json(indent=2, ensure_ascii=False)
 
 
@@ -298,7 +340,7 @@ def main() -> None:  # CLI 演示入口
     parser.add_argument("--student-count", type=int, default=30, help="学生人数")
     parser.add_argument("--skill-level", default="初学者", help="技术水平")
     parser.add_argument("--theme", default="冰上双足滑行与身体姿态控制", help="教学主题")
-    parser.add_argument("--conditions", default="标准冰场1片；教练2人+教师1人；冰鞋/护具/标志桶若干", help="教学条件")
+    parser.add_argument("--conditions", default="", help="教学条件")
     parser.add_argument("--total-minutes", type=int, default=45, help="总课时（仅支持45）")
     parser.add_argument("--group-active-min", type=float, default=36.0, help="群体活动时间(分钟)")
     parser.add_argument("--individual-active-min", type=float, default=25.0, help="个体有效练习时间(分钟)")

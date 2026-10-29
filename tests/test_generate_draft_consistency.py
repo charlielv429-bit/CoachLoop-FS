@@ -62,9 +62,11 @@ def test_tier_and_rotation_mapping_explicit():
     tiered = plan.learner_analysis.tiered_plan
     grouping = plan.venue_equipment.grouping
     assert "3 个能力层级" in tiered
-    assert "4 组" in grouping
-    # 明确对应关系，避免层级/轮换组混淆
-    assert "层级①→组A" in grouping and "层级③→组D" in grouping
+    assert "2 组" in grouping
+    assert plan.venue_equipment.proposed_group_sizes == [10, 10]
+    assert "不固定绑定轮换组" in tiered
+    assert "待确认" in grouping
+    assert "不表示各组可同时上冰" in grouping
 
 
 # ---- 3. 密度证据不足 ----
@@ -98,7 +100,7 @@ def test_evaluation_is_observable_tiered_and_not_official_line():
     plan = build_draft(_inp())
     ev = next(p.evaluation for p in plan.teaching_flow.phases if p.phase.value == "main")
     assert "层级①" in ev and "层级②" in ev and "层级③" in ev  # 可观察分层描述
-    assert "教师拟定的过程性观察目标" in ev
+    assert "实际教学人员拟定的过程性观察目标" in ev
     assert "非官方技术合格线" in ev
 
 

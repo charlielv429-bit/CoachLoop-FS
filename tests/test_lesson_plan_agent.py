@@ -144,7 +144,7 @@ class TestLoadCalc:
         acc = calc_load(total_minutes=45, group_active_min=36, individual_active_min=24, avg_hr=135, kind=MeasurementKind.ESTIMATED)
         assert acc.group_density.unit == "%" and acc.group_density.result == 80.0
         assert acc.individual_density.result == pytest.approx(53.33, abs=0.01)
-        assert acc.group_density.formula == "group = group_active_min / total_minutes = 36.0 / 45"
+        assert acc.group_density.formula == "group = group_active_min / total_minutes * 100 = 36.0 / 45 * 100"
         assert acc.group_density.numerator == 36.0 and acc.group_density.denominator == 45.0
         assert acc.avg_hr.kind == MeasurementKind.ESTIMATED
         assert "待课堂实测验证" in acc.note
@@ -156,7 +156,7 @@ class TestLoadCalc:
 
     def test_min_activity_for_targets(self):
         r = min_activity_for_targets(45)
-        assert r["min_group_active_min"] == 33.8  # 45*0.75 round1
+        assert r["min_group_active_min"] == 33.75  # 保留原始精度45*0.75
         assert r["min_individual_active_min"] == 22.5  # 45*0.5
         assert r["group_target"] == 0.75 and r["individual_target"] == 0.5
 
