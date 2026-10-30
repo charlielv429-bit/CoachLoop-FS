@@ -10,6 +10,8 @@
 <body>
   <header><span class="brand">CoachLoop-FS</span><span class="mode">V1.1 多主题 · 本地交互版</span></header>
   <main>
+    <nav id="stage-nav" aria-label="教学阶段"><button type="button" data-stage="prelesson" aria-pressed="true">智能备课</button><button type="button" data-stage="video" aria-pressed="false" disabled>视频动作分析</button><button type="button" data-stage="feedback" aria-pressed="false" disabled>训练反馈</button></nav>
+    <section id="prelesson-pane">
     <section class="intro"><p class="eyebrow">课前 · 智能备课</p><h1>从教学需求到可审核的教案</h1>
       <p>填写班级与教学条件，调用现有教案 Agent 动态生成七要素草稿。支持24个候选主题、四个水平，45分钟；教学内容与安全规则均待专业核实。</p>
       <p class="notice">仅在本机运行，不连接 Coze 或数据库。生成结果需教师复核，知识依据未核实，运动负荷为预计设计值。</p>
@@ -62,7 +64,31 @@
         </div>
       </section>
     </div>
+    </section>
+    <section id="video-pane" hidden>
+      <h1>视频动作分析 · 仅在本机处理</h1>
+      <p class="notice">视频可能包含面部等隐私。仅上传您拥有合法使用权且获必要授权的单人视频；不上传第三方云服务。候选变化不是技术错误，本地审核操作者未认证为专业教练。</p>
+      <p id="video-capabilities" role="status">正在检查本机视频环境…</p>
+      <div class="workspace"><section class="panel">
+      <form id="video-form"><label>MP4 / MOV（≤25MiB、≤60秒）<input id="video-file" type="file" accept=".mp4,.mov,video/mp4,video/quicktime" required></label>
+      <label>观察侧<select id="video-side"><option value="left">左侧</option><option value="right">右侧</option></select></label>
+      <label><input id="video-rights" type="checkbox" required>我确认拥有合法使用权并获得必要的隐私授权</label>
+      <label><input id="video-privacy" type="checkbox" required>我理解本机临时处理、导出数据仍可能敏感</label>
+      <label><input id="video-single" type="checkbox" required>单人、固定侧面机位；不把二维特征当重心或用刃判定</label>
+      <button id="video-start" type="submit" disabled>上传到本机并分析</button></form>
+      <button id="video-delete" type="button" class="secondary">取消并清除本机任务</button>
+      <p id="video-message" role="status" aria-live="polite"></p>
+      <p class="hint">原始文件不归档，转换后删除。预览、特征与未认证审核暂存最多20分钟；退出服务会清除。请自行保管必要导出，不在此保存学生身份。</p>
+      </section><section class="panel">
+      <div class="video-stage"><video id="analysis-video" controls playsinline preload="metadata"></video><canvas id="pose-overlay" aria-label="二维观测骨架"></canvas></div>
+      <p id="video-quality"></p><p id="frame-quality" class="hint"></p>
+      <button id="video-export" type="button" class="secondary" disabled>导出分析及审核 JSON（敏感数据）</button>
+      <p class="hint">骨架来自实际检出帧，缺失不插值。预览已无音频和元数据；浏览器不支持原始编码时，分析完成后尝试规范化预览。</p>
+      </section></div>
+      <section class="panel"><h2>候选变化事件与本地人工审核</h2><p>confirmed 仅确认可观察变化；不是已证实技术错误。操作由服务端记为本机会话操作者，不能认证为专业教练。</p><div id="video-events"></div></section>
+    </section>
+    <section id="feedback-pane" hidden><h1>训练反馈草稿</h1><p class="notice">仅引用本次本机分析。所有本地审核均未认证，不冒充正式教练结论；没有数据库写入或自动批准。</p><button id="feedback-refresh" type="button">根据当前记录生成草稿</button><button id="feedback-export" type="button" class="secondary" disabled>导出反馈草稿</button><p id="feedback-message" role="status"></p><section id="feedback-content" class="panel" hidden></section></section>
   </main>
-  <footer>课中视频、课后反馈与 Coze 在线工作流尚未接入此界面。保留原有模块，不在此模拟它们已上线。</footer>
+  <footer>本地视频与反馈不连接Coze或数据库；Cloudflare模拟课堂禁止真实视频上传。教学与安全规则仍待专项教练确认。</footer>
 </body>
 </html>

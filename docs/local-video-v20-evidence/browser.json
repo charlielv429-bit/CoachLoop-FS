@@ -1,0 +1,23 @@
+{
+  "kind": "real_local_chromium_real_video_pipeline",
+  "source_is_mock": false,
+  "video_sha256": "ea9151e447b301985d5d65666551ef863b369a2e0f3a71ddd58abef2e722f96a",
+  "source_frames": 65,
+  "detected_frames": 65,
+  "candidate_event_count": 18,
+  "actual_upload": true,
+  "actual_mediapipe_subprocess": true,
+  "preview_and_event_seek": true,
+  "keypoint_overlay": true,
+  "review_action": "automated_local_unverified",
+  "authenticated_coach": false,
+  "structured_export": true,
+  "postlesson_draft": true,
+  "technical_error_assessment": "not_assessed",
+  "teacher_review_required": true,
+  "delete_cleans_ui": true,
+  "screenshot": "privacy_redacted_ui_only",
+  "raw_video_or_landmarks_or_event_records_committed": false,
+  "cloud_or_coze_or_paid_calls": false,
+  "server_shutdown_cleanup": true
+}

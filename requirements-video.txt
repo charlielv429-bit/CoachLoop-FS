@@ -1,0 +1,4 @@
+# Isolated .venv-video only; do not install in the main application environment.
+mediapipe==0.10.32
+opencv-contrib-python==4.12.0.88
+pydantic==2.12.5

@@ -18,7 +18,8 @@ def main():
     app = create_console_app(args.port)
     print(f'CoachLoop-FS interactive console: http://127.0.0.1:{args.port}', flush=True)
     print('Local only. No Coze, production credentials, database or paid model calls. Ctrl+C to stop.', flush=True)
-    uvicorn.run(app, host='127.0.0.1', port=args.port, access_log=False, log_level='warning')
+    uvicorn.run(app, host='127.0.0.1', port=args.port, access_log=False, log_level='warning', proxy_headers=False,
+                limit_concurrency=32, timeout_keep_alive=5, timeout_graceful_shutdown=5)
 
 
 if __name__ == '__main__':

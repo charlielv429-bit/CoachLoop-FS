@@ -4,28 +4,36 @@ A same-origin HttpOnly session authorizes the browser. After CSRF/host checks,
 this local boundary injects an ephemeral internal Bearer into the unchanged API.
 No production credential, external service, database or teacher approval is used.
 """
+from contextlib import asynccontextmanager
 import hmac
 from pathlib import Path
 import secrets
 
 from fastapi import FastAPI
+from fastapi.exceptions import RequestValidationError
 from starlette.requests import Request
 from starlette.responses import FileResponse, JSONResponse
 
 from .api import create_router
+from integrations.local_video.service import VideoStore, VideoError, READ_PATHS, WRITE_PATHS, COOKIE as VIDEO_COOKIE, BASE as VIDEO_BASE
+from integrations.local_video.api import create_router as create_video_routers
 from .adaptive_api import create_adaptive_router, ADAPTIVE, CATALOGUE, LOCAL_AUTH
 
 STATIC = Path(__file__).with_name('console_static')
 COOKIE = 'coachloop_local_console'
 CANONICAL = '/api/v1/lesson-plans/draft'
 ALLOWED = {('GET', '/'), ('GET', '/console.js'), ('GET', '/console.css'),
-           ('GET', '/health'), ('POST', CANONICAL), ('GET', CATALOGUE), ('POST', ADAPTIVE)}
+           ('GET', '/health'), ('POST', CANONICAL), ('GET', CATALOGUE), ('POST', ADAPTIVE), ('GET','/video-console.js')}
+ALLOWED |= {('GET',path) for path in READ_PATHS} | {('POST',path) for path in WRITE_PATHS}
 SECURITY_HEADERS = {
     'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer',
     'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'DENY',
     'Content-Security-Policy': "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
     'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
 }
+
+
+LOCAL_SECURITY_HEADERS = {**SECURITY_HEADERS, 'Cross-Origin-Resource-Policy': 'same-origin', 'Content-Security-Policy': SECURITY_HEADERS['Content-Security-Policy'] + "; media-src 'self' blob:"}
 
 
 class LocalBoundary:
@@ -41,9 +49,9 @@ class LocalBoundary:
         async def secured(message):
             if message['type'] == 'http.response.start':
                 original = message.get('headers', [])
-                names = {name.lower().encode() for name in SECURITY_HEADERS}
+                names = {name.lower().encode() for name in LOCAL_SECURITY_HEADERS}
                 message = {**message, 'headers': [(k, v) for k, v in original if k.lower() not in names]
-                    + [(k.lower().encode(), v.encode()) for k, v in SECURITY_HEADERS.items()]}
+                    + [(k.lower().encode(), v.encode()) for k, v in LOCAL_SECURITY_HEADERS.items()]}
             await send(message)
         async def reject(status, detail):
             return await JSONResponse({'detail': detail}, status_code=status)(scope, receive, secured)
@@ -60,34 +68,58 @@ class LocalBoundary:
             return await reject(403, 'Cross-site access refused')
         if request.headers.get('origin') not in (None, self.origin):
             return await reject(403, 'Cross-origin access refused')
+        if scope['path'] in READ_PATHS:
+            cookie = request.cookies.get(COOKIE, '')
+            if not cookie or not hmac.compare_digest(cookie.encode(), self.session.encode()):
+                return await reject(401, 'Local console session required')
+            scope = {**scope, 'coachloop_local_auth': LOCAL_AUTH}
         if scope['method'] == 'POST':
             cookie = request.cookies.get(COOKIE, '')
             if not cookie or not hmac.compare_digest(cookie.encode(), self.session.encode()):
                 return await reject(401, 'Open the local console to start a session')
             origins = [v.decode('latin1') for k, v in headers if k.lower() == b'origin']
             if (origins != [self.origin] or request.headers.get('x-coachloop-console') != '1'
-                    or request.headers.get('content-type', '').split(';')[0].strip().lower() != 'application/json'
+                    or request.headers.get('content-type', '').split(';')[0].strip().lower() not in
+                        (('video/mp4','video/quicktime') if scope['path']==VIDEO_BASE+'/upload' else ('application/json',))
                     or any(k.lower() == b'authorization' for k, _ in headers)):
                 return await reject(403, 'Local session and same-origin JSON request required')
             scope = {**scope, 'coachloop_local_auth': LOCAL_AUTH, 'headers': [*headers, (b'authorization', ('Bearer ' + self.bearer).encode())]}
         return await self.app(scope, receive, secured)
 
 
-def create_console_app(port: int = 8767):
+def create_console_app(port: int = 8767, *, video_store=None):
     if type(port) is not int or not 1 <= port <= 65535:
         raise ValueError('Local port must be an integer from 1 to 65535')
     session, bearer = secrets.token_urlsafe(32), secrets.token_urlsafe(32)
-    app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
+    store = video_store if video_store is not None else VideoStore()
+    @asynccontextmanager
+    async def lifespan(app):
+        try:yield
+        finally:store.close()
+    app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None, lifespan=lifespan)
+    app.state.video_store = store
+    @app.exception_handler(VideoError)
+    async def video_error(request, error):
+        return JSONResponse({'detail': error.code},status_code=error.status,headers={'Cache-Control':'no-store'})
+    @app.exception_handler(RequestValidationError)
+    async def invalid_local_request(request, error):
+        return JSONResponse({'detail':'Invalid local request fields'},status_code=422,headers={'Cache-Control':'no-store'})
+    for router in create_video_routers():app.include_router(router)
     app.include_router(create_router(access_token=bearer))
     app.include_router(create_adaptive_router())
     @app.get('/')
-    def index():
+    def index(request: Request):
+        video_token = store.session(request.cookies.get(VIDEO_COOKIE))
         response = FileResponse(STATIC / 'index.html', media_type='text/html')
         response.set_cookie(COOKIE, session, httponly=True, samesite='strict', secure=False)
+        response.set_cookie(VIDEO_COOKIE, video_token, httponly=True, samesite='strict', secure=False, max_age=1800)
         return response
     @app.get('/console.js')
     def javascript():
         return FileResponse(STATIC / 'console.js', media_type='text/javascript')
+    @app.get('/video-console.js')
+    def video_javascript():
+        return FileResponse(STATIC / 'video-console.js', media_type='text/javascript')
     @app.get('/console.css')
     def stylesheet():
         return FileResponse(STATIC / 'console.css', media_type='text/css')
