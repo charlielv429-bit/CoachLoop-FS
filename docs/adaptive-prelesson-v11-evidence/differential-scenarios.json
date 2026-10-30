@@ -1,0 +1,690 @@
+[
+  {
+    "request": {
+      "class_label": "匿名班级",
+      "theme_id": "two_foot_glide",
+      "student_count": 10,
+      "skill_level": "零基础",
+      "age_band": "青少年",
+      "mastered_skills": [
+        "safety_equipment"
+      ],
+      "coach_count": 2,
+      "teacher_count": 1,
+      "total_minutes": 45,
+      "usable_area_m2": 200.0,
+      "declared_practice_capacity": 10,
+      "equipment_sets": 30,
+      "safe_waiting_area": true,
+      "ice_available": true,
+      "venue_conditions": "MOCK合成冰场",
+      "equipment_conditions": "MOCK合成装备",
+      "goal_preference": "基础控制",
+      "teacher_goal_edit": "",
+      "teacher_notes": "",
+      "teacher_exercise_edits": []
+    },
+    "status": "draft_ready",
+    "adaptation": {
+      "theme_id": "two_foot_glide",
+      "theme_version": "1.1.0",
+      "source": {
+        "kind": "editorial_candidate",
+        "reference": null,
+        "note": "工程整理候选教学条目，未核实课程标准或专业安全依据"
+      },
+      "verification_status": "unverified",
+      "prerequisites_missing": [],
+      "goals": [
+        "建立双足滑行的受控体验",
+        "安全与基础控制",
+        "目标偏好：基础控制"
+      ],
+      "core_exercises": [
+        {
+          "order": 1,
+          "task": "站姿观察",
+          "catalogue_task": "站姿观察",
+          "active_min_per_student": 7.666666666666667,
+          "mode": "扶助或短段体验后停顿；侧重基础控制",
+          "status": "candidate_unverified"
+        },
+        {
+          "order": 2,
+          "task": "短段双足滑行",
+          "catalogue_task": "短段双足滑行",
+          "active_min_per_student": 7.666666666666667,
+          "mode": "扶助或短段体验后停顿；侧重基础控制",
+          "status": "candidate_unverified"
+        },
+        {
+          "order": 3,
+          "task": "滑行后受控停顿",
+          "catalogue_task": "滑行后受控停顿",
+          "active_min_per_student": 7.666666666666667,
+          "mode": "扶助或短段体验后停顿；侧重基础控制",
+          "status": "candidate_unverified"
+        }
+      ],
+      "organization": {
+        "status": "pending_confirmation",
+        "capacity_source": "teacher_declared_unverified",
+        "declared_capacity": 10,
+        "usable_area_m2": 200.0,
+        "concurrent_students": 10,
+        "wave_sizes": [
+          10
+        ],
+        "groups": [
+          {
+            "wave": 1,
+            "coach": 1,
+            "students": 5
+          },
+          {
+            "wave": 1,
+            "coach": 2,
+            "students": 5
+          }
+        ],
+        "rotation_count": 1,
+        "main_demo_min": 5,
+        "main_rotation_min": 24,
+        "transition_min_per_wave": 1,
+        "core_active_min_per_student": 23.0,
+        "group_diagram": "轮1：教练1组5人 / 教练2组5人",
+        "waiting_students_max": 0,
+        "note": "面积仅记录，不推算安全容量。容量由教师填报待现场确认；人数拆分不证明安全师生比。冰外等候非练习。"
+      },
+      "staff_tasks": [
+        {
+          "role": "coach",
+          "number": 1,
+          "task": "安全与基础控制；指导本组、观察双足支撑下的姿态稳定并记录形成性反馈；保护方式待专业核定"
+        },
+        {
+          "role": "coach",
+          "number": 2,
+          "task": "安全与基础控制；指导本组、观察双足支撑下的姿态稳定并记录形成性反馈；保护方式待专业核定"
+        },
+        {
+          "role": "teacher",
+          "number": 1,
+          "task": "等待区秩序、轮换交接及异常报告；不替代专项教练"
+        }
+      ],
+      "evaluation_indicators": [
+        "记录滑行中姿态变化与停顿完成情况",
+        "观察指令响应与基础控制",
+        "按偏好形成性观察：基础控制"
+      ],
+      "safety_limits": [
+        "短段距离与停止方式由教练按冰面核定（待专项教练确认）",
+        "候选教学设计，知识与安全依据未核实；待专项教练和教师现场复核，确认前不实施。",
+        "摔倒、起身及制动处置由专项教练结合现场与学校应急预案确定，本稿不提供统一处置指令。"
+      ],
+      "differentiation": [
+        "支持：扶助或短段体验后停顿",
+        "巩固：按观察反馈重复当前任务",
+        "进阶：经专项教练许可后衔接"
+      ],
+      "teacher_goal_edit": "",
+      "teacher_notes": "",
+      "teacher_review_checklist": [
+        "核实先修技能与水平",
+        "核定现场容量、等待区和实际人员职责",
+        "复核本主题动作与安全要求",
+        "确认分组时间与预计负荷假设",
+        "核实知识来源；本稿仍为unverified",
+        "人工审核在本应用外完成，本应用不批准"
+      ]
+    },
+    "estimated_load": {
+      "total_minutes": 45,
+      "kind": "estimated",
+      "avg_hr": null,
+      "group_density": {
+        "name": "预计群体活动窗口密度（至少有一组活动，非全体同时活动）",
+        "kind": "estimated",
+        "formula": "预计活动分钟 / 45分钟 × 100；轮换均匀分配假设，非实测",
+        "numerator": 30.0,
+        "denominator": 45.0,
+        "unit": "%",
+        "result": 66.66666666666666,
+        "target": null,
+        "display_result": 66.67
+      },
+      "individual_density": {
+        "name": "预计人均活动密度",
+        "kind": "estimated",
+        "formula": "预计活动分钟 / 45分钟 × 100；轮换均匀分配假设，非实测",
+        "numerator": 30.0,
+        "denominator": 45.0,
+        "unit": "%",
+        "result": 66.66666666666666,
+        "target": null,
+        "display_result": 66.67
+      },
+      "note": "非实测：准备4分钟+结束3分钟活动假设；基本29分钟=示范5分钟+轮换24分钟，每轮转换1分钟；核心有效窗口23分钟，平均分配1轮。暂缓时活动量计0。心率未估计，不能据此判断实际生理负荷。"
+    }
+  },
+  {
+    "request": {
+      "class_label": "匿名班级",
+      "theme_id": "two_foot_glide",
+      "student_count": 20,
+      "skill_level": "零基础",
+      "age_band": "青少年",
+      "mastered_skills": [
+        "safety_equipment"
+      ],
+      "coach_count": 1,
+      "teacher_count": 1,
+      "total_minutes": 45,
+      "usable_area_m2": 200.0,
+      "declared_practice_capacity": 10,
+      "equipment_sets": 30,
+      "safe_waiting_area": true,
+      "ice_available": true,
+      "venue_conditions": "MOCK合成冰场",
+      "equipment_conditions": "MOCK合成装备",
+      "goal_preference": "基础控制",
+      "teacher_goal_edit": "",
+      "teacher_notes": "",
+      "teacher_exercise_edits": []
+    },
+    "status": "draft_ready",
+    "adaptation": {
+      "theme_id": "two_foot_glide",
+      "theme_version": "1.1.0",
+      "source": {
+        "kind": "editorial_candidate",
+        "reference": null,
+        "note": "工程整理候选教学条目，未核实课程标准或专业安全依据"
+      },
+      "verification_status": "unverified",
+      "prerequisites_missing": [],
+      "goals": [
+        "建立双足滑行的受控体验",
+        "安全与基础控制",
+        "目标偏好：基础控制"
+      ],
+      "core_exercises": [
+        {
+          "order": 1,
+          "task": "站姿观察",
+          "catalogue_task": "站姿观察",
+          "active_min_per_student": 3.6666666666666665,
+          "mode": "扶助或短段体验后停顿；侧重基础控制",
+          "status": "candidate_unverified"
+        },
+        {
+          "order": 2,
+          "task": "短段双足滑行",
+          "catalogue_task": "短段双足滑行",
+          "active_min_per_student": 3.6666666666666665,
+          "mode": "扶助或短段体验后停顿；侧重基础控制",
+          "status": "candidate_unverified"
+        },
+        {
+          "order": 3,
+          "task": "滑行后受控停顿",
+          "catalogue_task": "滑行后受控停顿",
+          "active_min_per_student": 3.6666666666666665,
+          "mode": "扶助或短段体验后停顿；侧重基础控制",
+          "status": "candidate_unverified"
+        }
+      ],
+      "organization": {
+        "status": "pending_confirmation",
+        "capacity_source": "teacher_declared_unverified",
+        "declared_capacity": 10,
+        "usable_area_m2": 200.0,
+        "concurrent_students": 10,
+        "wave_sizes": [
+          10,
+          10
+        ],
+        "groups": [
+          {
+            "wave": 1,
+            "coach": 1,
+            "students": 10
+          },
+          {
+            "wave": 2,
+            "coach": 1,
+            "students": 10
+          }
+        ],
+        "rotation_count": 2,
+        "main_demo_min": 5,
+        "main_rotation_min": 24,
+        "transition_min_per_wave": 1,
+        "core_active_min_per_student": 11.0,
+        "group_diagram": "轮1：教练1组10人 → 轮2：教练1组10人",
+        "waiting_students_max": 10,
+        "note": "面积仅记录，不推算安全容量。容量由教师填报待现场确认；人数拆分不证明安全师生比。冰外等候非练习。"
+      },
+      "staff_tasks": [
+        {
+          "role": "coach",
+          "number": 1,
+          "task": "安全与基础控制；指导本组、观察双足支撑下的姿态稳定并记录形成性反馈；保护方式待专业核定"
+        },
+        {
+          "role": "teacher",
+          "number": 1,
+          "task": "等待区秩序、轮换交接及异常报告；不替代专项教练"
+        }
+      ],
+      "evaluation_indicators": [
+        "记录滑行中姿态变化与停顿完成情况",
+        "观察指令响应与基础控制",
+        "按偏好形成性观察：基础控制"
+      ],
+      "safety_limits": [
+        "短段距离与停止方式由教练按冰面核定（待专项教练确认）",
+        "候选教学设计，知识与安全依据未核实；待专项教练和教师现场复核，确认前不实施。",
+        "摔倒、起身及制动处置由专项教练结合现场与学校应急预案确定，本稿不提供统一处置指令。",
+        "需2轮且每位学生核心活动仅预计11.00分钟；缩小班级/增加区域须先现场确认，不以增加次数补偿"
+      ],
+      "differentiation": [
+        "支持：扶助或短段体验后停顿",
+        "巩固：按观察反馈重复当前任务",
+        "进阶：经专项教练许可后衔接"
+      ],
+      "teacher_goal_edit": "",
+      "teacher_notes": "",
+      "teacher_review_checklist": [
+        "核实先修技能与水平",
+        "核定现场容量、等待区和实际人员职责",
+        "复核本主题动作与安全要求",
+        "确认分组时间与预计负荷假设",
+        "核实知识来源；本稿仍为unverified",
+        "人工审核在本应用外完成，本应用不批准"
+      ]
+    },
+    "estimated_load": {
+      "total_minutes": 45,
+      "kind": "estimated",
+      "avg_hr": null,
+      "group_density": {
+        "name": "预计群体活动窗口密度（至少有一组活动，非全体同时活动）",
+        "kind": "estimated",
+        "formula": "预计活动分钟 / 45分钟 × 100；轮换均匀分配假设，非实测",
+        "numerator": 29.0,
+        "denominator": 45.0,
+        "unit": "%",
+        "result": 64.44444444444444,
+        "target": null,
+        "display_result": 64.44
+      },
+      "individual_density": {
+        "name": "预计人均活动密度",
+        "kind": "estimated",
+        "formula": "预计活动分钟 / 45分钟 × 100；轮换均匀分配假设，非实测",
+        "numerator": 18.0,
+        "denominator": 45.0,
+        "unit": "%",
+        "result": 40.0,
+        "target": null,
+        "display_result": 40.0
+      },
+      "note": "非实测：准备4分钟+结束3分钟活动假设；基本29分钟=示范5分钟+轮换24分钟，每轮转换1分钟；核心有效窗口22分钟，平均分配2轮。暂缓时活动量计0。心率未估计，不能据此判断实际生理负荷。"
+    }
+  },
+  {
+    "request": {
+      "class_label": "匿名班级",
+      "theme_id": "two_foot_glide",
+      "student_count": 20,
+      "skill_level": "初级",
+      "age_band": "青少年",
+      "mastered_skills": [
+        "safety_equipment"
+      ],
+      "coach_count": 2,
+      "teacher_count": 1,
+      "total_minutes": 45,
+      "usable_area_m2": 200.0,
+      "declared_practice_capacity": 10,
+      "equipment_sets": 30,
+      "safe_waiting_area": true,
+      "ice_available": true,
+      "venue_conditions": "MOCK合成冰场",
+      "equipment_conditions": "MOCK合成装备",
+      "goal_preference": "基础控制",
+      "teacher_goal_edit": "",
+      "teacher_notes": "",
+      "teacher_exercise_edits": []
+    },
+    "status": "draft_ready",
+    "adaptation": {
+      "theme_id": "two_foot_glide",
+      "theme_version": "1.1.0",
+      "source": {
+        "kind": "editorial_candidate",
+        "reference": null,
+        "note": "工程整理候选教学条目，未核实课程标准或专业安全依据"
+      },
+      "verification_status": "unverified",
+      "prerequisites_missing": [],
+      "goals": [
+        "建立双足滑行的受控体验",
+        "左右侧动作稳定性",
+        "目标偏好：基础控制"
+      ],
+      "core_exercises": [
+        {
+          "order": 1,
+          "task": "站姿观察",
+          "catalogue_task": "站姿观察",
+          "active_min_per_student": 3.6666666666666665,
+          "mode": "分侧重复后比较质量；侧重基础控制",
+          "status": "candidate_unverified"
+        },
+        {
+          "order": 2,
+          "task": "短段双足滑行",
+          "catalogue_task": "短段双足滑行",
+          "active_min_per_student": 3.6666666666666665,
+          "mode": "分侧重复后比较质量；侧重基础控制",
+          "status": "candidate_unverified"
+        },
+        {
+          "order": 3,
+          "task": "滑行后受控停顿",
+          "catalogue_task": "滑行后受控停顿",
+          "active_min_per_student": 3.6666666666666665,
+          "mode": "分侧重复后比较质量；侧重基础控制",
+          "status": "candidate_unverified"
+        }
+      ],
+      "organization": {
+        "status": "pending_confirmation",
+        "capacity_source": "teacher_declared_unverified",
+        "declared_capacity": 10,
+        "usable_area_m2": 200.0,
+        "concurrent_students": 10,
+        "wave_sizes": [
+          10,
+          10
+        ],
+        "groups": [
+          {
+            "wave": 1,
+            "coach": 1,
+            "students": 5
+          },
+          {
+            "wave": 1,
+            "coach": 2,
+            "students": 5
+          },
+          {
+            "wave": 2,
+            "coach": 1,
+            "students": 5
+          },
+          {
+            "wave": 2,
+            "coach": 2,
+            "students": 5
+          }
+        ],
+        "rotation_count": 2,
+        "main_demo_min": 5,
+        "main_rotation_min": 24,
+        "transition_min_per_wave": 1,
+        "core_active_min_per_student": 11.0,
+        "group_diagram": "轮1：教练1组5人 / 教练2组5人 → 轮2：教练1组5人 / 教练2组5人",
+        "waiting_students_max": 10,
+        "note": "面积仅记录，不推算安全容量。容量由教师填报待现场确认；人数拆分不证明安全师生比。冰外等候非练习。"
+      },
+      "staff_tasks": [
+        {
+          "role": "coach",
+          "number": 1,
+          "task": "左右侧动作稳定性；指导本组、观察双足支撑下的姿态稳定并记录形成性反馈；保护方式待专业核定"
+        },
+        {
+          "role": "coach",
+          "number": 2,
+          "task": "左右侧动作稳定性；指导本组、观察双足支撑下的姿态稳定并记录形成性反馈；保护方式待专业核定"
+        },
+        {
+          "role": "teacher",
+          "number": 1,
+          "task": "等待区秩序、轮换交接及异常报告；不替代专项教练"
+        }
+      ],
+      "evaluation_indicators": [
+        "记录滑行中姿态变化与停顿完成情况",
+        "分别记录左右侧连续性",
+        "按偏好形成性观察：基础控制"
+      ],
+      "safety_limits": [
+        "短段距离与停止方式由教练按冰面核定（待专项教练确认）",
+        "候选教学设计，知识与安全依据未核实；待专项教练和教师现场复核，确认前不实施。",
+        "摔倒、起身及制动处置由专项教练结合现场与学校应急预案确定，本稿不提供统一处置指令。",
+        "需2轮且每位学生核心活动仅预计11.00分钟；缩小班级/增加区域须先现场确认，不以增加次数补偿"
+      ],
+      "differentiation": [
+        "支持：分侧重复后比较质量",
+        "巩固：按观察反馈重复当前任务",
+        "进阶：经专项教练许可后衔接"
+      ],
+      "teacher_goal_edit": "",
+      "teacher_notes": "",
+      "teacher_review_checklist": [
+        "核实先修技能与水平",
+        "核定现场容量、等待区和实际人员职责",
+        "复核本主题动作与安全要求",
+        "确认分组时间与预计负荷假设",
+        "核实知识来源；本稿仍为unverified",
+        "人工审核在本应用外完成，本应用不批准"
+      ]
+    },
+    "estimated_load": {
+      "total_minutes": 45,
+      "kind": "estimated",
+      "avg_hr": null,
+      "group_density": {
+        "name": "预计群体活动窗口密度（至少有一组活动，非全体同时活动）",
+        "kind": "estimated",
+        "formula": "预计活动分钟 / 45分钟 × 100；轮换均匀分配假设，非实测",
+        "numerator": 29.0,
+        "denominator": 45.0,
+        "unit": "%",
+        "result": 64.44444444444444,
+        "target": null,
+        "display_result": 64.44
+      },
+      "individual_density": {
+        "name": "预计人均活动密度",
+        "kind": "estimated",
+        "formula": "预计活动分钟 / 45分钟 × 100；轮换均匀分配假设，非实测",
+        "numerator": 18.0,
+        "denominator": 45.0,
+        "unit": "%",
+        "result": 40.0,
+        "target": null,
+        "display_result": 40.0
+      },
+      "note": "非实测：准备4分钟+结束3分钟活动假设；基本29分钟=示范5分钟+轮换24分钟，每轮转换1分钟；核心有效窗口22分钟，平均分配2轮。暂缓时活动量计0。心率未估计，不能据此判断实际生理负荷。"
+    }
+  },
+  {
+    "request": {
+      "class_label": "匿名班级",
+      "theme_id": "two_foot_glide",
+      "student_count": 30,
+      "skill_level": "零基础",
+      "age_band": "青少年",
+      "mastered_skills": [
+        "safety_equipment"
+      ],
+      "coach_count": 1,
+      "teacher_count": 1,
+      "total_minutes": 45,
+      "usable_area_m2": 200.0,
+      "declared_practice_capacity": 10,
+      "equipment_sets": 30,
+      "safe_waiting_area": true,
+      "ice_available": true,
+      "venue_conditions": "MOCK合成冰场",
+      "equipment_conditions": "MOCK合成装备",
+      "goal_preference": "基础控制",
+      "teacher_goal_edit": "",
+      "teacher_notes": "",
+      "teacher_exercise_edits": []
+    },
+    "status": "draft_ready",
+    "adaptation": {
+      "theme_id": "two_foot_glide",
+      "theme_version": "1.1.0",
+      "source": {
+        "kind": "editorial_candidate",
+        "reference": null,
+        "note": "工程整理候选教学条目，未核实课程标准或专业安全依据"
+      },
+      "verification_status": "unverified",
+      "prerequisites_missing": [],
+      "goals": [
+        "建立双足滑行的受控体验",
+        "安全与基础控制",
+        "目标偏好：基础控制"
+      ],
+      "core_exercises": [
+        {
+          "order": 1,
+          "task": "站姿观察",
+          "catalogue_task": "站姿观察",
+          "active_min_per_student": 2.3333333333333335,
+          "mode": "扶助或短段体验后停顿；侧重基础控制",
+          "status": "candidate_unverified"
+        },
+        {
+          "order": 2,
+          "task": "短段双足滑行",
+          "catalogue_task": "短段双足滑行",
+          "active_min_per_student": 2.3333333333333335,
+          "mode": "扶助或短段体验后停顿；侧重基础控制",
+          "status": "candidate_unverified"
+        },
+        {
+          "order": 3,
+          "task": "滑行后受控停顿",
+          "catalogue_task": "滑行后受控停顿",
+          "active_min_per_student": 2.3333333333333335,
+          "mode": "扶助或短段体验后停顿；侧重基础控制",
+          "status": "candidate_unverified"
+        }
+      ],
+      "organization": {
+        "status": "pending_confirmation",
+        "capacity_source": "teacher_declared_unverified",
+        "declared_capacity": 10,
+        "usable_area_m2": 200.0,
+        "concurrent_students": 10,
+        "wave_sizes": [
+          10,
+          10,
+          10
+        ],
+        "groups": [
+          {
+            "wave": 1,
+            "coach": 1,
+            "students": 10
+          },
+          {
+            "wave": 2,
+            "coach": 1,
+            "students": 10
+          },
+          {
+            "wave": 3,
+            "coach": 1,
+            "students": 10
+          }
+        ],
+        "rotation_count": 3,
+        "main_demo_min": 5,
+        "main_rotation_min": 24,
+        "transition_min_per_wave": 1,
+        "core_active_min_per_student": 7.0,
+        "group_diagram": "轮1：教练1组10人 → 轮2：教练1组10人 → 轮3：教练1组10人",
+        "waiting_students_max": 20,
+        "note": "面积仅记录，不推算安全容量。容量由教师填报待现场确认；人数拆分不证明安全师生比。冰外等候非练习。"
+      },
+      "staff_tasks": [
+        {
+          "role": "coach",
+          "number": 1,
+          "task": "安全与基础控制；指导本组、观察双足支撑下的姿态稳定并记录形成性反馈；保护方式待专业核定"
+        },
+        {
+          "role": "teacher",
+          "number": 1,
+          "task": "等待区秩序、轮换交接及异常报告；不替代专项教练"
+        }
+      ],
+      "evaluation_indicators": [
+        "记录滑行中姿态变化与停顿完成情况",
+        "观察指令响应与基础控制",
+        "按偏好形成性观察：基础控制"
+      ],
+      "safety_limits": [
+        "短段距离与停止方式由教练按冰面核定（待专项教练确认）",
+        "候选教学设计，知识与安全依据未核实；待专项教练和教师现场复核，确认前不实施。",
+        "摔倒、起身及制动处置由专项教练结合现场与学校应急预案确定，本稿不提供统一处置指令。",
+        "需3轮且每位学生核心活动仅预计7.00分钟；缩小班级/增加区域须先现场确认，不以增加次数补偿"
+      ],
+      "differentiation": [
+        "支持：扶助或短段体验后停顿",
+        "巩固：按观察反馈重复当前任务",
+        "进阶：经专项教练许可后衔接"
+      ],
+      "teacher_goal_edit": "",
+      "teacher_notes": "",
+      "teacher_review_checklist": [
+        "核实先修技能与水平",
+        "核定现场容量、等待区和实际人员职责",
+        "复核本主题动作与安全要求",
+        "确认分组时间与预计负荷假设",
+        "核实知识来源；本稿仍为unverified",
+        "人工审核在本应用外完成，本应用不批准"
+      ]
+    },
+    "estimated_load": {
+      "total_minutes": 45,
+      "kind": "estimated",
+      "avg_hr": null,
+      "group_density": {
+        "name": "预计群体活动窗口密度（至少有一组活动，非全体同时活动）",
+        "kind": "estimated",
+        "formula": "预计活动分钟 / 45分钟 × 100；轮换均匀分配假设，非实测",
+        "numerator": 28.0,
+        "denominator": 45.0,
+        "unit": "%",
+        "result": 62.22222222222222,
+        "target": null,
+        "display_result": 62.22
+      },
+      "individual_density": {
+        "name": "预计人均活动密度",
+        "kind": "estimated",
+        "formula": "预计活动分钟 / 45分钟 × 100；轮换均匀分配假设，非实测",
+        "numerator": 14.0,
+        "denominator": 45.0,
+        "unit": "%",
+        "result": 31.11111111111111,
+        "target": null,
+        "display_result": 31.11
+      },
+      "note": "非实测：准备4分钟+结束3分钟活动假设；基本29分钟=示范5分钟+轮换24分钟，每轮转换1分钟；核心有效窗口21分钟，平均分配3轮。暂缓时活动量计0。心率未估计，不能据此判断实际生理负荷。"
+    }
+  }
+]

@@ -1,0 +1,20 @@
+{
+  "kind": "real_local_chromium_interaction",
+  "coze_online": false,
+  "database_used": false,
+  "paid_model_calls": 0,
+  "catalogue_count": 24,
+  "level_filter": true,
+  "english_search": true,
+  "dynamic_10_vs_30_students": true,
+  "dynamic_topic_content": true,
+  "teacher_goal_and_exercise_edits": true,
+  "original_candidate_provenance_preserved": true,
+  "withheld_zero_coach": true,
+  "withheld_missing_prerequisite": true,
+  "stale_output_hidden": true,
+  "xss_rendered_as_text": true,
+  "downloaded_draft_protected": true,
+  "expired_session_hides_old_plan": true,
+  "teacher_review_required": true
+}

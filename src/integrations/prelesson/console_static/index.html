@@ -8,10 +8,10 @@
   <script src="/console.js" defer></script>
 </head>
 <body>
-  <header><span class="brand">CoachLoop-FS</span><span class="mode">本地交互版</span></header>
+  <header><span class="brand">CoachLoop-FS</span><span class="mode">V1.1 多主题 · 本地交互版</span></header>
   <main>
     <section class="intro"><p class="eyebrow">课前 · 智能备课</p><h1>从教学需求到可审核的教案</h1>
-      <p>填写班级与教学条件，调用现有教案 Agent 动态生成七要素草稿。当前支持零基础双足滑行，45分钟。</p>
+      <p>填写班级与教学条件，调用现有教案 Agent 动态生成七要素草稿。支持24个候选主题、四个水平，45分钟；教学内容与安全规则均待专业核实。</p>
       <p class="notice">仅在本机运行，不连接 Coze 或数据库。生成结果需教师复核，知识依据未核实，运动负荷为预计设计值。</p>
     </section>
     <div class="workspace">
@@ -21,13 +21,31 @@
           <p class="hint">不填写学生姓名、健康信息或任何凭据。</p>
           <div class="row"><label>学生人数<input name="student_count" type="number" value="20" min="1" max="500" step="1" required></label>
           <label>课时（分钟）<input name="total_minutes" type="number" value="45" min="45" max="45" readonly required></label></div>
-          <label>教学主题<select name="theme"><option>冰上双足滑行与身体姿态控制</option></select></label>
-          <label>学生水平<select name="skill_level"><option>零基础</option></select></label>
-          <div class="row"><label>实际教练人数<input name="coach_count" type="number" min="0" max="50" step="1" value="1"></label>
-          <label>实际教师人数<input name="teacher_count" type="number" min="0" max="50" step="1" value="1"></label></div>
-          <p class="hint">未知请留空，不会自动补造师资。组织方案仍待确认。</p>
+          <label>学生水平 / 主题筛选<select name="skill_level"><option>零基础</option><option>初级</option><option>初中级</option><option>中级</option></select></label>
+          <label>搜索主题<input id="theme-search" type="search" placeholder="输入中文、英文或主题关键词" maxlength="80"></label>
+          <label>教学主题<select name="theme_id" required></select></label>
+          <p id="theme-description" class="hint"></p>
+          <details><summary>已掌握先修技能（教师自报，请如实勾选）</summary><div id="skills"></div></details>
+          <label>年龄段<select name="age_band"><option>儿童</option><option selected>青少年</option><option>成人</option><option>混合年龄</option></select></label>
+          <div class="row"><label>实际教练人数<input name="coach_count" required type="number" min="0" max="50" step="1" value="1"></label>
+          <label>实际教师人数<input name="teacher_count" required type="number" min="0" max="50" step="1" value="1"></label></div>
+          <p class="hint">请填实际人数，不能留空。0教练将暂缓冰上方案；不虚构安全师生比。</p>
           <label>场地条件<input name="venue_conditions" maxlength="500" required placeholder="冰面、可用区域与现场限制"></label>
           <label>器材条件<input name="equipment_conditions" maxlength="500" required placeholder="冰鞋、护具、辅助器材及数量"></label>
+          <div class="row"><label>可用冰场面积（平方米）<input name="usable_area_m2" type="number" min="0.01" max="100000" step="any" required></label>
+          <label>现场拟定同时练习容量<input name="declared_practice_capacity" type="number" min="1" max="500" step="1" required></label></div>
+          <p class="hint">容量须由教师结合现场填写，面积不会自动换算为安全容量；所有组织仍待现场复核。</p>
+          <label>齐备个人冰鞋及护具套数<input name="equipment_sets" type="number" min="0" max="500" step="1" required></label>
+          <label><input name="safe_waiting_area" type="checkbox">已具备冰外等待区域（教师自报，未独立核实）</label>
+          <label><input name="ice_available" type="checkbox" checked>冰面当前可使用（待现场核查）</label>
+          <label>教学目标偏好<select name="goal_preference"><option>基础控制</option><option>动作质量</option><option>左右均衡</option><option>衔接节奏</option></select></label>
+          <label>修改候选教学目标<input name="teacher_goal_edit" maxlength="500" placeholder="可编辑；保留教师待审核标记，不替代专业确认"></label>
+          <details><summary>修改核心练习草稿（不改变安全限制或审核状态）</summary>
+          <p class="hint">留空沿用主题库候选内容；填写后以教师未审核修改标记，不作为安全许可。</p>
+          <label>第一步<input name="teacher_exercise_edits" maxlength="500"></label>
+          <label>第二步<input name="teacher_exercise_edits" maxlength="500"></label>
+          <label>第三步<input name="teacher_exercise_edits" maxlength="500"></label></details>
+          <label>教师修改备注<input name="teacher_notes" maxlength="2000" placeholder="修改练习安排的意见；作为未审核备注随草稿导出"></label>
           <button id="generate" type="submit">生成教案草稿</button>
           <p id="message" role="status" aria-live="polite">填写条件后生成。不会自动批准或保存到数据库。</p>
         </form>
@@ -37,7 +55,7 @@
         <div id="result" hidden>
           <div class="panel result-heading"><p class="eyebrow">生成完成 · 等待教师复核</p><h2 id="plan-title"></h2>
             <div class="badges"><span>草稿 draft</span><span>知识未核实</span><span>预计负荷</span></div>
-            <p id="audience"></p><button id="download" type="button" class="secondary">下载完整草稿 JSON</button>
+            <p id="audience"></p><button id="download" type="button" class="secondary">下载完整草稿 JSON（含修改备注）</button>
             <p class="hint">下载不是批准。当前没有教师身份认证、审核写回或自动归档。</p></div>
           <div id="time-summary" class="panel"></div>
           <div id="elements"></div>

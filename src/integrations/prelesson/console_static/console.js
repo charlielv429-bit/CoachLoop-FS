@@ -22,10 +22,21 @@ const labels={content:'内容',principles:'原则',skill_description:'动作说�
   proposed_group_sizes:'建议分组人数',zones:'教学区域',route:'移动路线',observation_position:'教师观察位置',
   equipment_list:'器材清单',camera_position:'拍摄位置建议',risk_screening:'课前风险核查',ice_check:'冰面检查',
   equipment_check:'器材检查',staffing:'师资安排',zone_management:'区域管理',emergency_flow:'应急交接',medical_note:'医学边界提示',
+  theme_id:'主题标识',theme_version:'主题版本',verification_status:'核实状态',source:'来源',
+  prerequisites_missing:'缺少先修技能',core_exercises:'核心练习',evaluation_indicators:'形成性评价',safety_limits:'安全限制',
+  staff_tasks:'师资分工',teacher_review_checklist:'教师审核清单',teacher_goal_edit:'教师修改目标',teacher_notes:'教师修改备注',
+  differentiation:'差异化练习',capacity_source:'容量依据',declared_capacity:'教师拟定容量',usable_area_m2:'可用面积（平方米）',
+  concurrent_students:'同时练习人数',wave_sizes:'各轮人数',groups:'指导组',rotation_count:'轮换次数',
+  main_demo_min:'基本阶段示范分钟',main_rotation_min:'基本阶段轮换窗口分钟',transition_min_per_wave:'每轮转换分钟（假设）',
+  core_active_min_per_student:'人均核心活动分钟',waiting_students_max:'最多等待人数',group_diagram:'分组轮换示意',
+  wave:'轮次',coach:'教练',students:'学生数',role:'角色',number:'人员序号',task:'任务',order:'顺序',
+  catalogue_task:'主题库原候选任务',active_min_per_student:'预计人均活动分钟',mode:'练习方式',
+  status:'状态',editorial_candidate:'工程整理候选条目（未经专业核实）',withheld:'暂缓冰上实施',candidate_unverified:'候选内容未核实',teacher_declared_unverified:'教师填报，未独立核实',
+  editorials:'工程整理',reference:'正式引用（暂无）',kind:'类型',teacher:'体育教师',
   prep:'准备阶段',preparation:'准备阶段',main:'基本阶段',closing:'结束阶段'};
 const elements=[['guiding_ideology','01 指导思想'],['teaching_material_analysis','02 教材分析'],
-  ['learner_analysis','03 学情分析与分层练习'],['venue_equipment','04 场地器材与组织'],
-  ['safety_precautions','05 安全防范与禁忌'],['teaching_flow','06 教学流程'],['load_accounting','07 预计运动负荷']];
+  ['learner_analysis','03 学情分析与分层练习'],['teaching_flow','04 教学流程'],
+  ['venue_equipment','05 场地器材与组织'],['safety_precautions','06 安全防范'],['complete_plan','07 完整教案']];
 function text(value){return typeof value==='string'?(labels[value]||value):String(value);}
 function render(value){
   if(Array.isArray(value)){const list=document.createElement('ul');for(const item of value){const li=document.createElement('li');li.append(render(item));list.append(li);}return list;}
@@ -36,14 +47,16 @@ function invalidate(){draft=null;output.hidden=true;empty.hidden=false;}
 function status(value,error=false){message.textContent=value;message.dataset.error=String(error);}
 function validateResponse(data){
   const p=data&&data.lesson_plan;
-  if(!p||data.schema_version!=='prelesson-draft-v1'||data.status!=='draft_ready'||data.requires_teacher_review!==true||data.knowledge_status!=='unverified'
-    ||data.load_basis!=='estimated_design_assumptions'||p.review_status!=='draft'
-    ||p.teaching_flow.total_minutes!==45||p.teaching_flow.phases.reduce((sum,x)=>sum+x.minutes,0)!==45
+  if(!p||data.schema_version!=='adaptive-prelesson-v1.1'||!['draft_ready','needs_confirmation'].includes(data.status)
+    ||data.requires_teacher_review!==true||data.knowledge_status!=='unverified'||data.review_status!=='draft'
+    ||p.review_status!=='draft'||p.teaching_flow.total_minutes!==45||p.teaching_flow.phases.length!==3
+    ||p.teaching_flow.phases.reduce((sum,x)=>sum+x.minutes,0)!==45
     ||p.safety_precautions.safety_review_status!=='unreviewed'||p.venue_equipment.organization_status!=='pending_confirmation'
-    ||p.load_accounting.total_minutes!==45||elements.some(([key])=>!p[key])
-    ||!p.evidence_log.some(e=>e.source==='unverified')
+    ||p.load_accounting.total_minutes!==45||p.load_accounting.avg_hr!==null||p.load_accounting.kind!=='estimated'
+    ||elements.some(([key])=>!p[key])||!p.evidence_log.some(e=>e.source==='unverified')
     ||p.evidence_log.some(e=>['kb_evidence','real_analysis'].includes(e.source)||(e.source==='unverified'&&e.citation!==null))
-    ||['avg_hr','group_density','individual_density'].some(k=>p.load_accounting[k].kind!=='estimated')){
+    ||['group_density','individual_density'].some(k=>p.load_accounting[k].kind!=='estimated')
+    ||(data.status==='needs_confirmation'&&data.adaptation.core_exercises.length!==0)){
     throw new Error('响应未通过草稿保护检查，未展示教案。');
   }
 }
@@ -58,6 +71,7 @@ function show(data){
   for(const phase of p.teaching_flow.phases){const box=document.createElement('div');box.textContent=labels[phase.phase]||phase.phase;const minutes=document.createElement('strong');minutes.textContent=phase.minutes+' 分钟';box.append(minutes);strip.append(box);}time.append(strip);
   const container=document.querySelector('#elements');container.replaceChildren();
   for(const [key,title] of elements){const section=document.createElement('details');section.className='panel element';section.open=true;const summary=document.createElement('summary');summary.textContent=title;section.append(summary,render(p[key]));container.append(section);}
+  for(const [title,value] of [['预计负荷与核算依据（心率未估计、未实测）',p.load_accounting],['差异化安排与教师审核清单',data.adaptation]]){const section=document.createElement('details');section.className='panel element';section.open=true;const titleNode=document.createElement('summary');titleNode.textContent=title;section.append(titleNode,render(value));container.append(section);}
   const evidence=document.createElement('details');evidence.className='panel element';const summary=document.createElement('summary');summary.textContent='知识依据 · 未核实';evidence.append(summary,render(p.evidence_log));container.append(evidence);
   draft=data;empty.hidden=true;output.hidden=false;
 }
@@ -68,14 +82,16 @@ form.addEventListener('submit',async event=>{
   const version=++requestVersion;const controller=new AbortController();activeController=controller;
   invalidate();submit.disabled=true;status('正在调用教案 Agent…');
   const values=new FormData(form);const payload=Object.fromEntries(values);
-  for(const key of ['student_count','total_minutes','coach_count','teacher_count']){payload[key]=values.get(key)===''?null:Number(values.get(key));}
+  for(const key of ['student_count','total_minutes','coach_count','teacher_count','usable_area_m2','declared_practice_capacity','equipment_sets']){payload[key]=values.get(key)===''?null:Number(values.get(key));}
+  payload.teacher_exercise_edits=values.getAll('teacher_exercise_edits');
+  payload.mastered_skills=values.getAll('mastered_skills');payload.safe_waiting_area=values.has('safe_waiting_area');payload.ice_available=values.has('ice_available');
   const timer=setTimeout(()=>controller.abort(),15000);
   try{
-    const response=await fetch('/api/v1/lesson-plans/draft',{method:'POST',credentials:'same-origin',redirect:'error',
+    const response=await fetch('/api/v1/lesson-plans/adaptive-draft',{method:'POST',credentials:'same-origin',redirect:'error',
       headers:{'Content-Type':'application/json','X-CoachLoop-Console':'1'},body:JSON.stringify(payload),signal:controller.signal});
-    if(!response.ok){const errors={401:'本地会话已失效，请刷新页面。',403:'请求未通过本地安全检查。',413:'输入过长，请缩短内容。',422:'输入不符合当前模板，请检查人数、师资及场地器材描述。',503:'生成服务暂不可用。'};throw new Error(errors[response.status]||'生成失败，请稍后重试。');}
+    if(!response.ok){const errors={401:'本地会话已失效，请刷新页面。',403:'请求未通过本地安全检查。',413:'输入过长，请缩短内容。',422:'输入无效，请检查必填条件、数值及主题。',503:'生成服务暂不可用。'};throw new Error(errors[response.status]||'生成失败，请稍后重试。');}
     const data=await response.json();if(version!==requestVersion)return;
-    show(data);status('教案已动态生成。请由教师复核组织、安全与知识依据。');
+    show(data);status(data.status==='needs_confirmation'?'条件不足：已暂缓冰上方案，请按限制调整输入。':'教案已动态生成，组织和安全仍待教师与专项教练确认。');
   }catch(error){if(version===requestVersion){invalidate();status(error.name==='AbortError'?'请求已取消或超时，请重试。':error instanceof TypeError?'无法连接本地服务，请确认服务窗口仍在运行。':error.message,true);}}
   finally{clearTimeout(timer);if(activeController===controller){activeController=null;submit.disabled=false;}}
 });
@@ -85,3 +101,31 @@ document.querySelector('#download').addEventListener('click',()=>{
   const link=document.createElement('a');link.href=url;link.download='coachloop-lesson-plan.draft.json';link.click();
   setTimeout(()=>URL.revokeObjectURL(url),1000);
 });
+
+// All catalogue text is rendered as text, never interpreted as HTML.
+let themes=[];
+const selector=form.elements.theme_id;
+function filterThemes(){
+  const previous=selector.value;const query=document.querySelector('#theme-search').value.trim().toLowerCase();
+  const matching=themes.filter(t=>t.supported_levels.includes(form.elements.skill_level.value)&&[t.name_zh,t.name_en,t.theme_id].join(' ').toLowerCase().includes(query));
+  selector.replaceChildren();
+  for(const t of matching){const option=document.createElement('option');option.value=t.theme_id;option.textContent=t.name_zh+' · '+t.name_en;selector.append(option);}
+  if(matching.some(t=>t.theme_id===previous))selector.value=previous;
+  else if(!query&&matching.some(t=>t.theme_id==='two_foot_glide'))selector.value='two_foot_glide';
+  describeTheme();
+}
+function describeTheme(){
+  const t=themes.find(t=>t.theme_id===selector.value);
+  document.querySelector('#theme-description').textContent=t?'先修：'+(t.prerequisites.map(id=>themes.find(x=>x.theme_id===id).name_zh).join('、')||'无')+'。候选内容版本'+t.version+'，来源：工程整理，unverified；不满足条件将暂缓冰上练习。':'没有匹配主题，请调整搜索。';
+  submit.disabled=!t;
+}
+form.elements.skill_level.addEventListener('change',filterThemes);
+document.querySelector('#theme-search').addEventListener('input',filterThemes);
+selector.addEventListener('change',describeTheme);
+submit.disabled=true;
+fetch('/api/v1/lesson-plans/themes',{credentials:'same-origin',redirect:'error'}).then(r=>{if(!r.ok)throw new Error();return r.json();}).then(data=>{
+  if(data.knowledge_status!=='unverified'||data.themes.length<24)throw new Error();
+  themes=data.themes;const skills=document.querySelector('#skills');
+  for(const t of themes){const label=document.createElement('label');const check=document.createElement('input');check.type='checkbox';check.name='mastered_skills';check.value=t.theme_id;label.append(check,document.createTextNode(t.name_zh));skills.append(label);}
+  filterThemes();
+}).catch(()=>{submit.disabled=true;status('无法加载主题库，请确认本地服务版本并刷新页面。',true);});

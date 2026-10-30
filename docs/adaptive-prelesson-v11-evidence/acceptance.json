@@ -1,0 +1,47 @@
+{
+  "baseline_main": "7c72b13fb8ed5d5aa6866e2f3dfd0936802ff3da",
+  "inherited_pr10": "730a69de2600c8b89828cd4435cd8b64b8ce901d",
+  "theme_count": 24,
+  "full_regression": {
+    "passed": 893,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 34.36,
+    "postgresql": "16.15",
+    "command": ".venv/bin/python -B -m pytest -q -p no:cacheprovider --tb=short",
+    "environment": "disposable mock-only loopback PostgreSQL"
+  },
+  "adaptive_tests": {
+    "passed": 77,
+    "failed": 0,
+    "skipped": 0
+  },
+  "original_video_tests": {
+    "passed": 41,
+    "failed": 0,
+    "skipped": 0
+  },
+  "browser_evidence": "browser.json",
+  "browser": "real local Chromium over HTTP",
+  "screenshot_sha256": "8d155452bec51166a8438dea0f401323097070c00f0f5749cdfdb37a1ee62689",
+  "security_review": {
+    "loopback_session_origin_csrf": true,
+    "unprotected_router_fails_closed": true,
+    "xss_text_only": true,
+    "draft_unverified_export_recomputed": true,
+    "no_database_migrations_modified": true,
+    "git_diff_check": true,
+    "runtime_dependencies_added": false
+  },
+  "warnings": [
+    "Existing Coze SDK Pydantic class-based Config deprecation"
+  ],
+  "not_verified": [
+    "Native Mac execution of V1.1 in user environment",
+    "Professional curriculum and safety review"
+  ],
+  "coze_accessed": false,
+  "paid_model_calls": 0,
+  "production_database_used": false,
+  "deployed": false
+}

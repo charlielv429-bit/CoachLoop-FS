@@ -1,0 +1,222 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "class_label": {
+      "default": "匿名班级",
+      "maxLength": 80,
+      "minLength": 1,
+      "title": "Class Label",
+      "type": "string"
+    },
+    "theme_id": {
+      "default": "two_foot_glide",
+      "enum": [
+        "safety_equipment",
+        "fall_recovery",
+        "marching",
+        "two_foot_glide",
+        "posture",
+        "basic_stop",
+        "alternating_push",
+        "one_foot_glide",
+        "swizzles",
+        "backward_two_foot",
+        "two_foot_turn",
+        "curve_glide",
+        "forward_inside",
+        "forward_outside",
+        "backward_one_foot",
+        "forward_crossovers",
+        "circle_glide",
+        "rhythm",
+        "backward_edges",
+        "backward_crossovers",
+        "three_turn",
+        "mohawk",
+        "two_foot_spin",
+        "step_sequence"
+      ],
+      "maxLength": 40,
+      "minLength": 1,
+      "title": "Theme Id",
+      "type": "string"
+    },
+    "student_count": {
+      "maximum": 500,
+      "minimum": 1,
+      "title": "Student Count",
+      "type": "integer"
+    },
+    "skill_level": {
+      "enum": [
+        "零基础",
+        "初级",
+        "初中级",
+        "中级"
+      ],
+      "title": "Skill Level",
+      "type": "string"
+    },
+    "age_band": {
+      "default": "青少年",
+      "enum": [
+        "儿童",
+        "青少年",
+        "成人",
+        "混合年龄"
+      ],
+      "title": "Age Band",
+      "type": "string"
+    },
+    "mastered_skills": {
+      "items": {
+        "enum": [
+          "safety_equipment",
+          "fall_recovery",
+          "marching",
+          "two_foot_glide",
+          "posture",
+          "basic_stop",
+          "alternating_push",
+          "one_foot_glide",
+          "swizzles",
+          "backward_two_foot",
+          "two_foot_turn",
+          "curve_glide",
+          "forward_inside",
+          "forward_outside",
+          "backward_one_foot",
+          "forward_crossovers",
+          "circle_glide",
+          "rhythm",
+          "backward_edges",
+          "backward_crossovers",
+          "three_turn",
+          "mohawk",
+          "two_foot_spin",
+          "step_sequence"
+        ],
+        "type": "string"
+      },
+      "maxItems": 24,
+      "title": "Mastered Skills",
+      "type": "array",
+      "uniqueItems": true
+    },
+    "coach_count": {
+      "maximum": 50,
+      "minimum": 0,
+      "title": "Coach Count",
+      "type": "integer"
+    },
+    "teacher_count": {
+      "maximum": 50,
+      "minimum": 0,
+      "title": "Teacher Count",
+      "type": "integer"
+    },
+    "total_minutes": {
+      "default": 45,
+      "maximum": 45,
+      "minimum": 45,
+      "title": "Total Minutes",
+      "type": "integer"
+    },
+    "usable_area_m2": {
+      "exclusiveMinimum": 0,
+      "maximum": 100000,
+      "title": "Usable Area M2",
+      "type": "number"
+    },
+    "declared_practice_capacity": {
+      "maximum": 500,
+      "minimum": 1,
+      "title": "Declared Practice Capacity",
+      "type": "integer"
+    },
+    "equipment_sets": {
+      "description": "齐备且可用的个人冰鞋护具套数",
+      "maximum": 500,
+      "minimum": 0,
+      "title": "Equipment Sets",
+      "type": "integer"
+    },
+    "safe_waiting_area": {
+      "title": "Safe Waiting Area",
+      "type": "boolean"
+    },
+    "ice_available": {
+      "default": true,
+      "title": "Ice Available",
+      "type": "boolean"
+    },
+    "venue_conditions": {
+      "maxLength": 500,
+      "minLength": 1,
+      "title": "Venue Conditions",
+      "type": "string"
+    },
+    "equipment_conditions": {
+      "maxLength": 500,
+      "minLength": 1,
+      "title": "Equipment Conditions",
+      "type": "string"
+    },
+    "goal_preference": {
+      "default": "基础控制",
+      "enum": [
+        "基础控制",
+        "动作质量",
+        "左右均衡",
+        "衔接节奏"
+      ],
+      "title": "Goal Preference",
+      "type": "string"
+    },
+    "teacher_goal_edit": {
+      "default": "",
+      "maxLength": 500,
+      "title": "Teacher Goal Edit",
+      "type": "string"
+    },
+    "teacher_notes": {
+      "default": "",
+      "maxLength": 2000,
+      "title": "Teacher Notes",
+      "type": "string"
+    },
+    "teacher_exercise_edits": {
+      "anyOf": [
+        {
+          "maxItems": 0
+        },
+        {
+          "maxItems": 3,
+          "minItems": 3
+        }
+      ],
+      "items": {
+        "maxLength": 500,
+        "pattern": "^[^\\x00-\\x1f\\x7f]*$",
+        "type": "string"
+      },
+      "maxItems": 3,
+      "title": "Teacher Exercise Edits",
+      "type": "array"
+    }
+  },
+  "required": [
+    "student_count",
+    "skill_level",
+    "coach_count",
+    "teacher_count",
+    "usable_area_m2",
+    "declared_practice_capacity",
+    "equipment_sets",
+    "safe_waiting_area",
+    "venue_conditions",
+    "equipment_conditions"
+  ],
+  "title": "AdaptiveRequest",
+  "type": "object"
+}
