@@ -55,6 +55,19 @@ def synthetic_video_stages():
 
 def import_payload(chain, reviews):
     """Pending claims only: the import adapter cannot manufacture coach review."""
+    def mock_source(source):
+        if not isinstance(source, dict) or source.get('is_mock') is not True:
+            return False
+        if 'mode' in source and source['mode'] != 'mock':
+            return False
+        paths = [source[key] for key in ('source', 'video_path', 'input_json') if key in source]
+        return bool(paths) and all(isinstance(path, str) and path.startswith('mock://') for path in paths)
+
+    # This helper generates a synthetic import declaration. Never relabel real,
+    # unknown or contradictory V5 provenance just because it has valid fields.
+    if (reviews.is_mock is not True or not mock_source(reviews.source)
+            or any(not mock_source(record.source) for record in reviews.records)):
+        raise ValueError('Only explicitly synthetic MOCK review sources may enter this demo adapter')
     return dict(schema_version='reviewed-training-import-v1', data_domain='mock', time_unit='ms',
         class_id=str(chain['class_id']), lesson_id=str(chain['lesson_id']),
         training_session_id=str(chain['session_id']), analysis_run_id=str(uuid4()),

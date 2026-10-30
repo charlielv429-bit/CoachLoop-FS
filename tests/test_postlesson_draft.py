@@ -91,3 +91,63 @@ def test_invalid_limit_cannot_open_a_database_connection(limit):
     from agents.postlesson_agent import draft_from_database
     with pytest.raises(ValueError):
         draft_from_database(None, uuid4(), uuid4(), limit=limit)
+
+
+@pytest.mark.parametrize('mutation', [
+    {'excluded_event_count': -1}, {'excluded_event_count': True},
+    {'excluded_event_count': '2'}, {'more_events_available': 'false'},
+    {'more_events_available': None}, {'training_session_id': 'not-a-uuid'},
+])
+def test_all_fields_are_revalidated_after_model_copy(mutation):
+    draft = _draft_for_page(page()).model_copy(update=mutation)
+    with pytest.raises((ValueError, ValidationError)):
+        draft.model_dump_json()
+
+
+def test_duplicate_observations_cannot_inflate_a_report():
+    draft = _draft_for_page(page('confirmed', 'authenticated', True, 1))
+    changed = draft.model_copy(update={'observations': draft.observations * 2})
+    with pytest.raises(ValueError):
+        changed.model_dump_json()
+
+
+def test_review_sequence_boolean_cannot_be_serialized_as_integer_one():
+    draft = _draft_for_page(page('confirmed', 'authenticated', True, 1))
+    altered = draft.observations[0].model_copy(update={'review_sequence': True})
+    with pytest.raises(ValueError):
+        draft.model_copy(update={'observations': (altered,)}).model_dump_json()
+
+
+@pytest.mark.parametrize('attack', [
+    'top_false', 'top_integer', 'source_false', 'source_missing', 'source_integer',
+    'source_real_mode', 'source_external_video', 'source_external_source',
+    'source_local_file', 'record_false', 'record_missing', 'record_external_video',
+])
+def test_demo_adapter_never_relabels_real_or_unknown_sources_as_mock(attack):
+    _, _, reviews = synthetic_video_stages()
+    if attack == 'top_false':
+        reviews = reviews.model_copy(update={'is_mock': False})
+    elif attack == 'top_integer':
+        reviews = reviews.model_copy(update={'is_mock': 1})
+    elif attack == 'source_false':
+        reviews.source['is_mock'] = False
+    elif attack == 'source_missing':
+        reviews.source.pop('is_mock')
+    elif attack == 'source_integer':
+        reviews.source['is_mock'] = 1
+    elif attack == 'source_real_mode':
+        reviews.source['mode'] = 'real'
+    elif attack == 'source_external_video':
+        reviews.source['video_path'] = 'https://synthetic-review.invalid/not-mock'
+    elif attack == 'source_external_source':
+        reviews.source['source'] = 'real://not-a-mock-source'
+    elif attack == 'source_local_file':
+        reviews.source['input_json'] = '/tmp/unknown-review.json'
+    elif attack == 'record_false':
+        reviews.records[0].source['is_mock'] = False
+    elif attack == 'record_missing':
+        reviews.records[0].source.pop('is_mock')
+    else:
+        reviews.records[0].source['video_path'] = 'real://not-a-mock-source'
+    with pytest.raises(ValueError):
+        import_payload(dict(class_id=uuid4(), lesson_id=uuid4(), session_id=uuid4()), reviews)

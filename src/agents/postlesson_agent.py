@@ -20,7 +20,7 @@ PRACTICE = (
 class Observation(BaseModel):
     model_config = ConfigDict(extra='forbid', frozen=True)
     event_id: UUID
-    review_sequence: int = Field(ge=1)
+    review_sequence: int = Field(strict=True, ge=1)
     status: Literal['confirmed', 'normal_movement']
     interpretation: Literal['reviewed_observable_change', 'reviewed_normal_movement']
 
@@ -37,9 +37,9 @@ class PostlessonDraft(BaseModel):
     technical_error_assessment: Literal['not_assessed'] = 'not_assessed'
     recommendation_basis: Literal['beginner_template_not_event_diagnosis'] = 'beginner_template_not_event_diagnosis'
     scope: Literal['returned_page'] = 'returned_page'
-    more_events_available: bool
+    more_events_available: bool = Field(strict=True)
     observations: tuple[Observation, ...]
-    excluded_event_count: int = Field(ge=0)
+    excluded_event_count: int = Field(strict=True, ge=0)
     learning_assessment: Literal['insufficient_for_skill_grade'] = 'insufficient_for_skill_grade'
     tiered_practice: tuple[str, ...] = PRACTICE
 
@@ -51,8 +51,12 @@ class PostlessonDraft(BaseModel):
             learning_assessment='insufficient_for_skill_grade', tiered_practice=PRACTICE)
         if self.requires_teacher_review is not True or any(getattr(self, k) != v for k, v in expected.items()):
             raise ValueError('Postlesson draft must preserve review and evidence safeguards')
+        seen = set()
         for observation in self.observations:
-            Observation.model_validate(observation.model_dump())
+            Observation.model_validate({name: getattr(observation, name) for name in Observation.model_fields})
+            if observation.event_id in seen:
+                raise ValueError('Duplicate observation in postlesson report')
+            seen.add(observation.event_id)
             if observation.interpretation != ('reviewed_observable_change' if observation.status == 'confirmed'
                     else 'reviewed_normal_movement'):
                 raise ValueError('Observation interpretation conflicts with review status')
@@ -61,7 +65,10 @@ class PostlessonDraft(BaseModel):
     @model_serializer(mode='wrap')
     def guarded_export(self, handler):
         self.guard_output()
-        return handler(self)
+        # Frozen models still allow model_copy(update=...) without validation.
+        # Validate every serialized field, not just the semantic control flags.
+        validated = type(self).model_validate({name: getattr(self, name) for name in type(self).model_fields})
+        return handler(validated)
 
 
 def _draft_for_page(page: ResultPage) -> PostlessonDraft:

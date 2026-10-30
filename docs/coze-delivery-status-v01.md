@@ -60,10 +60,23 @@
 
 本地工作已完成到可验证边界，没有后台持续执行安排。未Merge、未部署、未上传凭据/真实数据、未调用付费模型、未修改数据库迁移或V2—V5.2。
 
-## P6：本轮实际验收
+## P6：原PR提交b408ec1实际验收
 
 - 隔离PostgreSQL16.15完整pytest：**758 passed、0 failed、0 skipped，32.86秒，通过率100%**。包括main原710项、现有诊断17项和新增本地演示/课后保护31项；各专项是全量子集，不重复累计。
 - 新增课后单元23项、真实数据库三阶段6项、离线导出/HTML安全2项。既有视频41项、RLS、审核信任、事件一致性、幂等/并发、高精度、真实无DB启动与错误响应烟测均在全量内通过。
 - 首次新增集成夹具使用不符合既有mock资源目录约束的URI，产生5个新用例失败；改正夹具后专项29项及最终全量全部通过。没有放宽SQL或业务校验。
 - `git diff --check`通过；导出文件检查无占位域名、已知密钥模式或数据库连接串，全部数据明确合成。没有生产安全认证通过的证据，也没有执行真实Coze视频识别或真实人工复核。仅有既有SDK的Pydantic弃用警告1项。
 - 机器可读验收：[acceptance.json](demo-delivery/acceptance.json)。本地命令：`.venv/bin/python -B -m pytest -q -p no:cacheprovider`，必须按既有数据库文档显式连接专用隔离库。脱敏证据通过本地测试runner的 `COACHLOOP_DEMO_EVIDENCE_DIR` 输出；离线文件用 `.venv/bin/python scripts/prepare_three_stage_delivery.py` 生成，不要求用户再在Mac执行这些工程命令。
+
+## PR #9独立审查与最小修复
+
+确认远程PR原Head为 `b408ec1`、源分支 `feature/three-stage-demo-v01`，原提交在独立PostgreSQL16.15中重新运行 **758 passed、0 failed、0 skipped（31.37秒）**，原报告属实。
+
+复现并修复两个P2：
+
+1. 演示 `import_payload` 原来把非mock/来源不明的V5记录直接声明为synthetic/mock。现在逐项要求顶层与逐记录明确 `is_mock is True`、来源路径为mock://，并拒绝矛盾mode及整数伪布尔。数据库mock清单登记及受限角色约束保持不变。
+2. 课后报告的语义标记受保护，但model_copy仍可使负数数量、错误分页类型或重复观察导出。现在导出前重新校验全部原始字段，避免序列化将布尔变成整数后掩盖错误，并拒绝重复观察。
+
+新增20项反例；修复后全量 **778 passed、0 failed、0 skipped（31.33秒）**，相关单元/导出专项45通过。原视频41项、数据库RLS/审核信任/历史与训练归档均在全量中通过；只有既有SDK弃用警告1项，`git diff --check`通过。没有修改数据库、视频、网关、插件或部署代码。
+
+离线HTML静态确认有4个原生details区块，无script、无外部资源引用，CSP禁止外部加载；页面标明MOCK、无真实人工审核、课后草稿及最终归档未实现。原始数据库证据SHA256与验收清单一致，输出JSON Schema未变化。浏览器实际file://验证受本环境组织策略阻断（Chromium显示“Your organization doesn’t allow you to view this site”），没有绕过策略，**不能声称本环境已完成直接打开的浏览器验收**。Mac普通浏览器的最终打开确认仍需实际执行，这不是已发现的HTML代码缺陷。
