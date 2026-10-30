@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CoachLoop-FS 课堂演示登录</title><link rel="stylesheet" href="/console.css"><script src="/classroom-login.js" defer></script></head>
+<body><header><span class="brand">CoachLoop-FS</span><span class="mode">临时课堂演示</span></header><main>
+<section class="panel"><h1>进入模拟备课课堂</h1><p class="notice">公网临时演示，仅允许合成学生数据。不要填写真实姓名、健康记录或任何账号凭据。课堂访问码不代表教师审核身份。</p>
+<form id="classroom-login"><label>课堂访问码<input name="code" type="password" maxlength="128" required autocomplete="off"></label>
+<label><input name="mock_acknowledged" type="checkbox" required>我只使用合成模拟数据，不提交真实学生信息。</label>
+<button type="submit">进入课堂演示</button><p id="login-message" role="status" aria-live="polite"></p></form>
+<p>访问码由教师在本机启动终端查看，并通过独立渠道告知。二维码仅包含临时网址。</p></section></main></body></html>

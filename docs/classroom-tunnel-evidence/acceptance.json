@@ -1,0 +1,68 @@
+{
+  "baseline_main": "dacb0c6f1e1cfe06ac570476a5289e66d97cf351",
+  "full_regression": {
+    "passed": 952,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 36.6,
+    "postgresql": "16.15",
+    "command": ".venv/bin/python -B -m pytest -q -p no:cacheprovider --tb=short",
+    "environment": "disposable mock-only loopback PostgreSQL"
+  },
+  "classroom_tests": {
+    "passed": 59,
+    "failed": 0,
+    "skipped": 0
+  },
+  "original_video_tests": {
+    "passed": 41,
+    "failed": 0,
+    "skipped": 0
+  },
+  "browser": {
+    "classroom": "real Chromium, local simulated HTTPS proxy",
+    "local_v11_regression": "real Chromium over loopback HTTP",
+    "native_mac_or_ios_verified": false
+  },
+  "real_http_supervisor_stop": {
+    "passed": true,
+    "connector": "explicit simulated cloudflared executable",
+    "public_tunnel": false
+  },
+  "qr": {
+    "actual_encoder_payload_roundtrip": true,
+    "svg_generated_locally": true,
+    "includes_access_code": false
+  },
+  "public_cloudflare_verified": false,
+  "cloudflared_installed_in_execution_environment": false,
+  "network_blocker": "Managed restricted networking: Cloudflare official documentation CONNECT rejected with 403; no external TCP grants. No bypass attempted.",
+  "security_checks": [
+    "exact pinned host and HTTPS origin",
+    "loopback raw peer; proxy headers disabled",
+    "per-browser Secure HttpOnly SameSite Strict cookies",
+    "CSRF and duplicate-header checks",
+    "global and per-session rate budgets",
+    "mock declarations not treated as automatic anonymization",
+    "draft export guards",
+    "expiry and stop revoke sessions",
+    "no database migrations/main/video changes",
+    "no credentials in URL or QR"
+  ],
+  "screenshots": {
+    "mobile.png": "3dfdf06841726b544ad6c2865ae1554b67bafdc8b64afa244fd6f21ad4cd126d",
+    "console.png": "390cee63029b9e5ab0b040e14653b6afd80917ba2c3a6b5789fe375458130422"
+  },
+  "warnings": [
+    "Existing Coze SDK Pydantic Config deprecation"
+  ],
+  "coze_used": false,
+  "production_database_used": false,
+  "paid_model_calls": 0,
+  "pending": [
+    "Mac cloudflared installation and network reachability",
+    "actual Quick Tunnel HTTPS forwarding headers",
+    "phone cellular/iPad/other computer generation and export",
+    "public failure after teacher stops classroom"
+  ]
+}

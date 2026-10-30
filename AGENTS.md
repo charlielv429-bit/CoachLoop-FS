@@ -107,3 +107,8 @@
 - `agents.lesson_plan_agent.adaptive` + `themes.v11.json`：24候选主题、四水平、显式先修/资源约束、教师候选目标与练习修改，复用既有七要素/45分钟/证据与原始精度指标。无心率预测，知识与安全始终unverified。
 - `integrations.prelesson.adaptive_api` 仅由本地console挂载，复用会话/Origin/CSRF，额外检查服务端身份标记；不得挂production main。V1 API及部署/Coze契约不变。
 - 文档与真实浏览器证据：`docs/adaptive-prelesson-v11.md`；正式测试 `tests/test_adaptive_prelesson_v11.py`；可选浏览器验收 `scripts/verify_adaptive_prelesson_browser.py`。
+
+### 临时 Cloudflare 课堂演示
+- `integrations.prelesson.classroom` 是独立显式HTTPS课堂边界，不修改 `LocalBoundary` 或生产main。真实peer必须127.0.0.1且Uvicorn proxy_headers=False；本次Quick Tunnel精确Host/Origin、访问码、独立Secure会话、CSRF、全局/会话限流。仅合成数据，不能把mock声明当匿名化或教师认证。
+- `scripts/start_classroom_tunnel.command` / `stop_classroom_tunnel.command`：私有锁控制本次cloudflared与源站，不按PID杀进程；原本地8767启动器保留。可选classroom extra仅qrcode，二维码不含访问码。
+- 文档 `docs/cloudflare-classroom-demo-v01.md`；测试 `tests/test_classroom_tunnel.py`；真实浏览器模拟HTTPS证据不等同公网Cloudflare验证。`check_classroom_https.py` 才用于已启动的正式临时网址，必须TLS验证且不得打印访问码/响应敏感内容。

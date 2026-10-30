@@ -1,5 +1,6 @@
 'use strict';
 const form=document.querySelector('#lesson-form');
+const isClassroom=document.querySelector('meta[name="coachloop-mode"]')?.content==='classroom_mock_demo';
 const output=document.querySelector('#result');
 const empty=document.querySelector('#empty');
 const message=document.querySelector('#message');
@@ -47,6 +48,7 @@ function invalidate(){draft=null;output.hidden=true;empty.hidden=false;}
 function status(value,error=false){message.textContent=value;message.dataset.error=String(error);}
 function validateResponse(data){
   const p=data&&data.lesson_plan;
+  if(isClassroom&&(data.demo_data_domain!=='mock'||data.is_mock!==true||data.human_review_performed!==false))throw new Error('缺少课堂模拟标记。');
   if(!p||data.schema_version!=='adaptive-prelesson-v1.1'||!['draft_ready','needs_confirmation'].includes(data.status)
     ||data.requires_teacher_review!==true||data.knowledge_status!=='unverified'||data.review_status!=='draft'
     ||p.review_status!=='draft'||p.teaching_flow.total_minutes!==45||p.teaching_flow.phases.length!==3
@@ -84,13 +86,15 @@ form.addEventListener('submit',async event=>{
   const values=new FormData(form);const payload=Object.fromEntries(values);
   for(const key of ['student_count','total_minutes','coach_count','teacher_count','usable_area_m2','declared_practice_capacity','equipment_sets']){payload[key]=values.get(key)===''?null:Number(values.get(key));}
   payload.teacher_exercise_edits=values.getAll('teacher_exercise_edits');
+  if(isClassroom){payload.data_domain='mock';payload.is_mock=true;}
   payload.mastered_skills=values.getAll('mastered_skills');payload.safe_waiting_area=values.has('safe_waiting_area');payload.ice_available=values.has('ice_available');
   const timer=setTimeout(()=>controller.abort(),15000);
   try{
     const response=await fetch('/api/v1/lesson-plans/adaptive-draft',{method:'POST',credentials:'same-origin',redirect:'error',
       headers:{'Content-Type':'application/json','X-CoachLoop-Console':'1'},body:JSON.stringify(payload),signal:controller.signal});
-    if(!response.ok){const errors={401:'本地会话已失效，请刷新页面。',403:'请求未通过本地安全检查。',413:'输入过长，请缩短内容。',422:'输入无效，请检查必填条件、数值及主题。',503:'生成服务暂不可用。'};throw new Error(errors[response.status]||'生成失败，请稍后重试。');}
-    const data=await response.json();if(version!==requestVersion)return;
+    if(!response.ok){const errors={429:'课堂生成次数已达限制，请一分钟后重试。',401:isClassroom?'课堂会话已失效，请刷新后登录。':'本地会话已失效，请刷新页面。',403:'请求未通过本地安全检查。',413:'输入过长，请缩短内容。',422:'输入无效，请检查必填条件、数值及主题。',503:'生成服务暂不可用。'};throw new Error(errors[response.status]||'生成失败，请稍后重试。');}
+    let data=await response.json();if(version!==requestVersion)return;
+    if(isClassroom){if(data.data_domain!=='mock'||data.is_mock!==true||data.human_review_performed!==false)throw new Error('课堂模拟数据标记异常。');data={...data.draft,demo_data_domain:'mock',is_mock:true,human_review_performed:false};}
     show(data);status(data.status==='needs_confirmation'?'条件不足：已暂缓冰上方案，请按限制调整输入。':'教案已动态生成，组织和安全仍待教师与专项教练确认。');
   }catch(error){if(version===requestVersion){invalidate();status(error.name==='AbortError'?'请求已取消或超时，请重试。':error instanceof TypeError?'无法连接本地服务，请确认服务窗口仍在运行。':error.message,true);}}
   finally{clearTimeout(timer);if(activeController===controller){activeController=null;submit.disabled=false;}}
@@ -98,7 +102,7 @@ form.addEventListener('submit',async event=>{
 document.querySelector('#download').addEventListener('click',()=>{
   if(!draft)return;validateResponse(draft);
   const url=URL.createObjectURL(new Blob([JSON.stringify(draft,null,2)],{type:'application/json'}));
-  const link=document.createElement('a');link.href=url;link.download='coachloop-lesson-plan.draft.json';link.click();
+  const link=document.createElement('a');link.href=url;link.download=isClassroom?'coachloop-classroom.mock.draft.json':'coachloop-lesson-plan.draft.json';link.click();
   setTimeout(()=>URL.revokeObjectURL(url),1000);
 });
 
@@ -129,3 +133,12 @@ fetch('/api/v1/lesson-plans/themes',{credentials:'same-origin',redirect:'error'}
   for(const t of themes){const label=document.createElement('label');const check=document.createElement('input');check.type='checkbox';check.name='mastered_skills';check.value=t.theme_id;label.append(check,document.createTextNode(t.name_zh));skills.append(label);}
   filterThemes();
 }).catch(()=>{submit.disabled=true;status('无法加载主题库，请确认本地服务版本并刷新页面。',true);});
+
+if(isClassroom){
+  document.querySelector('.mode').textContent='临时HTTPS课堂 · 仅模拟数据';
+  document.querySelector('.notice').textContent='公网课堂演示：仅允许合成模拟数据，不填写真实姓名、健康记录或凭据。教学知识与安全依据未核实，组织须经现场专业审核。课堂访问码不证明教师身份。';
+  form.elements.class_label.value='MOCK-CLASSROOM';form.elements.class_label.pattern='MOCK-[A-Z0-9_-]{1,60}';
+  const logout=document.createElement('button');logout.type='button';logout.textContent='退出课堂';logout.className='secondary';
+  logout.addEventListener('click',async()=>{try{await fetch('/classroom/logout',{method:'POST',credentials:'same-origin',redirect:'error',headers:{'Content-Type':'application/json','X-CoachLoop-Console':'1'},body:'{}'});}finally{invalidate();location.replace('/');}});
+  document.querySelector('.intro').append(logout);
+}
