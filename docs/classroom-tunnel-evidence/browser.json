@@ -1,0 +1,18 @@
+{
+  "kind": "real_chromium_over_local_simulated_https_proxy",
+  "public_cloudflare_verified": false,
+  "coze_online": false,
+  "database_used": false,
+  "paid_model_calls": 0,
+  "wrong_code_refused": true,
+  "secure_httponly_samesite_cookie": true,
+  "anonymous_not_authorized": true,
+  "classroom_mock_banner": true,
+  "dynamic_topic_and_grouping": true,
+  "teacher_edits": true,
+  "download_mock_draft_unverified": true,
+  "xss_notes_rendered_as_text": true,
+  "responsive_mobile_viewport": true,
+  "logout_revokes_session": true,
+  "tls_note": "Self-signed loopback fixture only; browser certificate exception is not used by the public verifier"
+}
