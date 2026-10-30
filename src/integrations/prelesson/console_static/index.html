@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>CoachLoop-FS · 智能备课</title>
+  <link rel="stylesheet" href="/console.css">
+  <script src="/console.js" defer></script>
+</head>
+<body>
+  <header><span class="brand">CoachLoop-FS</span><span class="mode">本地交互版</span></header>
+  <main>
+    <section class="intro"><p class="eyebrow">课前 · 智能备课</p><h1>从教学需求到可审核的教案</h1>
+      <p>填写班级与教学条件，调用现有教案 Agent 动态生成七要素草稿。当前支持零基础双足滑行，45分钟。</p>
+      <p class="notice">仅在本机运行，不连接 Coze 或数据库。生成结果需教师复核，知识依据未核实，运动负荷为预计设计值。</p>
+    </section>
+    <div class="workspace">
+      <section class="panel input-panel"><h2>教学需求</h2>
+        <form id="lesson-form">
+          <label>匿名班级标签<input name="class_label" value="匿名班级" maxlength="80" required autocomplete="off"></label>
+          <p class="hint">不填写学生姓名、健康信息或任何凭据。</p>
+          <div class="row"><label>学生人数<input name="student_count" type="number" value="20" min="1" max="500" step="1" required></label>
+          <label>课时（分钟）<input name="total_minutes" type="number" value="45" min="45" max="45" readonly required></label></div>
+          <label>教学主题<select name="theme"><option>冰上双足滑行与身体姿态控制</option></select></label>
+          <label>学生水平<select name="skill_level"><option>零基础</option></select></label>
+          <div class="row"><label>实际教练人数<input name="coach_count" type="number" min="0" max="50" step="1" value="1"></label>
+          <label>实际教师人数<input name="teacher_count" type="number" min="0" max="50" step="1" value="1"></label></div>
+          <p class="hint">未知请留空，不会自动补造师资。组织方案仍待确认。</p>
+          <label>场地条件<input name="venue_conditions" maxlength="500" required placeholder="冰面、可用区域与现场限制"></label>
+          <label>器材条件<input name="equipment_conditions" maxlength="500" required placeholder="冰鞋、护具、辅助器材及数量"></label>
+          <button id="generate" type="submit">生成教案草稿</button>
+          <p id="message" role="status" aria-live="polite">填写条件后生成。不会自动批准或保存到数据库。</p>
+        </form>
+      </section>
+      <section class="output-panel" aria-label="教案输出">
+        <div id="empty" class="panel empty"><span class="empty-icon">45′</span><h2>教案将在这里生成</h2><p>七要素 · 三阶段流程 · 预计负荷 · 安全提示</p></div>
+        <div id="result" hidden>
+          <div class="panel result-heading"><p class="eyebrow">生成完成 · 等待教师复核</p><h2 id="plan-title"></h2>
+            <div class="badges"><span>草稿 draft</span><span>知识未核实</span><span>预计负荷</span></div>
+            <p id="audience"></p><button id="download" type="button" class="secondary">下载完整草稿 JSON</button>
+            <p class="hint">下载不是批准。当前没有教师身份认证、审核写回或自动归档。</p></div>
+          <div id="time-summary" class="panel"></div>
+          <div id="elements"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+  <footer>课中视频、课后反馈与 Coze 在线工作流尚未接入此界面。保留原有模块，不在此模拟它们已上线。</footer>
+</body>
+</html>
