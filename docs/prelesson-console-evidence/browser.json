@@ -1,0 +1,26 @@
+{
+  "downloaded_draft_protected": true,
+  "expired_session_hides_old_plan": true,
+  "kind": "real_local_browser_interaction",
+  "coze_online": false,
+  "database_used": false,
+  "one_student_dynamic": true,
+  "twenty_student_dynamic": true,
+  "seven_elements_and_evidence_sections": true,
+  "stale_output_hidden": true,
+  "xss_rendered_as_text": true,
+  "teacher_review_required": true,
+  "observed_class_1": "MOCK-BROWSER-01·1人·初学者",
+  "observed_class_20": "MOCK-BROWSER-01·20人·初学者",
+  "test_results": {
+    "passed": 816,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 34.54,
+    "postgresql": "16.15",
+    "new_console_tests": 38,
+    "existing_video_tests": 41
+  },
+  "paid_model_calls": 0,
+  "screenshot_sha256": "d15a66621048ddb0e8c578f9dd882be0fa16d4b1762cbb2d30440c64cd18d242"
+}

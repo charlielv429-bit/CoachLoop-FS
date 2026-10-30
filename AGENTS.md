@@ -90,6 +90,8 @@
 
 ### INTEGRATION-04 部署准备（未部署）
 
+- 课前交互控制台：`integrations.prelesson.console.create_console_app(port)`为独立loopback应用，不挂main；本地HttpOnly/SameSite会话与Origin/Host/CSRF校验通过后注入临时内部Bearer复用原API。禁止生产Token、公开代理/公网绑定，不能当教师身份认证。`scripts/run_prelesson_console.py`或Mac的 `scripts/start_prelesson_console.command` 启动；界面和安全边界/实际截图见 `docs/prelesson-interactive-console-v01.md`。测试 `tests/test_prelesson_console.py`、`tests/test_prelesson_console_http.py`，无需数据库或外部模型。
+
 - 三阶段本地演示：`src/integrations/three_stage_demo.py`只适配既有七要素/几何/V4/V5结构；`agents/postlesson_agent.py`以服务端注入身份只读查询数据库，输出mock、draft、unverified且不做技术错误或等级判定。入口未挂main；不执行教师批准或报告写回。`tests/teaching/test_three_stage_demo.py`仅在隔离数据库使用显式MOCK角色模拟教师/教练状态机，绝非真实人工审核。证据及线上阻塞见 `docs/coze-delivery-status-v01.md`；`scripts/prepare_three_stage_delivery.py`生成离线文件，不是Coze安装器或ZIP打包器。
 
 - DEPLOY-FIX-01：`main.PRELESSON_ONLY` 在导入时固定，同时用于lifespan与访问白名单；profile=1跳过数据库、memory检查点、旧工作流与异步运行时初始化。启动器预检不再要求/解析数据库变量，普通模式初始化不变。真实启动器无DB、出站连接及初始化禁止探针、18项HTTP烟测和普通模式行为测试见 `tests/test_prelesson_db_free_startup.py`；当前部署要求见 `docs/coze-deploy-readiness-v01.md`。下述原启动链路描述以该更新为准。
