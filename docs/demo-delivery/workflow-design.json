@@ -1,0 +1,14 @@
+{
+  "kind": "integration_design_only_not_official_Coze_import_format",
+  "platform_installed": false,
+  "prelesson": [
+    {"node": "teacher_input", "fields": ["student_count", "theme", "skill_level", "total_minutes", "coach_count", "teacher_count", "venue_conditions", "equipment_conditions"]},
+    {"node": "generatePrelessonDraft", "method": "POST", "path": "/api/v1/lesson-plans/draft", "credential_source": "platform_secure_configuration_only"},
+    {"node": "validate_response", "require": {"status": "draft_ready", "requires_teacher_review": true, "knowledge_status": "unverified", "lesson_plan.review_status": "draft", "lesson_plan.teaching_flow.total_minutes": 45}},
+    {"node": "teacher_handoff", "automatic_approval": false, "approval_writeback_implemented": false}
+  ],
+  "in_class": {"source": "existing_Coze_video_configuration_unverified_or_existing_V2_V5_structures", "review": "explicit_coach_review_required", "confirmed_means": "observable_change_not_technical_error"},
+  "postlesson": {"local_entry": "agents.postlesson_agent.draft_from_database", "identity": "server_injected_tenant_bound_restricted_database_login", "public_HTTP_deployed": false, "requires_teacher_review": true, "final_report_archive_implemented": false},
+  "knowledge": {"status": "unverified", "verified_formal_citations": 0},
+  "data": {"domain": "mock", "real_students_allowed": false}
+}

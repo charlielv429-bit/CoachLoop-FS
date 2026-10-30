@@ -1,0 +1,1133 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'">
+<title>CoachLoop-FS 本地合成教学闭环</title>
+<style>body{font:17px/1.6 system-ui;max-width:1000px;margin:32px auto;padding:0 20px;background:#f6f8fa;color:#172436}h1{font-size:28px}.notice{background:#fff1cf;border-left:5px solid #a85b00;padding:16px}details{background:white;margin:18px 0;padding:16px;border:1px solid #ccd5df;border-radius:8px}summary{cursor:pointer;font-weight:700}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px}li{margin:8px 0}</style>
+<h1>CoachLoop-FS：本地三阶段合成演示</h1>
+<p class="notice">非Coze线上运行；没有真实学生、真实视频或真实人工审核。数据库中的审核动作由受限MOCK测试角色显式模拟，不能作为真实教练确认。课后草稿仍待教师复核。</p>
+<ol><li>课前：固定零基础主题，七要素、45分钟、预计负荷、draft与unverified。</li>
+<li>课中：40帧合成关键点复用原几何提取/V4检测/V5审核；没有运行MediaPipe。</li>
+<li>归档：隔离PostgreSQL16受限角色写入与查询，重复请求使用同一收据。</li>
+<li>课后：只读数据库审核状态；confirmed仅为可观测变化，技术错误与技能等级均未评定。</li></ol>
+<p>点击下列区块查看本次脱敏测试证据。平台认证、插件安装、Agent绑定和在线知识库均尚未验收。课后最终教师确认与报告归档未实现。</p><details><summary>课前：七要素草稿</summary><pre>{
+  &quot;schema_version&quot;: &quot;prelesson-draft-v1&quot;,
+  &quot;status&quot;: &quot;draft_ready&quot;,
+  &quot;requires_teacher_review&quot;: true,
+  &quot;knowledge_status&quot;: &quot;unverified&quot;,
+  &quot;load_basis&quot;: &quot;estimated_design_assumptions&quot;,
+  &quot;lesson_plan&quot;: {
+    &quot;title&quot;: &quot;花样滑冰·冰上双足滑行与身体姿态控制（45 分钟·教师审核稿）&quot;,
+    &quot;teacher_input&quot;: {
+      &quot;audience&quot;: &quot;MOCK-THREE-STAGE-01·20人·初学者&quot;,
+      &quot;theme&quot;: &quot;冰上双足滑行与身体姿态控制&quot;,
+      &quot;conditions&quot;: &quot;教练1名；教师1名；场地：合成冰场，容量与组织待教师现场确认；器材：合成冰鞋护具20套&quot;,
+      &quot;class_data_available&quot;: false
+    },
+    &quot;guiding_ideology&quot;: {
+      &quot;content&quot;: &quot;围绕“健康第一”理念，通过冰上双足滑行与身体姿态控制学习，落实运动能力、健康行为与体育品德三个维度的可观察目标。（课标依据：知识库未核实，不虚构出处。）&quot;,
+      &quot;motor_competence&quot;: &quot;掌握安全基本站姿与短距双足滑行，能保持重心平稳、目视前方（具体技术标准待专业教练确认）。&quot;,
+      &quot;healthy_behavior&quot;: &quot;普通教学提示（未经专项安全审核）：养成课前热身与装备/冰面检查习惯；摔倒、起身与制动的具体处置方式待专项教练确认，按现场风险和学校应急预案执行；本稿不提供统一处置指令。&quot;,
+      &quot;sports_ethics&quot;: &quot;遵守冰场秩序与器材管理规定，尊重同伴、互相提示。&quot;
+    },
+    &quot;teaching_material_analysis&quot;: {
+      &quot;technical_composition&quot;: &quot;冰上双足滑行由“基本站姿—推冰滑行—制动停住”构成，核心是身体姿态控制（膝部微屈、躯干适度前倾、头平视、重心在两脚间）。&quot;,
+      &quot;key_points&quot;: &quot;保持平稳基本站姿与目视前方，双足平刃着冰。&quot;,
+      &quot;difficulties&quot;: &quot;平衡掌控与身体姿态放松，避免重心后坐或紧张僵直。&quot;,
+      &quot;progression&quot;: &quot;承接上一课的冰上站立，本节课过渡到短距滑行，为后续转弯与单足滑行铺垫。&quot;,
+      &quot;note_2d_limitation&quot;: &quot;膝角/躯干倾角/髋踝偏移为二维视频可观测几何量，不等同于真实重心、冰刀用刃或经证实的专项技术错误；本课不设置技术角度合格阈值，具体动作标准待专业教练确认。&quot;
+    },
+    &quot;learner_analysis&quot;: {
+      &quot;student_profile&quot;: &quot;MOCK-THREE-STAGE-01·20人·初学者，为冰上双足滑行零基础到起步阶段。&quot;,
+      &quot;common_difficulties&quot;: &quot;重心后坐、双腿紧张僵直、不敢放手滑行。&quot;,
+      &quot;tiered_plan&quot;: &quot;3 个能力层级仅为待观察的教学分类，不代表实际各层人数：层级①扶栏站稳；层级②短距滑行；层级③姿态巩固（均待专项教练确认）。能力分类不固定绑定轮换组，按到场观察调整。&quot;,
+      &quot;note&quot;: &quot;已确认事实来自教师输入；未经审核姿态事件与待核实推测另以证据来源标记，不作确定结论。&quot;
+    },
+    &quot;venue_equipment&quot;: {
+      &quot;organization_status&quot;: &quot;pending_confirmation&quot;,
+      &quot;proposed_group_sizes&quot;: [
+        10,
+        10
+      ],
+      &quot;zones&quot;: &quot;练习区/缓冲停区/观察区（冰场货物区域按现场实际划分）。&quot;,
+      &quot;route&quot;: &quot;绕固定标志桶单向短距滑行路线。&quot;,
+      &quot;observation_position&quot;: &quot;观察岗位按实际教学人员与场地核定，不假定额外教师；待确认：20名学生建议分 2 组，各组人数为 10/10；仅作人数拆分建议，不表示各组可同时上冰。须核定教练覆盖、教师职责、场地容量与安全师生比后制定轮换；确认前不实施。&quot;,
+      &quot;grouping&quot;: &quot;待确认：20名学生建议分 2 组，各组人数为 10/10；仅作人数拆分建议，不表示各组可同时上冰。须核定教练覆盖、教师职责、场地容量与安全师生比后制定轮换；确认前不实施。&quot;,
+      &quot;equipment_list&quot;: &quot;冰鞋、护具（头盔/护膝/护腕）、标志桶若干、备用护栏（按冰场实际配置）。&quot;,
+      &quot;camera_position&quot;: &quot;固定支架对角机位，录制全体练习画面（可选，用于课后 CoachLoop-FS 反馈）。&quot;
+    },
+    &quot;safety_precautions&quot;: {
+      &quot;safety_review_status&quot;: &quot;unreviewed&quot;,
+      &quot;risk_screening&quot;: &quot;课前由实际教学人员按学校制度做健康问询与身体不适筛查（本 AI 不进行医疗判断）。&quot;,
+      &quot;ice_check&quot;: &quot;开课前检查冰面平整、无裂缝异物、护栏完好。&quot;,
+      &quot;equipment_check&quot;: &quot;逐人检查冰鞋刀刃、护具系带，尺码合适。&quot;,
+      &quot;staffing&quot;: &quot;教练1名+教师1名；岗位分工待现场教学负责人按实际师资核定，不虚构新增人员；安全职责与教练覆盖均待确认，未核定前不实施本稿。&quot;,
+      &quot;zone_management&quot;: &quot;普通教学提示（未经专项安全审核）：练习区、缓冲区与轮换路线须由现场负责人员核定；待确认：20名学生建议分 2 组，各组人数为 10/10；仅作人数拆分建议，不表示各组可同时上冰。须核定教练覆盖、教师职责、场地容量与安全师生比后制定轮换；确认前不实施。&quot;,
+      &quot;emergency_flow&quot;: &quot;普通教学提示（未经专项安全审核）：摔倒、起身与制动的具体处置方式待专项教练确认，按现场风险和学校应急预案执行；本稿不提供统一处置指令。&quot;,
+      &quot;medical_note&quot;: &quot;涉及伤病或身体不适由现场负责人员按学校既有制度核查，AI 不作医疗判断；摔倒、起身与制动的具体处置方式待专项教练确认，按现场风险和学校应急预案执行；本稿不提供统一处置指令。&quot;
+    },
+    &quot;teaching_flow&quot;: {
+      &quot;total_minutes&quot;: 45,
+      &quot;phases&quot;: [
+        {
+          &quot;phase&quot;: &quot;prep&quot;,
+          &quot;minutes&quot;: 9,
+          &quot;content&quot;: &quot;课堂常规、健康与装备检查；陆地关节激活（踝/膝/髋）；冰上适应性热身（扶栏站立、原地踏步、小步随行）。&quot;,
+          &quot;teacher_activity&quot;: &quot;整队点名、讲解本课目标；示范扶栏站立与热身动作；巡回检查装备与健康状态（由实际教学人员按学校制度执行）。&quot;,
+          &quot;student_activity&quot;: &quot;着装与护具检查；跟随完成陆地踝膝髋活动；冰上扶栏站立、原地踏步与小步热身。&quot;,
+          &quot;organization&quot;: &quot;待确认：20名学生建议分 2 组，各组人数为 10/10；仅作人数拆分建议，不表示各组可同时上冰。须核定教练覆盖、教师职责、场地容量与安全师生比后制定轮换；确认前不实施。&quot;,
+          &quot;safety_tip&quot;: &quot;普通教学提示（未经专项安全审核）：护具与冰面状况由现场负责人员核查，不适时的沟通方式课前确认；摔倒、起身与制动的具体处置方式待专项教练确认，按现场风险和学校应急预案执行；本稿不提供统一处置指令。&quot;,
+          &quot;evaluation&quot;: &quot;口头评定装备检查与热身完成度。&quot;
+        },
+        {
+          &quot;phase&quot;: &quot;main&quot;,
+          &quot;minutes&quot;: 29,
+          &quot;content&quot;: &quot;讲解示范双足滑行与身体姿态控制（基本站姿）；扶栏→放手短距滑行；重心小步转移与制动小练习；分段巩固，录像留存。&quot;,
+          &quot;teacher_activity&quot;: &quot;示范「稳定基本站姿」：膝微屈、躯干适度前倾、头平视前方、双脚平刃着冰（具体技术要点待专业教练确认）；组织分组轮换练习与辅助练习；设置拍摄机位，巡回纠正身体姿态。&quot;,
+          &quot;student_activity&quot;: &quot;模仿基本站姿；扶栏滑行→放手短距滑行；同伴观察安排待现场人员确认；完成短距双足滑行练习（待现场安全方案确认后实施）。&quot;,
+          &quot;organization&quot;: &quot;待确认：20名学生建议分 2 组，各组人数为 10/10；仅作人数拆分建议，不表示各组可同时上冰。须核定教练覆盖、教师职责、场地容量与安全师生比后制定轮换；确认前不实施。&quot;,
+          &quot;safety_tip&quot;: &quot;普通教学提示（未经专项安全审核）：出发顺序与间距须按现场条件核定；摔倒、起身与制动的具体处置方式待专项教练确认，按现场风险和学校应急预案执行；本稿不提供统一处置指令。&quot;,
+          &quot;evaluation&quot;: &quot;分层观察评价（实际教学人员拟定的过程性观察目标，非官方技术合格线）：层级①能在扶栏辅助下保持基本站姿；层级②能放手完成短距滑行并保持目视前方；层级③能在较大滑距内保持姿态稳定；另以录像留存供课后 CoachLoop-FS 复核。&quot;
+        },
+        {
+          &quot;phase&quot;: &quot;closing&quot;,
+          &quot;minutes&quot;: 7,
+          &quot;content&quot;: &quot;陆地整理放松；课堂小结；学习评价；器材回收与后续练习提示。&quot;,
+          &quot;teacher_activity&quot;: &quot;带领放松整理；总结「稳定站姿 / 双足滑行」要点并预告下节课；组织器材回收与有序离场。&quot;,
+          &quot;student_activity&quot;: &quot;跟随放松；自评本课参与与收获；回收器材、有序离场。&quot;,
+          &quot;organization&quot;: &quot;集合位置与现场负责人职责待核定；待确认：20名学生建议分 2 组，各组人数为 10/10；仅作人数拆分建议，不表示各组可同时上冰。须核定教练覆盖、教师职责、场地容量与安全师生比后制定轮换；确认前不实施。&quot;,
+          &quot;safety_tip&quot;: &quot;普通教学提示（未经专项安全审核）：离场路线与秩序由现场负责人员确认；摔倒、起身与制动的具体处置方式待专项教练确认，按现场风险和学校应急预案执行；本稿不提供统一处置指令。&quot;,
+          &quot;evaluation&quot;: &quot;学生自评+实际教学人员按三层级逐项口头点评（过程性评价，不作成绩判定，不设定官方合格线）。&quot;
+        }
+      ]
+    },
+    &quot;load_accounting&quot;: {
+      &quot;avg_hr&quot;: {
+        &quot;name&quot;: &quot;预计平均心率&quot;,
+        &quot;kind&quot;: &quot;estimated&quot;,
+        &quot;formula&quot;: &quot;avg_hr = 145.0 次/分（预计输入值）&quot;,
+        &quot;numerator&quot;: 145.0,
+        &quot;denominator&quot;: 1.0,
+        &quot;unit&quot;: &quot;次/分&quot;,
+        &quot;result&quot;: 145.0,
+        &quot;target&quot;: &quot;预计范围，待课堂实测验证&quot;,
+        &quot;display_result&quot;: 145.0
+      },
+      &quot;group_density&quot;: {
+        &quot;name&quot;: &quot;群体运动密度&quot;,
+        &quot;kind&quot;: &quot;estimated&quot;,
+        &quot;formula&quot;: &quot;group = group_active_min / total_minutes * 100 = 36.0 / 45 * 100&quot;,
+        &quot;numerator&quot;: 36.0,
+        &quot;denominator&quot;: 45.0,
+        &quot;unit&quot;: &quot;%&quot;,
+        &quot;result&quot;: 80.0,
+        &quot;target&quot;: &quot;≥ 75%&quot;,
+        &quot;display_result&quot;: 80.0
+      },
+      &quot;individual_density&quot;: {
+        &quot;name&quot;: &quot;个体练习密度&quot;,
+        &quot;kind&quot;: &quot;estimated&quot;,
+        &quot;formula&quot;: &quot;individual = individual_active_min / total_minutes * 100 = 25.0 / 45 * 100&quot;,
+        &quot;numerator&quot;: 25.0,
+        &quot;denominator&quot;: 45.0,
+        &quot;unit&quot;: &quot;%&quot;,
+        &quot;result&quot;: 55.55555555555556,
+        &quot;target&quot;: &quot;≥ 50%&quot;,
+        &quot;display_result&quot;: 55.56
+      },
+      &quot;total_minutes&quot;: 45,
+      &quot;note&quot;: &quot;群体/个体密度与平均心率均为预计值（设计目标，依据输入活动时间推算），尚未由课堂环节安排实测验证，不得声称必然达标；待课堂实测后按实际活动时间/心率复核。&quot;
+    },
+    &quot;evidence_log&quot;: [
+      {
+        &quot;statement&quot;: &quot;教学对象：MOCK-THREE-STAGE-01·20人·初学者；教学主题：冰上双足滑行与身体姿态控制；教学条件：教练1名；教师1名；场地：合成冰场，容量与组织待教师现场确认；器材：合成冰鞋护具20套。&quot;,
+        &quot;source&quot;: &quot;teacher_input&quot;,
+        &quot;citation&quot;: null,
+        &quot;event_ref&quot;: null,
+        &quot;event_claim&quot;: &quot;observation&quot;
+      },
+      {
+        &quot;statement&quot;: &quot;【知识库未核实】当前未接入已检索的课程标准/冰场安全规范，引用不得虚构文件、章节或页码。&quot;,
+        &quot;source&quot;: &quot;unverified&quot;,
+        &quot;citation&quot;: null,
+        &quot;event_ref&quot;: null,
+        &quot;event_claim&quot;: &quot;observation&quot;
+      },
+      {
+        &quot;statement&quot;: &quot;45分钟三段式时间分配与负荷比例为本方案设计假设，须经教师按班级实际复核；预计心率/活动时间均为预计值，待课堂实测验证。&quot;,
+        &quot;source&quot;: &quot;design_assumption&quot;,
+        &quot;citation&quot;: null,
+        &quot;event_ref&quot;: null,
+        &quot;event_claim&quot;: &quot;observation&quot;
+      },
+      {
+        &quot;statement&quot;: &quot;CoachLoop-FS 视频姿态特征（膝角/躯干倾角/髋踝偏移）为可选辅助观察；未经教练审核的姿态事件不得描述为已确认技术错误。&quot;,
+        &quot;source&quot;: &quot;design_assumption&quot;,
+        &quot;citation&quot;: null,
+        &quot;event_ref&quot;: null,
+        &quot;event_claim&quot;: &quot;observation&quot;
+      }
+    ],
+    &quot;review_status&quot;: &quot;draft&quot;,
+    &quot;plan_version&quot;: &quot;1.0&quot;
+  }
+}</pre></details><details><summary>课中：合成姿态与候选事件</summary><pre>{
+  &quot;data_domain&quot;: &quot;mock&quot;,
+  &quot;human_review_performed&quot;: false,
+  &quot;model_inference_performed&quot;: false,
+  &quot;features&quot;: {
+    &quot;source&quot;: {
+      &quot;mode&quot;: &quot;mock&quot;,
+      &quot;is_mock&quot;: true,
+      &quot;source&quot;: &quot;mock://three-stage/synthetic-keypoints&quot;,
+      &quot;model&quot;: &quot;mock-geometry&quot;,
+      &quot;fps&quot;: 25.0
+    },
+    &quot;frames&quot;: [
+      {
+        &quot;frame_idx&quot;: 0,
+        &quot;timestamp_ms&quot;: 0.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 1,
+        &quot;timestamp_ms&quot;: 40.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 2,
+        &quot;timestamp_ms&quot;: 80.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 3,
+        &quot;timestamp_ms&quot;: 120.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 4,
+        &quot;timestamp_ms&quot;: 160.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 5,
+        &quot;timestamp_ms&quot;: 200.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 6,
+        &quot;timestamp_ms&quot;: 240.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 7,
+        &quot;timestamp_ms&quot;: 280.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 8,
+        &quot;timestamp_ms&quot;: 320.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 9,
+        &quot;timestamp_ms&quot;: 360.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 10,
+        &quot;timestamp_ms&quot;: 400.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 96.34,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 11,
+        &quot;timestamp_ms&quot;: 440.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 96.34,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 12,
+        &quot;timestamp_ms&quot;: 480.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 96.34,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 13,
+        &quot;timestamp_ms&quot;: 520.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 96.34,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 14,
+        &quot;timestamp_ms&quot;: 560.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 96.34,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 15,
+        &quot;timestamp_ms&quot;: 600.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 96.34,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 16,
+        &quot;timestamp_ms&quot;: 640.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 96.34,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 17,
+        &quot;timestamp_ms&quot;: 680.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 18,
+        &quot;timestamp_ms&quot;: 720.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 19,
+        &quot;timestamp_ms&quot;: 760.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 20,
+        &quot;timestamp_ms&quot;: 800.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 21,
+        &quot;timestamp_ms&quot;: 840.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 22,
+        &quot;timestamp_ms&quot;: 880.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 23,
+        &quot;timestamp_ms&quot;: 920.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 24,
+        &quot;timestamp_ms&quot;: 960.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 25,
+        &quot;timestamp_ms&quot;: 1000.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 26,
+        &quot;timestamp_ms&quot;: 1040.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 27,
+        &quot;timestamp_ms&quot;: 1080.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 28,
+        &quot;timestamp_ms&quot;: 1120.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 29,
+        &quot;timestamp_ms&quot;: 1160.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 30,
+        &quot;timestamp_ms&quot;: 1200.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 31,
+        &quot;timestamp_ms&quot;: 1240.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 32,
+        &quot;timestamp_ms&quot;: 1280.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 33,
+        &quot;timestamp_ms&quot;: 1320.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 34,
+        &quot;timestamp_ms&quot;: 1360.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 35,
+        &quot;timestamp_ms&quot;: 1400.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 36,
+        &quot;timestamp_ms&quot;: 1440.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 37,
+        &quot;timestamp_ms&quot;: 1480.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 38,
+        &quot;timestamp_ms&quot;: 1520.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      },
+      {
+        &quot;frame_idx&quot;: 39,
+        &quot;timestamp_ms&quot;: 1560.0,
+        &quot;features&quot;: {
+          &quot;knee_angle_deg&quot;: 180.0,
+          &quot;torso_pitch_deg&quot;: 4.574,
+          &quot;hip_ankle_offset_norm&quot;: 0.044,
+          &quot;degenerate&quot;: false,
+          &quot;degeneracy_reason&quot;: &quot;&quot;,
+          &quot;missing_required&quot;: []
+        },
+        &quot;keypoint_stats&quot;: {
+          &quot;total&quot;: 6,
+          &quot;finite&quot;: 6,
+          &quot;missing&quot;: 0,
+          &quot;missing_ratio&quot;: 0.0,
+          &quot;avg_visibility&quot;: 0.99
+        }
+      }
+    ],
+    &quot;summary&quot;: {
+      &quot;n_frames&quot;: 40,
+      &quot;side&quot;: &quot;left&quot;,
+      &quot;knee_detect_ratio&quot;: 1.0,
+      &quot;torso_detect_ratio&quot;: 1.0,
+      &quot;hip_ankle_detect_ratio&quot;: 1.0,
+      &quot;degenerate_frames&quot;: 0
+    },
+    &quot;errors&quot;: [],
+    &quot;reserved_coach_review&quot;: {
+      &quot;review_status&quot;: &quot;pending&quot;,
+      &quot;needs_coach_review&quot;: true,
+      &quot;coach_notes&quot;: &quot;&quot;,
+      &quot;coach_verdict&quot;: null
+    }
+  },
+  &quot;candidates&quot;: {
+    &quot;source&quot;: {
+      &quot;mode&quot;: &quot;mock&quot;,
+      &quot;is_mock&quot;: true,
+      &quot;source&quot;: &quot;mock://three-stage/synthetic-keypoints&quot;,
+      &quot;model&quot;: &quot;mock-geometry&quot;,
+      &quot;fps&quot;: 25.0,
+      &quot;video_path&quot;: &quot;mock://three-stage/synthetic-keypoints&quot;
+    },
+    &quot;config&quot;: {
+      &quot;knee_threshold_deg&quot;: 10.0,
+      &quot;torso_threshold_deg&quot;: 4.0,
+      &quot;hip_ankle_threshold_norm&quot;: 0.12,
+      &quot;smooth_window&quot;: 5,
+      &quot;visibility_threshold&quot;: 0.75,
+      &quot;min_event_frames&quot;: 1
+    },
+    &quot;is_mock&quot;: false,
+    &quot;event_count&quot;: {
+      &quot;knee_angle_deg&quot;: 1,
+      &quot;torso_pitch_deg&quot;: 0,
+      &quot;hip_ankle_offset_norm&quot;: 0,
+      &quot;total_events&quot;: 1,
+      &quot;note&quot;: &quot;total_events 为各特征事件数之和；同一时间段可能被多个特征同时标记。&quot;
+    },
+    &quot;events&quot;: [
+      {
+        &quot;feature&quot;: &quot;knee_angle_deg&quot;,
+        &quot;frame_start&quot;: 8,
+        &quot;frame_end&quot;: 18,
+        &quot;start_time_ms&quot;: 320.0,
+        &quot;end_time_ms&quot;: 720.0,
+        &quot;duration_ms&quot;: 400.0,
+        &quot;n_frames&quot;: 11,
+        &quot;deviation_max&quot;: 83.66,
+        &quot;swing&quot;: 66.928
+      }
+    ],
+    &quot;spike_anomalies&quot;: [],
+    &quot;low_visibility_segments&quot;: [],
+    &quot;undetected_or_missing_frames&quot;: [],
+    &quot;review_required&quot;: false,
+    &quot;review_reasons&quot;: [],
+    &quot;disclaimers&quot;: [
+      &quot;本结果基于 2D 图像平面可观测几何量，仅供教练复核参考，非动作评分或技术诊断。&quot;,
+      &quot;不依据 2D 数据推断双腿遮挡、真实重心位置或冰刀用刃，相关结论需教练结合 3D/冰面复核。&quot;,
+      &quot;下列阈值为可配置的探索性参数，不构成任何动作正确性标准。&quot;
+    ],
+    &quot;reserved_coach_review&quot;: {
+      &quot;review_status&quot;: &quot;pending&quot;,
+      &quot;needs_coach_review&quot;: true,
+      &quot;coach_notes&quot;: &quot;&quot;,
+      &quot;coach_verdict&quot;: null
+    }
+  },
+  &quot;pending_reviews&quot;: {
+    &quot;kind&quot;: &quot;coach_event_review&quot;,
+    &quot;version&quot;: &quot;1.0&quot;,
+    &quot;generated_from&quot;: &quot;mock://three-stage/candidates.json&quot;,
+    &quot;source&quot;: {
+      &quot;mode&quot;: &quot;mock&quot;,
+      &quot;is_mock&quot;: true,
+      &quot;source&quot;: &quot;mock://three-stage/synthetic-keypoints&quot;,
+      &quot;model&quot;: &quot;mock-geometry&quot;,
+      &quot;fps&quot;: 25.0,
+      &quot;video_path&quot;: &quot;mock://three-stage/synthetic-keypoints&quot;
+    },
+    &quot;is_mock&quot;: true,
+    &quot;records&quot;: [
+      {
+        &quot;event_id&quot;: &quot;evt_c48d6f5b9792&quot;,
+        &quot;original_event&quot;: {
+          &quot;feature&quot;: &quot;knee_angle_deg&quot;,
+          &quot;frame_start&quot;: 8,
+          &quot;frame_end&quot;: 18,
+          &quot;start_time_ms&quot;: 320.0,
+          &quot;end_time_ms&quot;: 720.0,
+          &quot;duration_ms&quot;: 400.0,
+          &quot;n_frames&quot;: 11,
+          &quot;deviation_max&quot;: 83.66,
+          &quot;swing&quot;: 66.928
+        },
+        &quot;source&quot;: {
+          &quot;mode&quot;: &quot;mock&quot;,
+          &quot;is_mock&quot;: true,
+          &quot;source&quot;: &quot;mock://three-stage/synthetic-keypoints&quot;,
+          &quot;model&quot;: &quot;mock-geometry&quot;,
+          &quot;fps&quot;: 25.0,
+          &quot;video_path&quot;: &quot;mock://three-stage/synthetic-keypoints&quot;
+        },
+        &quot;created_at&quot;: &quot;2026-10-30T01:07:12+00:00&quot;,
+        &quot;review_status&quot;: &quot;pending&quot;,
+        &quot;reviewed_by&quot;: null,
+        &quot;reviewed_at&quot;: null,
+        &quot;notes&quot;: &quot;&quot;,
+        &quot;review_history&quot;: [],
+        &quot;updated_at&quot;: &quot;2026-10-30T01:07:12+00:00&quot;
+      }
+    ],
+    &quot;summary&quot;: {
+      &quot;total&quot;: 1,
+      &quot;by_status&quot;: {
+        &quot;pending&quot;: 1,
+        &quot;confirmed&quot;: 0,
+        &quot;normal_movement&quot;: 0,
+        &quot;tracking_error&quot;: 0,
+        &quot;uncertain&quot;: 0
+      }
+    }
+  }
+}</pre></details><details><summary>数据库：导入、幂等与只读查询</summary><pre>{
+  &quot;analysis_run_id&quot;: &quot;f853b7e7-3b48-476f-8b39-51eda5d2fb66&quot;,
+  &quot;data_domain&quot;: &quot;mock&quot;,
+  &quot;events&quot;: [
+    {
+      &quot;analysis_run_id&quot;: &quot;f853b7e7-3b48-476f-8b39-51eda5d2fb66&quot;,
+      &quot;claim_streams_truncated&quot;: false,
+      &quot;deviation_max&quot;: 83.66,
+      &quot;effective_review_status&quot;: &quot;confirmed&quot;,
+      &quot;effective_review_verification&quot;: &quot;authenticated&quot;,
+      &quot;end_time_ms&quot;: 720.0,
+      &quot;event_id&quot;: &quot;365f328b-c42e-42fb-8cab-6052269508a1&quot;,
+      &quot;feature&quot;: &quot;knee_angle_deg&quot;,
+      &quot;frame_end&quot;: 18,
+      &quot;frame_start&quot;: 8,
+      &quot;imported_review_claims&quot;: [],
+      &quot;observation_summary_eligible&quot;: true,
+      &quot;source_event_id&quot;: &quot;evt_c48d6f5b9792&quot;,
+      &quot;start_time_ms&quot;: 320.0,
+      &quot;technical_error_assessment&quot;: &quot;not_assessed&quot;,
+      &quot;trusted_review_sequence&quot;: 1
+    }
+  ],
+  &quot;next_cursor&quot;: null,
+  &quot;schema_version&quot;: &quot;reviewed-training-results-v1&quot;,
+  &quot;summary&quot;: {
+    &quot;event_count&quot;: 1,
+    &quot;observation_summary_eligible_count&quot;: 1,
+    &quot;scope&quot;: &quot;returned_page&quot;,
+    &quot;technical_error_assessment&quot;: &quot;not_assessed&quot;,
+    &quot;trusted_reviewed_event_count&quot;: 1
+  },
+  &quot;training_session_id&quot;: &quot;3cacafa0-6260-4855-872b-6be5b0395512&quot;
+}</pre></details><details><summary>课后：待教师复核的观察与练习草稿</summary><pre>{
+  &quot;schema_version&quot;: &quot;postlesson-draft-v1&quot;,
+  &quot;data_domain&quot;: &quot;mock&quot;,
+  &quot;training_session_id&quot;: &quot;3cacafa0-6260-4855-872b-6be5b0395512&quot;,
+  &quot;analysis_run_id&quot;: &quot;f853b7e7-3b48-476f-8b39-51eda5d2fb66&quot;,
+  &quot;review_status&quot;: &quot;draft&quot;,
+  &quot;requires_teacher_review&quot;: true,
+  &quot;knowledge_status&quot;: &quot;unverified&quot;,
+  &quot;technical_error_assessment&quot;: &quot;not_assessed&quot;,
+  &quot;recommendation_basis&quot;: &quot;beginner_template_not_event_diagnosis&quot;,
+  &quot;scope&quot;: &quot;returned_page&quot;,
+  &quot;more_events_available&quot;: false,
+  &quot;observations&quot;: [
+    {
+      &quot;event_id&quot;: &quot;365f328b-c42e-42fb-8cab-6052269508a1&quot;,
+      &quot;review_sequence&quot;: 1,
+      &quot;status&quot;: &quot;confirmed&quot;,
+      &quot;interpretation&quot;: &quot;reviewed_observable_change&quot;
+    }
+  ],
+  &quot;excluded_event_count&quot;: 0,
+  &quot;learning_assessment&quot;: &quot;insufficient_for_skill_grade&quot;,
+  &quot;tiered_practice&quot;: [
+    &quot;基础层：教师确认组织与安全方案后，复习零基础双足滑行与姿态控制。&quot;,
+    &quot;巩固层：由教师现场选择相同主题的重复练习，不由事件变化自动分层。&quot;,
+    &quot;复核层：对信息不足或跟踪误差，先复核记录，不生成技术纠错结论。&quot;
+  ]
+}</pre></details></html>
