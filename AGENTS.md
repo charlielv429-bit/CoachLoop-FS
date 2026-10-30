@@ -112,3 +112,9 @@
 - `integrations.prelesson.classroom` 是独立显式HTTPS课堂边界，不修改 `LocalBoundary` 或生产main。真实peer必须127.0.0.1且Uvicorn proxy_headers=False；本次Quick Tunnel精确Host/Origin、访问码、独立Secure会话、CSRF、全局/会话限流。仅合成数据，不能把mock声明当匿名化或教师认证。
 - `scripts/start_classroom_tunnel.command` / `stop_classroom_tunnel.command`：私有锁控制本次cloudflared与源站，不按PID杀进程；原本地8767启动器保留。可选classroom extra仅qrcode，二维码不含访问码。
 - 文档 `docs/cloudflare-classroom-demo-v01.md`；测试 `tests/test_classroom_tunnel.py`；真实浏览器模拟HTTPS证据不等同公网Cloudflare验证。`check_classroom_https.py` 才用于已启动的正式临时网址，必须TLS验证且不得打印访问码/响应敏感内容。
+
+### V2.0 本机真实视频与未认证审核
+- `integrations/local_video/`：同一本地console挂载 `/api/v2/video/*`；独立浏览器Cookie隔离任务，授权声明、流式25MiB/120秒上传、FFmpeg校验与有界规范化、隔离`.venv-video`进程复用既有MP/V4/V5，预览与临时数据定时/退出清理。Cloudflare课堂白名单禁止这些路由与视频脚本，不允许转发真实学生视频。
+- `pose_extractor.extract_video_pose(..., include_keypoints=False)` 仅增加可选私有原始观测供新适配器使用，通用序列化不导出该字段；没有改写姿态、特征或V4/V5算法。当前实测MediaPipe0.10.32，旧注释1.2不代表本轮版本。
+- 审核操作者与时间由服务端记录，前端不能自报教练/认证身份；永远`local_unverified`，confirmed仅观察变化。反馈为本地安全适配层，不把真实视频改标mock导入现有数据库。trusted_observations始终空，draft/unverified/教师复核保护保留。
+- 文档 `docs/local-video-v20.md`；首次可选 `scripts/setup_local_video.command`，沿用原本地启动器8767。测试`tests/test_local_video_v20.py`；真实视频需显式合法`COACHLOOP_TEST_VIDEO`，不能用合成测试冒充。证据只提交聚合计数与隐私遮蔽UI，原片、模型、原始关键点与真实事件导出留本机临时目录且不得提交。

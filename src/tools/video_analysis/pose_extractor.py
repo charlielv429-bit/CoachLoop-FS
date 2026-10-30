@@ -1,4 +1,4 @@
-"""基于 MediaPipe 1.2 新版 tasks API 的真实视频姿态提取。
+"""基于 MediaPipe Tasks API 的真实视频姿态提取。
 
 ⚠️ 本模块依赖 mediapipe + opencv，仅应在隔离环境 `.venv-video` 中运行，
 不会被项目主 `.venv` 导入（也不从包 __init__ 导出）。
@@ -49,6 +49,7 @@ class VideoFrameRecord(BaseModel):
 class VideoPoseOutput(BaseModel):
     """整段视频处理结果。"""
     source: Dict[str, Any] = Field(..., description="来源信息：mode=real / is_mock=false / model=mediapipe_pose")
+    keypoints: List[KeypointFrame] = Field(default_factory=list, exclude=True, description="供显式本地适配器取用的原始观测关键点；通用序列化不导出，不插值")
     frames: List[VideoFrameRecord] = Field(..., description="逐帧结果")
     summary: Dict[str, Any] = Field(default={}, description="观测统计，含有效帧比例（valid_frame_ratio）；非评分")
     errors: List[str] = Field(default=[], description="处理错误或告警")
@@ -85,6 +86,7 @@ def extract_video_pose(
     side: str = "left",
     max_frames: Optional[int] = None,
     model_path: str = DEFAULT_MODEL_PATH,
+    include_keypoints: bool = False,
 ) -> VideoPoseOutput:
     """从 MP4 提取每帧人体关键点并复用 extract_features 计算可观测特征。
 
@@ -93,6 +95,7 @@ def extract_video_pose(
         side: 判定腿/支撑腿一侧（left/right），默认 left。
         max_frames: 可选，最多处理帧数。
         model_path: pose_landmarker.task 的路径。
+        include_keypoints: 仅显式本地适配器取用原始观测，通用序列化仍排除此字段。
     异常:
         MissingPrerequisiteError: 视频/模型/系统库任一前置缺失。
     """
@@ -195,6 +198,7 @@ def extract_video_pose(
     }
     return VideoPoseOutput(
         source=source,
+        keypoints=frames if include_keypoints else [],
         frames=video_records,
         summary=summary,
         errors=processed.errors + errors,

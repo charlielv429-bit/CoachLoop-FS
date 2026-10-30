@@ -1,0 +1,60 @@
+{
+  "baseline_main": "25215992fe8324f621b2a10f143b6d3ea2036978",
+  "full_regression": {
+    "passed": 1006,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 44.21,
+    "postgresql": "16.15",
+    "command": ".venv/bin/python -B -m pytest -q -p no:cacheprovider --tb=short",
+    "requires": "disposable teaching database + explicit licensed COACHLOOP_TEST_VIDEO + local video runtime/model"
+  },
+  "new_video_tests": {
+    "passed": 54,
+    "failed": 0,
+    "skipped": 0,
+    "real_formats_executed": [
+      "mp4",
+      "mov"
+    ],
+    "synthetic_contract_tests_not_counted_as_real_inference": true
+  },
+  "original_video_tests": {
+    "passed": 41,
+    "failed": 0,
+    "skipped": 0
+  },
+  "browser": {
+    "real_video_pipeline": "real Chromium + real local MP4 inference",
+    "prelesson_v11_regression": true,
+    "mock_classroom_regression": true,
+    "classroom_real_video_routes_refused": true
+  },
+  "screenshots": {
+    "video-ui.redacted.png": "211d35176dbb3a197d8bcb8177dfd4c74f0eb7f058ae10a4f3f56b82dfe2a377"
+  },
+  "security_review": {
+    "per_browser_job_isolation": true,
+    "no_frontend_authenticated_coach": true,
+    "review_sequence_and_idempotency": true,
+    "source_paths_not_exported": true,
+    "private_upload_limits": true,
+    "owned_process_cancellation": true,
+    "temp_cleanup_and_expiry": true,
+    "git_diff_check": true,
+    "no_production_main_or_database_migration_changes": true
+  },
+  "native_mac_or_safari_verified": false,
+  "public_real_video_upload_enabled": false,
+  "coze_used": false,
+  "production_database_used": false,
+  "paid_model_calls": 0,
+  "pending": [
+    "Mac native dependency/codec compatibility",
+    "Independent direct Google model origin comparison",
+    "Qualified coach review of filming protocol and kinematic thresholds",
+    "Real authenticated coach identity and approved report workflow",
+    "Production database/pilot/privacy audit before any public real-video capability"
+  ],
+  "warning": "One existing Coze SDK Pydantic Config deprecation"
+}

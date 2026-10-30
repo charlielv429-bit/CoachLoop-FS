@@ -34,6 +34,16 @@ const labels={content:'内容',principles:'原则',skill_description:'动作说�
   catalogue_task:'主题库原候选任务',active_min_per_student:'预计人均活动分钟',mode:'练习方式',
   status:'状态',editorial_candidate:'工程整理候选条目（未经专业核实）',withheld:'暂缓冰上实施',candidate_unverified:'候选内容未核实',teacher_declared_unverified:'教师填报，未独立核实',
   editorials:'工程整理',reference:'正式引用（暂无）',kind:'类型',teacher:'体育教师',
+  training_information:'训练基本信息',video_quality:'视频分析质量',reported_observations:'本地未认证观察记录',
+  trusted_observations:'正式可信观察（当前为空）',pending_questions:'待确认问题',candidate_practice:'候选练习建议',
+  authenticated_coach:'专业教练身份已认证',review_verification:'审核认证状态',local_unverified:'本地未认证',
+  technical_error_assessment:'技术错误评定',not_assessed:'未作技术错误评定',requires_teacher_review:'需要教师复核',
+  knowledge_status:'知识依据状态',review_status:'审核状态',draft:'草稿',generated_at:'草稿生成时间',
+  source_frames:'分析帧数',detected_frames:'检出帧数',valid_frame_ratio:'姿态检出比例',
+  start_time_ms:'预览开始时间（毫秒）',end_time_ms:'预览结束时间（毫秒）',frame_start:'分析开始帧',frame_end:'分析结束帧',
+  deviation_max:'相对基线偏离量',eligible_for_technical_conclusions:'可用于确定技术结论',review_sequences:'当前审核历史序列',
+  time_basis:'时间依据',analysis_scope:'分析范围',limitations:'观测局限',interpretation:'保守解释',
+  duration_seconds:'视频时长（秒）',width:'原视频宽',height:'原视频高',analysis_fps:'分析预览帧率',
   prep:'准备阶段',preparation:'准备阶段',main:'基本阶段',closing:'结束阶段'};
 const elements=[['guiding_ideology','01 指导思想'],['teaching_material_analysis','02 教材分析'],
   ['learner_analysis','03 学情分析与分层练习'],['teaching_flow','04 教学流程'],
@@ -142,3 +152,6 @@ if(isClassroom){
   logout.addEventListener('click',async()=>{try{await fetch('/classroom/logout',{method:'POST',credentials:'same-origin',redirect:'error',headers:{'Content-Type':'application/json','X-CoachLoop-Console':'1'},body:'{}'});}finally{invalidate();location.replace('/');}});
   document.querySelector('.intro').append(logout);
 }
+
+if(!isClassroom){const videoScript=document.createElement('script');videoScript.src='/video-console.js';document.head.append(videoScript);}
+else{for(const button of document.querySelectorAll('#stage-nav [data-stage]')){if(button.dataset.stage!=='prelesson'){button.disabled=true;button.title='真实视频仅本机可用，模拟课堂禁止上传';}}}
