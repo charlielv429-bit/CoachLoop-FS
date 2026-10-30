@@ -1,0 +1,901 @@
+{
+  "data_domain": "mock",
+  "human_review_performed": false,
+  "model_inference_performed": false,
+  "features": {
+    "source": {
+      "mode": "mock",
+      "is_mock": true,
+      "source": "mock://three-stage/synthetic-keypoints",
+      "model": "mock-geometry",
+      "fps": 25.0
+    },
+    "frames": [
+      {
+        "frame_idx": 0,
+        "timestamp_ms": 0.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 1,
+        "timestamp_ms": 40.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 2,
+        "timestamp_ms": 80.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 3,
+        "timestamp_ms": 120.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 4,
+        "timestamp_ms": 160.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 5,
+        "timestamp_ms": 200.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 6,
+        "timestamp_ms": 240.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 7,
+        "timestamp_ms": 280.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 8,
+        "timestamp_ms": 320.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 9,
+        "timestamp_ms": 360.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 10,
+        "timestamp_ms": 400.0,
+        "features": {
+          "knee_angle_deg": 96.34,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 11,
+        "timestamp_ms": 440.0,
+        "features": {
+          "knee_angle_deg": 96.34,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 12,
+        "timestamp_ms": 480.0,
+        "features": {
+          "knee_angle_deg": 96.34,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 13,
+        "timestamp_ms": 520.0,
+        "features": {
+          "knee_angle_deg": 96.34,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 14,
+        "timestamp_ms": 560.0,
+        "features": {
+          "knee_angle_deg": 96.34,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 15,
+        "timestamp_ms": 600.0,
+        "features": {
+          "knee_angle_deg": 96.34,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 16,
+        "timestamp_ms": 640.0,
+        "features": {
+          "knee_angle_deg": 96.34,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 17,
+        "timestamp_ms": 680.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 18,
+        "timestamp_ms": 720.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 19,
+        "timestamp_ms": 760.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 20,
+        "timestamp_ms": 800.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 21,
+        "timestamp_ms": 840.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 22,
+        "timestamp_ms": 880.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 23,
+        "timestamp_ms": 920.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 24,
+        "timestamp_ms": 960.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 25,
+        "timestamp_ms": 1000.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 26,
+        "timestamp_ms": 1040.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 27,
+        "timestamp_ms": 1080.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 28,
+        "timestamp_ms": 1120.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 29,
+        "timestamp_ms": 1160.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 30,
+        "timestamp_ms": 1200.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 31,
+        "timestamp_ms": 1240.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 32,
+        "timestamp_ms": 1280.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 33,
+        "timestamp_ms": 1320.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 34,
+        "timestamp_ms": 1360.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 35,
+        "timestamp_ms": 1400.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 36,
+        "timestamp_ms": 1440.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 37,
+        "timestamp_ms": 1480.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 38,
+        "timestamp_ms": 1520.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      },
+      {
+        "frame_idx": 39,
+        "timestamp_ms": 1560.0,
+        "features": {
+          "knee_angle_deg": 180.0,
+          "torso_pitch_deg": 4.574,
+          "hip_ankle_offset_norm": 0.044,
+          "degenerate": false,
+          "degeneracy_reason": "",
+          "missing_required": []
+        },
+        "keypoint_stats": {
+          "total": 6,
+          "finite": 6,
+          "missing": 0,
+          "missing_ratio": 0.0,
+          "avg_visibility": 0.99
+        }
+      }
+    ],
+    "summary": {
+      "n_frames": 40,
+      "side": "left",
+      "knee_detect_ratio": 1.0,
+      "torso_detect_ratio": 1.0,
+      "hip_ankle_detect_ratio": 1.0,
+      "degenerate_frames": 0
+    },
+    "errors": [],
+    "reserved_coach_review": {
+      "review_status": "pending",
+      "needs_coach_review": true,
+      "coach_notes": "",
+      "coach_verdict": null
+    }
+  },
+  "candidates": {
+    "source": {
+      "mode": "mock",
+      "is_mock": true,
+      "source": "mock://three-stage/synthetic-keypoints",
+      "model": "mock-geometry",
+      "fps": 25.0,
+      "video_path": "mock://three-stage/synthetic-keypoints"
+    },
+    "config": {
+      "knee_threshold_deg": 10.0,
+      "torso_threshold_deg": 4.0,
+      "hip_ankle_threshold_norm": 0.12,
+      "smooth_window": 5,
+      "visibility_threshold": 0.75,
+      "min_event_frames": 1
+    },
+    "is_mock": false,
+    "event_count": {
+      "knee_angle_deg": 1,
+      "torso_pitch_deg": 0,
+      "hip_ankle_offset_norm": 0,
+      "total_events": 1,
+      "note": "total_events 为各特征事件数之和；同一时间段可能被多个特征同时标记。"
+    },
+    "events": [
+      {
+        "feature": "knee_angle_deg",
+        "frame_start": 8,
+        "frame_end": 18,
+        "start_time_ms": 320.0,
+        "end_time_ms": 720.0,
+        "duration_ms": 400.0,
+        "n_frames": 11,
+        "deviation_max": 83.66,
+        "swing": 66.928
+      }
+    ],
+    "spike_anomalies": [],
+    "low_visibility_segments": [],
+    "undetected_or_missing_frames": [],
+    "review_required": false,
+    "review_reasons": [],
+    "disclaimers": [
+      "本结果基于 2D 图像平面可观测几何量，仅供教练复核参考，非动作评分或技术诊断。",
+      "不依据 2D 数据推断双腿遮挡、真实重心位置或冰刀用刃，相关结论需教练结合 3D/冰面复核。",
+      "下列阈值为可配置的探索性参数，不构成任何动作正确性标准。"
+    ],
+    "reserved_coach_review": {
+      "review_status": "pending",
+      "needs_coach_review": true,
+      "coach_notes": "",
+      "coach_verdict": null
+    }
+  },
+  "pending_reviews": {
+    "kind": "coach_event_review",
+    "version": "1.0",
+    "generated_from": "mock://three-stage/candidates.json",
+    "source": {
+      "mode": "mock",
+      "is_mock": true,
+      "source": "mock://three-stage/synthetic-keypoints",
+      "model": "mock-geometry",
+      "fps": 25.0,
+      "video_path": "mock://three-stage/synthetic-keypoints"
+    },
+    "is_mock": true,
+    "records": [
+      {
+        "event_id": "evt_c48d6f5b9792",
+        "original_event": {
+          "feature": "knee_angle_deg",
+          "frame_start": 8,
+          "frame_end": 18,
+          "start_time_ms": 320.0,
+          "end_time_ms": 720.0,
+          "duration_ms": 400.0,
+          "n_frames": 11,
+          "deviation_max": 83.66,
+          "swing": 66.928
+        },
+        "source": {
+          "mode": "mock",
+          "is_mock": true,
+          "source": "mock://three-stage/synthetic-keypoints",
+          "model": "mock-geometry",
+          "fps": 25.0,
+          "video_path": "mock://three-stage/synthetic-keypoints"
+        },
+        "created_at": "2026-10-30T01:07:12+00:00",
+        "review_status": "pending",
+        "reviewed_by": null,
+        "reviewed_at": null,
+        "notes": "",
+        "review_history": [],
+        "updated_at": "2026-10-30T01:07:12+00:00"
+      }
+    ],
+    "summary": {
+      "total": 1,
+      "by_status": {
+        "pending": 1,
+        "confirmed": 0,
+        "normal_movement": 0,
+        "tracking_error": 0,
+        "uncertain": 0
+      }
+    }
+  }
+}

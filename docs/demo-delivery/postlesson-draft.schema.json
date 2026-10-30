@@ -1,0 +1,147 @@
+{
+  "$defs": {
+    "Observation": {
+      "additionalProperties": false,
+      "properties": {
+        "event_id": {
+          "format": "uuid",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "review_sequence": {
+          "minimum": 1,
+          "title": "Review Sequence",
+          "type": "integer"
+        },
+        "status": {
+          "enum": [
+            "confirmed",
+            "normal_movement"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "interpretation": {
+          "enum": [
+            "reviewed_observable_change",
+            "reviewed_normal_movement"
+          ],
+          "title": "Interpretation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "event_id",
+        "review_sequence",
+        "status",
+        "interpretation"
+      ],
+      "title": "Observation",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "postlesson-draft-v1",
+      "default": "postlesson-draft-v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "data_domain": {
+      "const": "mock",
+      "default": "mock",
+      "title": "Data Domain",
+      "type": "string"
+    },
+    "training_session_id": {
+      "format": "uuid",
+      "title": "Training Session Id",
+      "type": "string"
+    },
+    "analysis_run_id": {
+      "format": "uuid",
+      "title": "Analysis Run Id",
+      "type": "string"
+    },
+    "review_status": {
+      "const": "draft",
+      "default": "draft",
+      "title": "Review Status",
+      "type": "string"
+    },
+    "requires_teacher_review": {
+      "const": true,
+      "default": true,
+      "title": "Requires Teacher Review",
+      "type": "boolean"
+    },
+    "knowledge_status": {
+      "const": "unverified",
+      "default": "unverified",
+      "title": "Knowledge Status",
+      "type": "string"
+    },
+    "technical_error_assessment": {
+      "const": "not_assessed",
+      "default": "not_assessed",
+      "title": "Technical Error Assessment",
+      "type": "string"
+    },
+    "recommendation_basis": {
+      "const": "beginner_template_not_event_diagnosis",
+      "default": "beginner_template_not_event_diagnosis",
+      "title": "Recommendation Basis",
+      "type": "string"
+    },
+    "scope": {
+      "const": "returned_page",
+      "default": "returned_page",
+      "title": "Scope",
+      "type": "string"
+    },
+    "more_events_available": {
+      "title": "More Events Available",
+      "type": "boolean"
+    },
+    "observations": {
+      "items": {
+        "$ref": "#/$defs/Observation"
+      },
+      "title": "Observations",
+      "type": "array"
+    },
+    "excluded_event_count": {
+      "minimum": 0,
+      "title": "Excluded Event Count",
+      "type": "integer"
+    },
+    "learning_assessment": {
+      "const": "insufficient_for_skill_grade",
+      "default": "insufficient_for_skill_grade",
+      "title": "Learning Assessment",
+      "type": "string"
+    },
+    "tiered_practice": {
+      "default": [
+        "基础层：教师确认组织与安全方案后，复习零基础双足滑行与姿态控制。",
+        "巩固层：由教师现场选择相同主题的重复练习，不由事件变化自动分层。",
+        "复核层：对信息不足或跟踪误差，先复核记录，不生成技术纠错结论。"
+      ],
+      "items": {
+        "type": "string"
+      },
+      "title": "Tiered Practice",
+      "type": "array"
+    }
+  },
+  "required": [
+    "training_session_id",
+    "analysis_run_id",
+    "more_events_available",
+    "observations",
+    "excluded_event_count"
+  ],
+  "title": "PostlessonDraft",
+  "type": "object"
+}

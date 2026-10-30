@@ -1,0 +1,34 @@
+{
+  "baseline_main": "3875f17e5dbc175bcb17e0f83c7320555bcee07a",
+  "local_tests": {
+    "passed": 778,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 31.33,
+    "pass_rate": 1.0,
+    "postgresql": "16.15",
+    "existing_video_tests": 41
+  },
+  "online_acceptance": false,
+  "plugin_installed": false,
+  "agent_bound": false,
+  "official_zip_format_confirmed": false,
+  "verified_formal_kb_citations": 0,
+  "real_student_data_used": false,
+  "human_review_performed": false,
+  "production_modified": false,
+  "paid_model_calls": 0,
+  "course_matrix_complete": false,
+  "evidence_sha256": "28dc5b1113761224178e92d2f681d84d30e3e5a79c1aa7594da77761c40e2bc4",
+  "pr9_review": {
+    "original_head": "b408ec1736bb112ed485199d3603b87e4cabd5d7",
+    "original_suite_passed": 758,
+    "original_suite_seconds": 31.37,
+    "new_counterexamples": 20,
+    "fixed_p2_issues": 2,
+    "remaining_code_blockers": 0,
+    "offline_html_static_validation": true,
+    "offline_html_browser_verified": false,
+    "browser_limitation": "Managed Chromium blocks file:// pages by organization policy; no policy bypass attempted."
+  }
+}
