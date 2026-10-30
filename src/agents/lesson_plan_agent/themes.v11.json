@@ -1,0 +1,970 @@
+[
+  {
+    "theme_id": "safety_equipment",
+    "name_zh": "安全与装备",
+    "name_en": "Safety and equipment",
+    "min_level": "零基础",
+    "supported_levels": [
+      "零基础",
+      "初级",
+      "初中级",
+      "中级"
+    ],
+    "prerequisites": [],
+    "goals": [
+      "认识装备检查与沟通流程"
+    ],
+    "key_points": "辨识冰鞋与护具使用状态",
+    "difficulties": "检查项目遗漏",
+    "practice_progression": [
+      "装备辨识",
+      "模拟检查交接",
+      "口述异常报告"
+    ],
+    "candidate_errors": [
+      "遗漏系带检查（候选观察，不能直接认定技术错误）"
+    ],
+    "evaluation_indicators": [
+      "能说明发现异常后的报告对象"
+    ],
+    "safety_requirements": [
+      "装备适配与检查由现场专业人员确认（待专项教练确认）"
+    ],
+    "source": {
+      "kind": "editorial_candidate",
+      "reference": null,
+      "note": "工程整理候选教学条目，未核实课程标准或专业安全依据"
+    },
+    "version": "1.1.0",
+    "verification_status": "unverified"
+  },
+  {
+    "theme_id": "fall_recovery",
+    "name_zh": "跌倒起立",
+    "name_en": "Fall and recovery",
+    "min_level": "零基础",
+    "supported_levels": [
+      "零基础",
+      "初级",
+      "初中级",
+      "中级"
+    ],
+    "prerequisites": [
+      "safety_equipment"
+    ],
+    "goals": [
+      "认识摔倒起立的学习边界"
+    ],
+    "key_points": "听从专项教练现场示范",
+    "difficulties": "情境变化下误用统一指令",
+    "practice_progression": [
+      "陆地情境讨论",
+      "教练示范观察",
+      "获现场许可后个别体验"
+    ],
+    "candidate_errors": [
+      "未经指导自行模仿起立（候选观察，不能直接认定技术错误）"
+    ],
+    "evaluation_indicators": [
+      "能复述暂停练习和求助流程"
+    ],
+    "safety_requirements": [
+      "不提供统一摔倒起立操作；具体动作必须由专项教练现场指导（待专项教练确认）"
+    ],
+    "source": {
+      "kind": "editorial_candidate",
+      "reference": null,
+      "note": "工程整理候选教学条目，未核实课程标准或专业安全依据"
+    },
+    "version": "1.1.0",
+    "verification_status": "unverified"
+  },
+  {
+    "theme_id": "marching",
+    "name_zh": "冰上踏步",
+    "name_en": "Marching",
+    "min_level": "零基础",
+    "supported_levels": [
+      "零基础",
+      "初级",
+      "初中级",
+      "中级"
+    ],
+    "prerequisites": [
+      "safety_equipment"
+    ],
+    "goals": [
+      "体验小步移动与停顿"
+    ],
+    "key_points": "小步移动后自主停顿",
+    "difficulties": "移动时身体紧张",
+    "practice_progression": [
+      "陆地踏步节奏",
+      "扶栏移动观察",
+      "受控短段踏步"
+    ],
+    "candidate_errors": [
+      "步幅变化过快（候选观察，不能直接认定技术错误）"
+    ],
+    "evaluation_indicators": [
+      "观察踏步后停顿与指令响应"
+    ],
+    "safety_requirements": [
+      "扶栏位置与起止边界由现场确认（待专项教练确认）"
+    ],
+    "source": {
+      "kind": "editorial_candidate",
+      "reference": null,
+      "note": "工程整理候选教学条目，未核实课程标准或专业安全依据"
+    },
+    "version": "1.1.0",
+    "verification_status": "unverified"
+  },
+  {
+    "theme_id": "two_foot_glide",
+    "name_zh": "冰上双足滑行与身体姿态控制",
+    "name_en": "Two-foot glide and posture",
+    "min_level": "零基础",
+    "supported_levels": [
+      "零基础",
+      "初级",
+      "初中级",
+      "中级"
+    ],
+    "prerequisites": [
+      "safety_equipment"
+    ],
+    "goals": [
+      "建立双足滑行的受控体验"
+    ],
+    "key_points": "双足支撑下的姿态稳定",
+    "difficulties": "滑行与停住衔接",
+    "practice_progression": [
+      "站姿观察",
+      "短段双足滑行",
+      "滑行后受控停顿"
+    ],
+    "candidate_errors": [
+      "姿态明显波动（候选观察，不能直接认定技术错误）"
+    ],
+    "evaluation_indicators": [
+      "记录滑行中姿态变化与停顿完成情况"
+    ],
+    "safety_requirements": [
+      "短段距离与停止方式由教练按冰面核定（待专项教练确认）"
+    ],
+    "source": {
+      "kind": "editorial_candidate",
+      "reference": null,
+      "note": "工程整理候选教学条目，未核实课程标准或专业安全依据"
+    },
+    "version": "1.1.0",
+    "verification_status": "unverified"
+  },
+  {
+    "theme_id": "posture",
+    "name_zh": "身体姿态控制",
+    "name_en": "Posture control",
+    "min_level": "零基础",
+    "supported_levels": [
+      "零基础",
+      "初级",
+      "初中级",
+      "中级"
+    ],
+    "prerequisites": [
+      "safety_equipment"
+    ],
+    "goals": [
+      "体会静态与移动中的姿态调整"
+    ],
+    "key_points": "静态到移动的姿态一致性",
+    "difficulties": "紧张与姿态调整协调",
+    "practice_progression": [
+      "陆地姿态对照",
+      "扶栏姿态体验",
+      "移动姿态观察"
+    ],
+    "candidate_errors": [
+      "上身姿态持续变化（候选观察，不能直接认定技术错误）"
+    ],
+    "evaluation_indicators": [
+      "对比静态与移动姿态的自述和观察"
+    ],
+    "safety_requirements": [
+      "不将二维角度作为技术合格阈值（待专项教练确认）"
+    ],
+    "source": {
+      "kind": "editorial_candidate",
+      "reference": null,
+      "note": "工程整理候选教学条目，未核实课程标准或专业安全依据"
+    },
+    "version": "1.1.0",
+    "verification_status": "unverified"
+  },
+  {
+    "theme_id": "basic_stop",
+    "name_zh": "基础停止",
+    "name_en": "Basic stopping",
+    "min_level": "零基础",
+    "supported_levels": [
+      "零基础",
+      "初级",
+      "初中级",
+      "中级"
+    ],
+    "prerequisites": [
+      "marching"
+    ],
+    "goals": [
+      "学习在现场许可条件下结束移动"
+    ],
+    "key_points": "听令减速与停止交接",
+    "difficulties": "恐惧时执行顺序混乱",
+    "practice_progression": [
+      "陆地停止口令",
+      "教练制动示范",
+      "个别受控制动体验"
+    ],
+    "candidate_errors": [
+      "停止前未观察区域（候选观察，不能直接认定技术错误）"
+    ],
+    "evaluation_indicators": [
+      "记录停止口令响应及区域遵守情况"
+    ],
+    "safety_requirements": [
+      "制动动作、距离和保护方式由专项教练核定（待专项教练确认）"
+    ],
+    "source": {
+      "kind": "editorial_candidate",
+      "reference": null,
+      "note": "工程整理候选教学条目，未核实课程标准或专业安全依据"
+    },
+    "version": "1.1.0",
+    "verification_status": "unverified"
+  },
+  {
+    "theme_id": "alternating_push",
+    "name_zh": "交替蹬冰",
+    "name_en": "Alternating pushes",
+    "min_level": "初级",
+    "supported_levels": [
+      "初级",
+      "初中级",
+      "中级"
+    ],
+    "prerequisites": [
+      "two_foot_glide",
+      "basic_stop"
+    ],
+    "goals": [
+      "体验左右交替推进"
+    ],
+    "key_points": "两侧推进顺序",
+    "difficulties": "推进后姿态恢复",
+    "practice_progression": [
+      "陆地交替模仿",
+      "分侧蹬冰",
+      "交替推进短段"
+    ],
+    "candidate_errors": [
+      "左右顺序不稳定（候选观察，不能直接认定技术错误）"
+    ],
+    "evaluation_indicators": [
+      "分别记录左右推进与恢复次数"
+    ],
+    "safety_requirements": [
+      "推进距离及速度由现场确认（待专项教练确认）"
+    ],
+    "source": {
+      "kind": "editorial_candidate",
+      "reference": null,
+      "note": "工程整理候选教学条目，未核实课程标准或专业安全依据"
+    },
+    "version": "1.1.0",
+    "verification_status": "unverified"
+  },
+  {
+    "theme_id": "one_foot_glide",
+    "name_zh": "单足滑行",
+    "name_en": "One-foot glide",
+    "min_level": "初级",
+    "supported_levels": [
+      "初级",
+      "初中级",
+      "中级"
+    ],
+    "prerequisites": [
+      "two_foot_glide",
+      "basic_stop"
+    ],
+    "goals": [
+      "观察单侧支撑稳定性"
+    ],
+    "key_points": "左右侧短时支撑",
+    "difficulties": "支撑转换时姿态波动",
+    "practice_progression": [
+      "双足到单侧重心体验",
+      "分侧短段支撑",
+      "左右侧交替观察"
+    ],
+    "candidate_errors": [
+      "两侧支撑差异（候选观察，不能直接认定技术错误）"
+    ],
+    "evaluation_indicators": [
+      "分别记录两侧支撑完成情况，不设时长合格线"
+    ],
+    "safety_requirements": [
+      "单侧支撑必须有现场教练许可与停止区域（待专项教练确认）"
+    ],
+    "source": {
+      "kind": "editorial_candidate",
+      "reference": null,
+      "note": "工程整理候选教学条目，未核实课程标准或专业安全依据"
+    },
+    "version": "1.1.0",
+    "verification_status": "unverified"
+  },
+  {
+    "theme_id": "swizzles",
+    "name_zh": "葫芦步",
+    "name_en": "Swizzles",
+    "min_level": "初级",
+    "supported_levels": [
+      "初级",
+      "初中级",
+      "中级"
+    ],
+    "prerequisites": [
+      "two_foot_glide",
+      "basic_stop"
+    ],
+    "goals": [
+      "体验双足开合推进"
+    ],
+    "key_points": "开合与节奏配合",
+    "difficulties": "开合幅度控制",
+    "practice_progression": [
+      "陆地开合模仿",
+      "扶栏开合体验",
+      "短段连续葫芦步"
+    ],
+    "candidate_errors": [
+      "开合节奏不一致（候选观察，不能直接认定技术错误）"
+    ],
+    "evaluation_indicators": [
+      "记录开合连续性及左右对称观察"
+    ],
+    "safety_requirements": [
+      "开合幅度与路径间隔须现场核定（待专项教练确认）"
+    ],
+    "source": {
+      "kind": "editorial_candidate",
+      "reference": null,
+      "note": "工程整理候选教学条目，未核实课程标准或专业安全依据"
+    },
+    "version": "1.1.0",
+    "verification_status": "unverified"
+  },
+  {
+    "theme_id": "backward_two_foot",
+    "name_zh": "后退双足滑行",
+    "name_en": "Backward two-foot glide",
+    "min_level": "初级",
+    "supported_levels": [
+      "初级",
+      "初中级",
+      "中级"
+    ],
+    "prerequisites": [
+      "two_foot_glide",
+      "basic_stop"
+    ],
+    "goals": [
+      "认识后退移动与观察边界"
+    ],
+    "key_points": "移动前确认后方区域",
+    "difficulties": "方向感与停止衔接",
+    "practice_progression": [
+      "后方区域辨识",
+      "教练后退示范",
+      "隔离区域双足后退体验"
+    ],
+    "candidate_errors": [
+      "后方观察不足（候选观察，不能直接认定技术错误）"
+    ],
+    "evaluation_indicators": [
+      "记录后方区域确认与停顿流程"
+    ],
+    "safety_requirements": [
+      "后退区域不得与前进路线混用，须现场专业确认（待专项教练确认）"
+    ],
+    "source": {
+      "kind": "editorial_candidate",
+      "reference": null,
+      "note": "工程整理候选教学条目，未核实课程标准或专业安全依据"
+    },
+    "version": "1.1.0",
+    "verification_status": "unverified"
+  },
+  {
+    "theme_id": "two_foot_turn",
+    "name_zh": "双足转体",
+    "name_en": "Two-foot turn",
+    "min_level": "初级",
+    "supported_levels": [
+      "初级",
+      "初中级",
+      "中级"
+    ],
+    "prerequisites": [
+      "two_foot_glide",
+      "basic_stop"
+    ],
+    "goals": [
+      "体验双足支撑方向变化"
+    ],
+    "key_points": "转体前后支撑稳定",
+    "difficulties": "方向变化后停住",
+    "practice_progression": [
+      "陆地方向模仿",
+      "原地双足转向",
+      "受控短段方向变化"
+    ],
+    "candidate_errors": [
+      "转向后姿态晃动（候选观察，不能直接认定技术错误）"
+    ],
+    "evaluation_indicators": [
+      "观察转向前后支撑与方向辨识"
+    ],
+    "safety_requirements": [
+      "转体范围及冰面条件须专项教练核定（待专项教练确认）"
+    ],
+    "source": {
+      "kind": "editorial_candidate",
+      "reference": null,
+      "note": "工程整理候选教学条目，未核实课程标准或专业安全依据"
+    },
+    "version": "1.1.0",
+    "verification_status": "unverified"
+  },
+  {
+    "theme_id": "curve_glide",
+    "name_zh": "弧线滑行",
+    "name_en": "Curve gliding",
+    "min_level": "初级",
+    "supported_levels": [
+      "初级",
+      "初中级",
+      "中级"
+    ],
+    "prerequisites": [
+      "two_foot_glide",
+      "basic_stop"
+    ],
+    "goals": [
+      "体验沿弧线路径移动"
+    ],
+    "key_points": "路径意识与姿态配合",
+    "difficulties": "弧线出口控制",
+    "practice_progression": [
+      "陆地弧线路线",
+      "宽弧双足体验",
+      "左右弧线对照"
+    ],
+    "candidate_errors": [
+      "偏离预定路径（候选观察，不能直接认定技术错误）"
+    ],
+    "evaluation_indicators": [
+      "记录左右弧线路径保持情况"
+    ],
+    "safety_requirements": [
+      "弧线半径与缓冲区由现场确认（待专项教练确认）"
+    ],
+    "source": {
+      "kind": "editorial_candidate",
+      "reference": null,
+      "note": "工程整理候选教学条目，未核实课程标准或专业安全依据"
+    },
+    "version": "1.1.0",
+    "verification_status": "unverified"
+  },
+  {
+    "theme_id": "forward_inside",
+    "name_zh": "前进内刃",
+    "name_en": "Forward inside edge",
+    "min_level": "初中级",
+    "supported_levels": [
+      "初中级",
+      "中级"
+    ],
+    "prerequisites": [
+      "one_foot_glide",
+      "curve_glide"
+    ],
+    "goals": [
+      "认识前进内刃的专项学习任务"
+    ],
+    "key_points": "左右侧内刃体验",
+    "difficulties": "刃感与路径协调",
+    "practice_progression": [
+      "陆地路径辨识",
+      "教练内刃示范",
+      "分侧短弧体验"
+    ],
+    "candidate_errors": [
+      "路径与用刃自述不一致（候选观察，不能直接认定技术错误）"
+    ],
+    "evaluation_indicators": [
+      "教练现场记录左右侧用刃体验，不以二维视频确认冰刀受力"
+    ],
+    "safety_requirements": [
+      "用刃练习须专项教练逐项许可（待专项教练确认）"
+    ],
+    "source": {
+      "kind": "editorial_candidate",
+      "reference": null,
+      "note": "工程整理候选教学条目，未核实课程标准或专业安全依据"
+    },
+    "version": "1.1.0",
+    "verification_status": "unverified"
+  },
+  {
+    "theme_id": "forward_outside",
+    "name_zh": "前进外刃",
+    "name_en": "Forward outside edge",
+    "min_level": "初中级",
+    "supported_levels": [
+      "初中级",
+      "中级"
+    ],
+    "prerequisites": [
+      "one_foot_glide",
+      "curve_glide"
+    ],
+    "goals": [
+      "认识前进外刃的专项学习任务"
+    ],
+    "key_points": "左右侧外刃体验",
+    "difficulties": "外刃路径与姿态配合",
+    "practice_progression": [
+      "外弧路径辨识",
+      "教练外刃示范",
+      "分侧外弧体验"
+    ],
+    "candidate_errors": [
+      "外弧路径中断（候选观察，不能直接认定技术错误）"
+    ],
+    "evaluation_indicators": [
+      "分侧记录外弧连续性与教练观察"
+    ],
+    "safety_requirements": [
+      "不得通过二维髋踝偏移直接判定用刃（待专项教练确认）"
+    ],
+    "source": {
+      "kind": "editorial_candidate",
+      "reference": null,
+      "note": "工程整理候选教学条目，未核实课程标准或专业安全依据"
+    },
+    "version": "1.1.0",
+    "verification_status": "unverified"
+  },
+  {
+    "theme_id": "backward_one_foot",
+    "name_zh": "后退单足",
+    "name_en": "Backward one-foot glide",
+    "min_level": "初中级",
+    "supported_levels": [
+      "初中级",
+      "中级"
+    ],
+    "prerequisites": [
+      "backward_two_foot",
+      "one_foot_glide"
+    ],
+    "goals": [
+      "体验后退单侧支撑衔接"
+    ],
+    "key_points": "后方观察与支撑转换",
+    "difficulties": "转换后姿态控制",
+    "practice_progression": [
+      "后退区域复核",
+      "双足后退转移体验",
+      "分侧后退支撑"
+    ],
+    "candidate_errors": [
+      "后退转换不连续（候选观察，不能直接认定技术错误）"
+    ],
+    "evaluation_indicators": [
+      "记录后方确认和分侧转换完成情况"
+    ],
+    "safety_requirements": [
+      "后退路线与等待区隔离需现场核定（待专项教练确认）"
+    ],
+    "source": {
+      "kind": "editorial_candidate",
+      "reference": null,
+      "note": "工程整理候选教学条目，未核实课程标准或专业安全依据"
+    },
+    "version": "1.1.0",
+    "verification_status": "unverified"
+  },
+  {
+    "theme_id": "forward_crossovers",
+    "name_zh": "前进交叉步",
+    "name_en": "Forward crossovers",
+    "min_level": "初中级",
+    "supported_levels": [
+      "初中级",
+      "中级"
+    ],
+    "prerequisites": [
+      "one_foot_glide",
+      "curve_glide"
+    ],
+    "goals": [
+      "学习前进交叉的衔接顺序"
+    ],
+    "key_points": "交叉顺序与弧线方向",
+    "difficulties": "连续交叉的节奏",
+    "practice_progression": [
+      "陆地交叉顺序",
+      "教练分解示范",
+      "分侧短段交叉"
+    ],
+    "candidate_errors": [
+      "交叉顺序混乱（候选观察，不能直接认定技术错误）"
+    ],
+    "evaluation_indicators": [
+      "记录两侧交叉顺序与连贯性"
+    ],
+    "safety_requirements": [
+      "交叉脚位与速度由专项教练现场确定（待专项教练确认）"
+    ],
+    "source": {
+      "kind": "editorial_candidate",
+      "reference": null,
+      "note": "工程整理候选教学条目，未核实课程标准或专业安全依据"
+    },
+    "version": "1.1.0",
+    "verification_status": "unverified"
+  },
+  {
+    "theme_id": "circle_glide",
+    "name_zh": "圆周滑行",
+    "name_en": "Circle gliding",
+    "min_level": "初中级",
+    "supported_levels": [
+      "初中级",
+      "中级"
+    ],
+    "prerequisites": [
+      "curve_glide",
+      "basic_stop"
+    ],
+    "goals": [
+      "发展圆周路径与方向衔接"
+    ],
+    "key_points": "圆周入口出口辨识",
+    "difficulties": "路径保持与观察并行",
+    "practice_progression": [
+      "圆周路线讲解",
+      "分段圆弧",
+      "受控圆周衔接"
+    ],
+    "candidate_errors": [
+      "入口出口交叉（候选观察，不能直接认定技术错误）"
+    ],
+    "evaluation_indicators": [
+      "记录入口出口与路径保持情况"
+    ],
+    "safety_requirements": [
+      "圆周区域不得与其他练习穿越冲突（待专项教练确认）"
+    ],
+    "source": {
+      "kind": "editorial_candidate",
+      "reference": null,
+      "note": "工程整理候选教学条目，未核实课程标准或专业安全依据"
+    },
+    "version": "1.1.0",
+    "verification_status": "unverified"
+  },
+  {
+    "theme_id": "rhythm",
+    "name_zh": "节奏控制",
+    "name_en": "Rhythm control",
+    "min_level": "初中级",
+    "supported_levels": [
+      "初中级",
+      "中级"
+    ],
+    "prerequisites": [
+      "alternating_push",
+      "basic_stop"
+    ],
+    "goals": [
+      "建立滑行节奏变化意识"
+    ],
+    "key_points": "节奏指令与动作配合",
+    "difficulties": "节奏改变后动作稳定",
+    "practice_progression": [
+      "陆地拍点",
+      "固定节奏短段",
+      "两种节奏衔接"
+    ],
+    "candidate_errors": [
+      "节拍响应延迟（候选观察，不能直接认定技术错误）"
+    ],
+    "evaluation_indicators": [
+      "记录节拍响应与动作衔接，不作音乐能力评分"
+    ],
+    "safety_requirements": [
+      "不以加速替代节奏变化（待专项教练确认）"
+    ],
+    "source": {
+      "kind": "editorial_candidate",
+      "reference": null,
+      "note": "工程整理候选教学条目，未核实课程标准或专业安全依据"
+    },
+    "version": "1.1.0",
+    "verification_status": "unverified"
+  },
+  {
+    "theme_id": "backward_edges",
+    "name_zh": "后退内外刃",
+    "name_en": "Backward edges",
+    "min_level": "中级",
+    "supported_levels": [
+      "中级"
+    ],
+    "prerequisites": [
+      "backward_one_foot",
+      "forward_inside",
+      "forward_outside"
+    ],
+    "goals": [
+      "区分后退内外刃专项任务"
+    ],
+    "key_points": "后退刃感与方向辨识",
+    "difficulties": "内外刃切换的控制",
+    "practice_progression": [
+      "内外弧辨识",
+      "教练后退用刃示范",
+      "分侧分刃短段体验"
+    ],
+    "candidate_errors": [
+      "刃型与路线混淆（候选观察，不能直接认定技术错误）"
+    ],
+    "evaluation_indicators": [
+      "专项教练分侧记录刃型与路径观察"
+    ],
+    "safety_requirements": [
+      "不根据二维几何确认冰刀用刃或压力（待专项教练确认）"
+    ],
+    "source": {
+      "kind": "editorial_candidate",
+      "reference": null,
+      "note": "工程整理候选教学条目，未核实课程标准或专业安全依据"
+    },
+    "version": "1.1.0",
+    "verification_status": "unverified"
+  },
+  {
+    "theme_id": "backward_crossovers",
+    "name_zh": "后退交叉步",
+    "name_en": "Backward crossovers",
+    "min_level": "中级",
+    "supported_levels": [
+      "中级"
+    ],
+    "prerequisites": [
+      "backward_one_foot",
+      "forward_crossovers"
+    ],
+    "goals": [
+      "学习后退交叉的方向与节奏"
+    ],
+    "key_points": "后退交叉顺序",
+    "difficulties": "观察与连续动作衔接",
+    "practice_progression": [
+      "陆地后退交叉顺序",
+      "教练分解示范",
+      "分侧短段衔接"
+    ],
+    "candidate_errors": [
+      "后退交叉顺序中断（候选观察，不能直接认定技术错误）"
+    ],
+    "evaluation_indicators": [
+      "记录后方观察与交叉顺序连贯性"
+    ],
+    "safety_requirements": [
+      "独立后退练习区和专项教练指导待现场确认（待专项教练确认）"
+    ],
+    "source": {
+      "kind": "editorial_candidate",
+      "reference": null,
+      "note": "工程整理候选教学条目，未核实课程标准或专业安全依据"
+    },
+    "version": "1.1.0",
+    "verification_status": "unverified"
+  },
+  {
+    "theme_id": "three_turn",
+    "name_zh": "三转基础",
+    "name_en": "Three-turn foundations",
+    "min_level": "中级",
+    "supported_levels": [
+      "中级"
+    ],
+    "prerequisites": [
+      "forward_inside",
+      "forward_outside",
+      "one_foot_glide"
+    ],
+    "goals": [
+      "认识三转前后方向变化任务"
+    ],
+    "key_points": "入转出转方向辨识",
+    "difficulties": "转向时姿态与路径衔接",
+    "practice_progression": [
+      "陆地三转路线",
+      "教练慢速分解",
+      "获许可后的单次方向转换"
+    ],
+    "candidate_errors": [
+      "入出转方向混淆（候选观察，不能直接认定技术错误）"
+    ],
+    "evaluation_indicators": [
+      "记录入出转方向辨识与衔接观察"
+    ],
+    "safety_requirements": [
+      "转体具体脚位与保护必须由专项教练确认（待专项教练确认）"
+    ],
+    "source": {
+      "kind": "editorial_candidate",
+      "reference": null,
+      "note": "工程整理候选教学条目，未核实课程标准或专业安全依据"
+    },
+    "version": "1.1.0",
+    "verification_status": "unverified"
+  },
+  {
+    "theme_id": "mohawk",
+    "name_zh": "莫霍克步",
+    "name_en": "Mohawk foundations",
+    "min_level": "中级",
+    "supported_levels": [
+      "中级"
+    ],
+    "prerequisites": [
+      "forward_inside",
+      "backward_one_foot"
+    ],
+    "goals": [
+      "认识换足换向衔接"
+    ],
+    "key_points": "换足前后方向对应",
+    "difficulties": "换足时支撑转移",
+    "practice_progression": [
+      "陆地换足路径",
+      "教练换足示范",
+      "获许可后的单次换向"
+    ],
+    "candidate_errors": [
+      "换足与方向顺序不一致（候选观察，不能直接认定技术错误）"
+    ],
+    "evaluation_indicators": [
+      "记录换足方向对应及停顿控制"
+    ],
+    "safety_requirements": [
+      "髋膝活动条件与脚位不由AI作医学或安全判定（待专项教练确认）"
+    ],
+    "source": {
+      "kind": "editorial_candidate",
+      "reference": null,
+      "note": "工程整理候选教学条目，未核实课程标准或专业安全依据"
+    },
+    "version": "1.1.0",
+    "verification_status": "unverified"
+  },
+  {
+    "theme_id": "two_foot_spin",
+    "name_zh": "双足旋转",
+    "name_en": "Two-foot spin",
+    "min_level": "中级",
+    "supported_levels": [
+      "中级"
+    ],
+    "prerequisites": [
+      "two_foot_turn",
+      "posture",
+      "basic_stop"
+    ],
+    "goals": [
+      "体验双足旋转的进入与退出"
+    ],
+    "key_points": "进入退出与方向控制",
+    "difficulties": "旋转后姿态恢复",
+    "practice_progression": [
+      "陆地旋转方向讨论",
+      "教练进出示范",
+      "获许可的低速旋转体验"
+    ],
+    "candidate_errors": [
+      "退出后方向辨识延迟（候选观察，不能直接认定技术错误）"
+    ],
+    "evaluation_indicators": [
+      "观察进入退出流程与方向辨识，不设转数合格线"
+    ],
+    "safety_requirements": [
+      "旋转区必须隔离；不规定转速转数安全阈值（待专项教练确认）"
+    ],
+    "source": {
+      "kind": "editorial_candidate",
+      "reference": null,
+      "note": "工程整理候选教学条目，未核实课程标准或专业安全依据"
+    },
+    "version": "1.1.0",
+    "verification_status": "unverified"
+  },
+  {
+    "theme_id": "step_sequence",
+    "name_zh": "基础步法组合",
+    "name_en": "Basic step sequence",
+    "min_level": "中级",
+    "supported_levels": [
+      "中级"
+    ],
+    "prerequisites": [
+      "forward_crossovers",
+      "two_foot_turn",
+      "rhythm"
+    ],
+    "goals": [
+      "组合已掌握步法并保持节奏"
+    ],
+    "key_points": "步法顺序与路径衔接",
+    "difficulties": "组合中动作质量保持",
+    "practice_progression": [
+      "陆地组合路线",
+      "分段步法衔接",
+      "受控短组合"
+    ],
+    "candidate_errors": [
+      "衔接顺序遗漏（候选观察，不能直接认定技术错误）"
+    ],
+    "evaluation_indicators": [
+      "记录顺序、节奏与停顿位置，逐项形成性反馈"
+    ],
+    "safety_requirements": [
+      "只组合已由专项教练确认可练习的步法，不含跳跃（待专项教练确认）"
+    ],
+    "source": {
+      "kind": "editorial_candidate",
+      "reference": null,
+      "note": "工程整理候选教学条目，未核实课程标准或专业安全依据"
+    },
+    "version": "1.1.0",
+    "verification_status": "unverified"
+  }
+]

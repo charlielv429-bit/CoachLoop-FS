@@ -13,12 +13,13 @@ from starlette.requests import Request
 from starlette.responses import FileResponse, JSONResponse
 
 from .api import create_router
+from .adaptive_api import create_adaptive_router, ADAPTIVE, CATALOGUE, LOCAL_AUTH
 
 STATIC = Path(__file__).with_name('console_static')
 COOKIE = 'coachloop_local_console'
 CANONICAL = '/api/v1/lesson-plans/draft'
 ALLOWED = {('GET', '/'), ('GET', '/console.js'), ('GET', '/console.css'),
-           ('GET', '/health'), ('POST', CANONICAL)}
+           ('GET', '/health'), ('POST', CANONICAL), ('GET', CATALOGUE), ('POST', ADAPTIVE)}
 SECURITY_HEADERS = {
     'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer',
     'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'DENY',
@@ -68,7 +69,7 @@ class LocalBoundary:
                     or request.headers.get('content-type', '').split(';')[0].strip().lower() != 'application/json'
                     or any(k.lower() == b'authorization' for k, _ in headers)):
                 return await reject(403, 'Local session and same-origin JSON request required')
-            scope = {**scope, 'headers': [*headers, (b'authorization', ('Bearer ' + self.bearer).encode())]}
+            scope = {**scope, 'coachloop_local_auth': LOCAL_AUTH, 'headers': [*headers, (b'authorization', ('Bearer ' + self.bearer).encode())]}
         return await self.app(scope, receive, secured)
 
 
@@ -78,6 +79,7 @@ def create_console_app(port: int = 8767):
     session, bearer = secrets.token_urlsafe(32), secrets.token_urlsafe(32)
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
     app.include_router(create_router(access_token=bearer))
+    app.include_router(create_adaptive_router())
     @app.get('/')
     def index():
         response = FileResponse(STATIC / 'index.html', media_type='text/html')

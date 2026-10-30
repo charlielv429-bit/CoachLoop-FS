@@ -1,0 +1,1271 @@
+{
+  "$defs": {
+    "AdaptationData": {
+      "additionalProperties": false,
+      "properties": {
+        "theme_id": {
+          "title": "Theme Id",
+          "type": "string"
+        },
+        "theme_version": {
+          "title": "Theme Version",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/SourceData"
+        },
+        "verification_status": {
+          "const": "unverified",
+          "title": "Verification Status",
+          "type": "string"
+        },
+        "prerequisites_missing": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Prerequisites Missing",
+          "type": "array"
+        },
+        "goals": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Goals",
+          "type": "array"
+        },
+        "core_exercises": {
+          "items": {
+            "$ref": "#/$defs/PracticeData"
+          },
+          "title": "Core Exercises",
+          "type": "array"
+        },
+        "organization": {
+          "$ref": "#/$defs/OrganizationData"
+        },
+        "staff_tasks": {
+          "items": {
+            "$ref": "#/$defs/DutyData"
+          },
+          "title": "Staff Tasks",
+          "type": "array"
+        },
+        "evaluation_indicators": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Evaluation Indicators",
+          "type": "array"
+        },
+        "safety_limits": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Safety Limits",
+          "type": "array"
+        },
+        "differentiation": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Differentiation",
+          "type": "array"
+        },
+        "teacher_goal_edit": {
+          "title": "Teacher Goal Edit",
+          "type": "string"
+        },
+        "teacher_notes": {
+          "title": "Teacher Notes",
+          "type": "string"
+        },
+        "teacher_review_checklist": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Teacher Review Checklist",
+          "type": "array"
+        }
+      },
+      "required": [
+        "theme_id",
+        "theme_version",
+        "source",
+        "verification_status",
+        "prerequisites_missing",
+        "goals",
+        "core_exercises",
+        "organization",
+        "staff_tasks",
+        "evaluation_indicators",
+        "safety_limits",
+        "differentiation",
+        "teacher_goal_edit",
+        "teacher_notes",
+        "teacher_review_checklist"
+      ],
+      "title": "AdaptationData",
+      "type": "object"
+    },
+    "AdaptiveLoad": {
+      "additionalProperties": false,
+      "properties": {
+        "total_minutes": {
+          "const": 45,
+          "default": 45,
+          "title": "Total Minutes",
+          "type": "integer"
+        },
+        "kind": {
+          "const": "estimated",
+          "default": "estimated",
+          "title": "Kind",
+          "type": "string"
+        },
+        "avg_hr": {
+          "default": null,
+          "title": "Avg Hr",
+          "type": "null"
+        },
+        "group_density": {
+          "$ref": "#/$defs/LoadMetric"
+        },
+        "individual_density": {
+          "$ref": "#/$defs/LoadMetric"
+        },
+        "note": {
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "group_density",
+        "individual_density",
+        "note"
+      ],
+      "title": "AdaptiveLoad",
+      "type": "object"
+    },
+    "AdaptivePlan": {
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "teacher_input": {
+          "$ref": "#/$defs/TeacherInput"
+        },
+        "guiding_ideology": {
+          "$ref": "#/$defs/GuidingIdeology"
+        },
+        "teaching_material_analysis": {
+          "$ref": "#/$defs/TeachingMaterialAnalysis"
+        },
+        "learner_analysis": {
+          "$ref": "#/$defs/LearnerAnalysis"
+        },
+        "teaching_flow": {
+          "$ref": "#/$defs/TeachingFlow"
+        },
+        "venue_equipment": {
+          "$ref": "#/$defs/VenueEquipment"
+        },
+        "safety_precautions": {
+          "$ref": "#/$defs/SafetyPrecautions"
+        },
+        "load_accounting": {
+          "$ref": "#/$defs/AdaptiveLoad"
+        },
+        "evidence_log": {
+          "items": {
+            "$ref": "#/$defs/EvidenceEntry"
+          },
+          "title": "Evidence Log",
+          "type": "array"
+        },
+        "review_status": {
+          "const": "draft",
+          "default": "draft",
+          "title": "Review Status",
+          "type": "string"
+        },
+        "plan_version": {
+          "const": "1.1.0",
+          "default": "1.1.0",
+          "title": "Plan Version",
+          "type": "string"
+        },
+        "complete_plan": {
+          "title": "Complete Plan",
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "teacher_input",
+        "guiding_ideology",
+        "teaching_material_analysis",
+        "learner_analysis",
+        "teaching_flow",
+        "venue_equipment",
+        "safety_precautions",
+        "load_accounting",
+        "evidence_log",
+        "complete_plan"
+      ],
+      "title": "AdaptivePlan",
+      "type": "object"
+    },
+    "AdaptiveRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "class_label": {
+          "default": "匿名班级",
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Class Label",
+          "type": "string"
+        },
+        "theme_id": {
+          "default": "two_foot_glide",
+          "enum": [
+            "safety_equipment",
+            "fall_recovery",
+            "marching",
+            "two_foot_glide",
+            "posture",
+            "basic_stop",
+            "alternating_push",
+            "one_foot_glide",
+            "swizzles",
+            "backward_two_foot",
+            "two_foot_turn",
+            "curve_glide",
+            "forward_inside",
+            "forward_outside",
+            "backward_one_foot",
+            "forward_crossovers",
+            "circle_glide",
+            "rhythm",
+            "backward_edges",
+            "backward_crossovers",
+            "three_turn",
+            "mohawk",
+            "two_foot_spin",
+            "step_sequence"
+          ],
+          "maxLength": 40,
+          "minLength": 1,
+          "title": "Theme Id",
+          "type": "string"
+        },
+        "student_count": {
+          "maximum": 500,
+          "minimum": 1,
+          "title": "Student Count",
+          "type": "integer"
+        },
+        "skill_level": {
+          "enum": [
+            "零基础",
+            "初级",
+            "初中级",
+            "中级"
+          ],
+          "title": "Skill Level",
+          "type": "string"
+        },
+        "age_band": {
+          "default": "青少年",
+          "enum": [
+            "儿童",
+            "青少年",
+            "成人",
+            "混合年龄"
+          ],
+          "title": "Age Band",
+          "type": "string"
+        },
+        "mastered_skills": {
+          "items": {
+            "enum": [
+              "safety_equipment",
+              "fall_recovery",
+              "marching",
+              "two_foot_glide",
+              "posture",
+              "basic_stop",
+              "alternating_push",
+              "one_foot_glide",
+              "swizzles",
+              "backward_two_foot",
+              "two_foot_turn",
+              "curve_glide",
+              "forward_inside",
+              "forward_outside",
+              "backward_one_foot",
+              "forward_crossovers",
+              "circle_glide",
+              "rhythm",
+              "backward_edges",
+              "backward_crossovers",
+              "three_turn",
+              "mohawk",
+              "two_foot_spin",
+              "step_sequence"
+            ],
+            "type": "string"
+          },
+          "maxItems": 24,
+          "title": "Mastered Skills",
+          "type": "array",
+          "uniqueItems": true
+        },
+        "coach_count": {
+          "maximum": 50,
+          "minimum": 0,
+          "title": "Coach Count",
+          "type": "integer"
+        },
+        "teacher_count": {
+          "maximum": 50,
+          "minimum": 0,
+          "title": "Teacher Count",
+          "type": "integer"
+        },
+        "total_minutes": {
+          "default": 45,
+          "maximum": 45,
+          "minimum": 45,
+          "title": "Total Minutes",
+          "type": "integer"
+        },
+        "usable_area_m2": {
+          "exclusiveMinimum": 0,
+          "maximum": 100000,
+          "title": "Usable Area M2",
+          "type": "number"
+        },
+        "declared_practice_capacity": {
+          "maximum": 500,
+          "minimum": 1,
+          "title": "Declared Practice Capacity",
+          "type": "integer"
+        },
+        "equipment_sets": {
+          "description": "齐备且可用的个人冰鞋护具套数",
+          "maximum": 500,
+          "minimum": 0,
+          "title": "Equipment Sets",
+          "type": "integer"
+        },
+        "safe_waiting_area": {
+          "title": "Safe Waiting Area",
+          "type": "boolean"
+        },
+        "ice_available": {
+          "default": true,
+          "title": "Ice Available",
+          "type": "boolean"
+        },
+        "venue_conditions": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Venue Conditions",
+          "type": "string"
+        },
+        "equipment_conditions": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Equipment Conditions",
+          "type": "string"
+        },
+        "goal_preference": {
+          "default": "基础控制",
+          "enum": [
+            "基础控制",
+            "动作质量",
+            "左右均衡",
+            "衔接节奏"
+          ],
+          "title": "Goal Preference",
+          "type": "string"
+        },
+        "teacher_goal_edit": {
+          "default": "",
+          "maxLength": 500,
+          "title": "Teacher Goal Edit",
+          "type": "string"
+        },
+        "teacher_notes": {
+          "default": "",
+          "maxLength": 2000,
+          "title": "Teacher Notes",
+          "type": "string"
+        },
+        "teacher_exercise_edits": {
+          "anyOf": [
+            {
+              "maxItems": 0
+            },
+            {
+              "maxItems": 3,
+              "minItems": 3
+            }
+          ],
+          "items": {
+            "maxLength": 500,
+            "pattern": "^[^\\x00-\\x1f\\x7f]*$",
+            "type": "string"
+          },
+          "maxItems": 3,
+          "title": "Teacher Exercise Edits",
+          "type": "array"
+        }
+      },
+      "required": [
+        "student_count",
+        "skill_level",
+        "coach_count",
+        "teacher_count",
+        "usable_area_m2",
+        "declared_practice_capacity",
+        "equipment_sets",
+        "safe_waiting_area",
+        "venue_conditions",
+        "equipment_conditions"
+      ],
+      "title": "AdaptiveRequest",
+      "type": "object"
+    },
+    "DutyData": {
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "enum": [
+            "coach",
+            "teacher"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "number": {
+          "title": "Number",
+          "type": "integer"
+        },
+        "task": {
+          "title": "Task",
+          "type": "string"
+        }
+      },
+      "required": [
+        "role",
+        "number",
+        "task"
+      ],
+      "title": "DutyData",
+      "type": "object"
+    },
+    "EventClaim": {
+      "enum": [
+        "observation",
+        "confirmed_error"
+      ],
+      "title": "EventClaim",
+      "type": "string"
+    },
+    "EventRef": {
+      "description": "引用某条 V4 事件（不得描述为已确认技术错误，除非教练确认）。",
+      "properties": {
+        "event_id": {
+          "description": "V4事件标识；仅ASCII字母、数字、下划线和连字符，最多64字符",
+          "maxLength": 64,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "feature": {
+          "description": "特征名（knee_angle_deg 等）",
+          "minLength": 1,
+          "title": "Feature",
+          "type": "string"
+        },
+        "frame_start": {
+          "description": "起始帧",
+          "title": "Frame Start",
+          "type": "integer"
+        },
+        "frame_end": {
+          "description": "结束帧",
+          "title": "Frame End",
+          "type": "integer"
+        },
+        "review_status": {
+          "description": "事件人工审核状态",
+          "enum": [
+            "pending",
+            "confirmed",
+            "normal_movement",
+            "tracking_error",
+            "uncertain"
+          ],
+          "title": "Review Status",
+          "type": "string"
+        },
+        "deviation_max": {
+          "default": 0.0,
+          "description": "偏离幅度（若 V4 提供）",
+          "title": "Deviation Max",
+          "type": "number"
+        }
+      },
+      "required": [
+        "event_id",
+        "feature",
+        "frame_start",
+        "frame_end",
+        "review_status"
+      ],
+      "title": "EventRef",
+      "type": "object"
+    },
+    "EvidenceEntry": {
+      "properties": {
+        "statement": {
+          "description": "教案内的陈述/依据",
+          "minLength": 1,
+          "title": "Statement",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/EvidenceSource",
+          "description": "来源/数据状态标记"
+        },
+        "citation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "引用标注（文件·章节/页码）；未核实则必须为 None",
+          "title": "Citation"
+        },
+        "event_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EventRef"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "若引用 V4 事件，须填写以触发状态保护"
+        },
+        "event_claim": {
+          "$ref": "#/$defs/EventClaim",
+          "default": "observation"
+        }
+      },
+      "required": [
+        "statement",
+        "source"
+      ],
+      "title": "EvidenceEntry",
+      "type": "object"
+    },
+    "EvidenceSource": {
+      "description": "证据来源/数据状态标记。",
+      "enum": [
+        "teacher_input",
+        "kb_evidence",
+        "real_analysis",
+        "design_assumption",
+        "unverified"
+      ],
+      "title": "EvidenceSource",
+      "type": "string"
+    },
+    "GroupData": {
+      "additionalProperties": false,
+      "properties": {
+        "wave": {
+          "title": "Wave",
+          "type": "integer"
+        },
+        "coach": {
+          "title": "Coach",
+          "type": "integer"
+        },
+        "students": {
+          "title": "Students",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "wave",
+        "coach",
+        "students"
+      ],
+      "title": "GroupData",
+      "type": "object"
+    },
+    "GuidingIdeology": {
+      "properties": {
+        "content": {
+          "description": "指导思想内容",
+          "minLength": 1,
+          "title": "Content",
+          "type": "string"
+        },
+        "motor_competence": {
+          "description": "运动能力维度可观察目标",
+          "minLength": 1,
+          "title": "Motor Competence",
+          "type": "string"
+        },
+        "healthy_behavior": {
+          "description": "健康行为维度可观察目标",
+          "minLength": 1,
+          "title": "Healthy Behavior",
+          "type": "string"
+        },
+        "sports_ethics": {
+          "description": "体育品德维度可观察目标",
+          "minLength": 1,
+          "title": "Sports Ethics",
+          "type": "string"
+        }
+      },
+      "required": [
+        "content",
+        "motor_competence",
+        "healthy_behavior",
+        "sports_ethics"
+      ],
+      "title": "GuidingIdeology",
+      "type": "object"
+    },
+    "LearnerAnalysis": {
+      "properties": {
+        "student_profile": {
+          "description": "学生基础（学段/人数/水平）",
+          "minLength": 1,
+          "title": "Student Profile",
+          "type": "string"
+        },
+        "common_difficulties": {
+          "default": "",
+          "description": "常见学习困难",
+          "title": "Common Difficulties",
+          "type": "string"
+        },
+        "tiered_plan": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "分层教学需求",
+          "title": "Tiered Plan"
+        },
+        "note": {
+          "default": "已确认事实/未经审核姿态事件/待核实推测需在教案中以证据来源明确区分。",
+          "description": "数据区分说明",
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "student_profile"
+      ],
+      "title": "LearnerAnalysis",
+      "type": "object"
+    },
+    "LoadMetric": {
+      "properties": {
+        "name": {
+          "description": "指标名",
+          "title": "Name",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/MeasurementKind",
+          "description": "预计值或实测值"
+        },
+        "formula": {
+          "description": "计算公式（含分子/分母/单位说明）",
+          "title": "Formula",
+          "type": "string"
+        },
+        "numerator": {
+          "description": "原始精度分子",
+          "minimum": 0,
+          "title": "Numerator",
+          "type": "number"
+        },
+        "denominator": {
+          "description": "原始精度分母",
+          "exclusiveMinimum": 0,
+          "title": "Denominator",
+          "type": "number"
+        },
+        "unit": {
+          "description": "单位（如 % / 次/分）",
+          "title": "Unit",
+          "type": "string"
+        },
+        "result": {
+          "description": "原始精度计算结果",
+          "minimum": 0,
+          "title": "Result",
+          "type": "number"
+        },
+        "target": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "可选目标/依据说明",
+          "title": "Target"
+        },
+        "display_result": {
+          "description": "仅展示时舍入，不能作为后续计算输入。",
+          "readOnly": true,
+          "title": "Display Result",
+          "type": "number"
+        }
+      },
+      "required": [
+        "name",
+        "kind",
+        "formula",
+        "numerator",
+        "denominator",
+        "unit",
+        "result",
+        "display_result"
+      ],
+      "title": "LoadMetric",
+      "type": "object"
+    },
+    "MeasurementKind": {
+      "enum": [
+        "estimated",
+        "measured"
+      ],
+      "title": "MeasurementKind",
+      "type": "string"
+    },
+    "OrganizationData": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "enum": [
+            "withheld",
+            "pending_confirmation"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "capacity_source": {
+          "const": "teacher_declared_unverified",
+          "title": "Capacity Source",
+          "type": "string"
+        },
+        "declared_capacity": {
+          "title": "Declared Capacity",
+          "type": "integer"
+        },
+        "usable_area_m2": {
+          "title": "Usable Area M2",
+          "type": "number"
+        },
+        "concurrent_students": {
+          "title": "Concurrent Students",
+          "type": "integer"
+        },
+        "wave_sizes": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Wave Sizes",
+          "type": "array"
+        },
+        "groups": {
+          "items": {
+            "$ref": "#/$defs/GroupData"
+          },
+          "title": "Groups",
+          "type": "array"
+        },
+        "rotation_count": {
+          "title": "Rotation Count",
+          "type": "integer"
+        },
+        "main_demo_min": {
+          "title": "Main Demo Min",
+          "type": "integer"
+        },
+        "main_rotation_min": {
+          "title": "Main Rotation Min",
+          "type": "integer"
+        },
+        "transition_min_per_wave": {
+          "title": "Transition Min Per Wave",
+          "type": "integer"
+        },
+        "core_active_min_per_student": {
+          "title": "Core Active Min Per Student",
+          "type": "number"
+        },
+        "group_diagram": {
+          "title": "Group Diagram",
+          "type": "string"
+        },
+        "waiting_students_max": {
+          "title": "Waiting Students Max",
+          "type": "integer"
+        },
+        "note": {
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "capacity_source",
+        "declared_capacity",
+        "usable_area_m2",
+        "concurrent_students",
+        "wave_sizes",
+        "groups",
+        "rotation_count",
+        "main_demo_min",
+        "main_rotation_min",
+        "transition_min_per_wave",
+        "core_active_min_per_student",
+        "group_diagram",
+        "waiting_students_max",
+        "note"
+      ],
+      "title": "OrganizationData",
+      "type": "object"
+    },
+    "Phase": {
+      "properties": {
+        "phase": {
+          "$ref": "#/$defs/TeachingPhase",
+          "description": "教学阶段"
+        },
+        "minutes": {
+          "description": "该阶段分钟数（正整数）",
+          "exclusiveMinimum": 0,
+          "title": "Minutes",
+          "type": "integer"
+        },
+        "content": {
+          "description": "教学内容",
+          "minLength": 1,
+          "title": "Content",
+          "type": "string"
+        },
+        "teacher_activity": {
+          "default": "",
+          "description": "教师活动",
+          "title": "Teacher Activity",
+          "type": "string"
+        },
+        "student_activity": {
+          "default": "",
+          "description": "学生活动",
+          "title": "Student Activity",
+          "type": "string"
+        },
+        "organization": {
+          "default": "",
+          "description": "组织方法",
+          "title": "Organization",
+          "type": "string"
+        },
+        "safety_tip": {
+          "default": "",
+          "description": "安全提示",
+          "title": "Safety Tip",
+          "type": "string"
+        },
+        "evaluation": {
+          "default": "",
+          "description": "评价方式",
+          "title": "Evaluation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "phase",
+        "minutes",
+        "content"
+      ],
+      "title": "Phase",
+      "type": "object"
+    },
+    "PracticeData": {
+      "additionalProperties": false,
+      "properties": {
+        "order": {
+          "title": "Order",
+          "type": "integer"
+        },
+        "task": {
+          "title": "Task",
+          "type": "string"
+        },
+        "catalogue_task": {
+          "title": "Catalogue Task",
+          "type": "string"
+        },
+        "active_min_per_student": {
+          "title": "Active Min Per Student",
+          "type": "number"
+        },
+        "mode": {
+          "title": "Mode",
+          "type": "string"
+        },
+        "status": {
+          "const": "candidate_unverified",
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "order",
+        "task",
+        "catalogue_task",
+        "active_min_per_student",
+        "mode",
+        "status"
+      ],
+      "title": "PracticeData",
+      "type": "object"
+    },
+    "SafetyPrecautions": {
+      "properties": {
+        "safety_review_status": {
+          "const": "unreviewed",
+          "default": "unreviewed",
+          "title": "Safety Review Status",
+          "type": "string"
+        },
+        "risk_screening": {
+          "description": "课前风险筛查",
+          "minLength": 1,
+          "title": "Risk Screening",
+          "type": "string"
+        },
+        "ice_check": {
+          "description": "冰面检查",
+          "minLength": 1,
+          "title": "Ice Check",
+          "type": "string"
+        },
+        "equipment_check": {
+          "description": "装备检查",
+          "minLength": 1,
+          "title": "Equipment Check",
+          "type": "string"
+        },
+        "staffing": {
+          "default": "",
+          "description": "教学人员职责",
+          "title": "Staffing",
+          "type": "string"
+        },
+        "zone_management": {
+          "default": "",
+          "description": "练习区管理",
+          "title": "Zone Management",
+          "type": "string"
+        },
+        "emergency_flow": {
+          "description": "紧急处置流程",
+          "minLength": 1,
+          "title": "Emergency Flow",
+          "type": "string"
+        },
+        "medical_note": {
+          "default": "涉及伤病/呼吸系统疾病/身体不适，仅提醒教师按学校既有制度核查，AI 不擅自诊断或处理医疗问题。",
+          "description": "医疗边界声明",
+          "title": "Medical Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "risk_screening",
+        "ice_check",
+        "equipment_check",
+        "emergency_flow"
+      ],
+      "title": "SafetyPrecautions",
+      "type": "object"
+    },
+    "SourceData": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "editorial_candidate",
+          "title": "Kind",
+          "type": "string"
+        },
+        "reference": {
+          "title": "Reference",
+          "type": "null"
+        },
+        "note": {
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "reference",
+        "note"
+      ],
+      "title": "SourceData",
+      "type": "object"
+    },
+    "TeacherInput": {
+      "description": "教师提供的教学条件（非关键项可为空，但不虚构）。",
+      "properties": {
+        "audience": {
+          "description": "教学对象",
+          "minLength": 1,
+          "title": "Audience",
+          "type": "string"
+        },
+        "theme": {
+          "description": "教学主题/动作",
+          "minLength": 1,
+          "title": "Theme",
+          "type": "string"
+        },
+        "conditions": {
+          "default": "",
+          "description": "教学条件（场地/器材/人员）",
+          "title": "Conditions",
+          "type": "string"
+        },
+        "class_data_available": {
+          "default": false,
+          "description": "是否有经授权班级训练记录",
+          "title": "Class Data Available",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "audience",
+        "theme"
+      ],
+      "title": "TeacherInput",
+      "type": "object"
+    },
+    "TeachingFlow": {
+      "description": "当前标准教案模式：严格45分钟；其他模式须显式使用通用模型另行定义。\n\nGeneralTeachingFlow 只负责通用三阶段完整性、正时长与合计约束，\n不可代替 LessonPlan 的标准模式校验。",
+      "properties": {
+        "total_minutes": {
+          "default": 45,
+          "description": "总课时（分钟）",
+          "exclusiveMinimum": 0,
+          "title": "Total Minutes",
+          "type": "integer"
+        },
+        "phases": {
+          "default": [],
+          "description": "教学阶段列表（必须恰含准备/基本/结束三段）",
+          "items": {
+            "$ref": "#/$defs/Phase"
+          },
+          "title": "Phases",
+          "type": "array"
+        }
+      },
+      "title": "TeachingFlow",
+      "type": "object"
+    },
+    "TeachingMaterialAnalysis": {
+      "properties": {
+        "technical_composition": {
+          "description": "技术构成",
+          "minLength": 1,
+          "title": "Technical Composition",
+          "type": "string"
+        },
+        "key_points": {
+          "description": "教学重点",
+          "minLength": 1,
+          "title": "Key Points",
+          "type": "string"
+        },
+        "difficulties": {
+          "description": "教学难点",
+          "minLength": 1,
+          "title": "Difficulties",
+          "type": "string"
+        },
+        "progression": {
+          "description": "与前后课程的联系",
+          "minLength": 1,
+          "title": "Progression",
+          "type": "string"
+        },
+        "note_2d_limitation": {
+          "default": "膝角/躯干倾角/髋踝偏移为二维视频可观测几何量，不等同于真实重心、冰刀用刃或经证实的专项技术错误。",
+          "description": "二维测量的局限性说明（不得将探索性阈值当作合格标准）",
+          "title": "Note 2D Limitation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "technical_composition",
+        "key_points",
+        "difficulties",
+        "progression"
+      ],
+      "title": "TeachingMaterialAnalysis",
+      "type": "object"
+    },
+    "TeachingPhase": {
+      "enum": [
+        "prep",
+        "main",
+        "closing"
+      ],
+      "title": "TeachingPhase",
+      "type": "string"
+    },
+    "VenueEquipment": {
+      "properties": {
+        "organization_status": {
+          "const": "pending_confirmation",
+          "default": "pending_confirmation",
+          "title": "Organization Status",
+          "type": "string"
+        },
+        "proposed_group_sizes": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Proposed Group Sizes",
+          "type": "array"
+        },
+        "zones": {
+          "description": "冰场区域划分",
+          "minLength": 1,
+          "title": "Zones",
+          "type": "string"
+        },
+        "route": {
+          "default": "",
+          "description": "练习路线",
+          "title": "Route",
+          "type": "string"
+        },
+        "observation_position": {
+          "default": "",
+          "description": "教师观察位置",
+          "title": "Observation Position",
+          "type": "string"
+        },
+        "grouping": {
+          "default": "",
+          "description": "分组安排",
+          "title": "Grouping",
+          "type": "string"
+        },
+        "equipment_list": {
+          "default": "",
+          "description": "器材数量",
+          "title": "Equipment List",
+          "type": "string"
+        },
+        "camera_position": {
+          "default": "",
+          "description": "视频拍摄机位",
+          "title": "Camera Position",
+          "type": "string"
+        }
+      },
+      "required": [
+        "zones"
+      ],
+      "title": "VenueEquipment",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "adaptive-prelesson-v1.1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "draft_ready",
+        "needs_confirmation"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "requires_teacher_review": {
+      "const": true,
+      "title": "Requires Teacher Review",
+      "type": "boolean"
+    },
+    "knowledge_status": {
+      "const": "unverified",
+      "title": "Knowledge Status",
+      "type": "string"
+    },
+    "review_status": {
+      "const": "draft",
+      "title": "Review Status",
+      "type": "string"
+    },
+    "request": {
+      "$ref": "#/$defs/AdaptiveRequest"
+    },
+    "lesson_plan": {
+      "$ref": "#/$defs/AdaptivePlan"
+    },
+    "adaptation": {
+      "$ref": "#/$defs/AdaptationData"
+    }
+  },
+  "required": [
+    "schema_version",
+    "status",
+    "requires_teacher_review",
+    "knowledge_status",
+    "review_status",
+    "request",
+    "lesson_plan",
+    "adaptation"
+  ],
+  "title": "AdaptiveResponse",
+  "type": "object"
+}

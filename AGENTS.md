@@ -102,3 +102,8 @@
 - 说明/GUI最少步骤见 `docs/coze-deploy-readiness-v01.md`；测试 `tests/test_deploy_readiness.py` 与现有隔离PG真实main测试联合运行。
 
 - PR #6安全修复：生产入口不得绕过预检；检查器按已发布响应Schema核对必填结构与版本，契约文件必须打包。开发入口不对公网安全作保证，不允许为平台联调绕过认证或回退旧生产启动命令。
+
+### V1.1 本地多主题自适应备课
+- `agents.lesson_plan_agent.adaptive` + `themes.v11.json`：24候选主题、四水平、显式先修/资源约束、教师候选目标与练习修改，复用既有七要素/45分钟/证据与原始精度指标。无心率预测，知识与安全始终unverified。
+- `integrations.prelesson.adaptive_api` 仅由本地console挂载，复用会话/Origin/CSRF，额外检查服务端身份标记；不得挂production main。V1 API及部署/Coze契约不变。
+- 文档与真实浏览器证据：`docs/adaptive-prelesson-v11.md`；正式测试 `tests/test_adaptive_prelesson_v11.py`；可选浏览器验收 `scripts/verify_adaptive_prelesson_browser.py`。
