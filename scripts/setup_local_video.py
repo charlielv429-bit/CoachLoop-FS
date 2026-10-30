@@ -15,10 +15,11 @@ import urllib.request
 
 ROOT=Path(__file__).resolve().parents[1]
 MODEL_URL='https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_full/float16/1/pose_landmarker_full.task'
-MODEL_SHA256='4eaa5eb7a98365221087693fcc286334cf0858e2eb6e15b506aa4a7ecdcec4ad'
-# Hash observed from the recorded public mirror; downloading DIRECTLY from Google
-# and matching it is the user's independent upstream comparison, not a claim that
-# this execution environment already reached Google. See video-v20.md provenance.
+MODEL_SHA256='5134a3aad27a58b93da0088d431f366da362b44e3ccfbe3462b3827a839011b1'
+# SHA-256 observed on user's Mac on 2026-10-30: independently downloaded over HTTPS
+# from MODEL_URL and byte-compared with locally loadable model (OFFICIAL_FILE_MATCH).
+# The assistant's GitHub environment did not independently download these bytes.
+# Keep strict SHA-256 verification and refuse to overwrite mismatching models.
 
 
 def main():

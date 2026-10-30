@@ -94,7 +94,7 @@ flowchart LR
 
 模型：本轮从公开GitHub镜像取Google Pose Landmarker Full任务包，镜像README声明为未修改的Google模型。文件SHA256 `4eaa5eb7a98365221087693fcc286334cf0858e2eb6e15b506aa4a7ecdcec4ad`，9398198字节。镜像固定提交 `a22a9520d07e2ff351fbcf2c01dccff5713471a9`，[来源与声明](https://github.com/BaratovAbdulaziz/pose-detection-models/blob/a22a9520d07e2ff351fbcf2c01dccff5713471a9/README.md)。
 
-**本轮尚未独立直连Google官方源比对该权重**，不能把镜像声明当密码学来源证明。Mac准备脚本只从 [Google官方固定版本](https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_full/float16/1/pose_landmarker_full.task)下载并核对该哈希，不自动回退镜像；模型使用仍须遵守上游条款。正式使用前需完成官方源核验与本机实测。
+**本轮尚未独立直连Google官方源比对该权重**，不能把镜像声明当密码学来源证明。Mac准备脚本只从 [Google官方固定版本](https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_full/float16/1/pose_landmarker_full.task)下载并核对更新后的用户Mac核验哈希，不自动回退镜像；模型使用仍须遵守上游条款。2026-10-30 用户Mac通过 HTTPS 独立下载该URL，下载文件与其本地模型 SHA-256 同为 `5134a3aad27a58b93da0088d431f366da362b44e3ccfbe3462b3827a839011b1`，`cmp` 输出 `OFFICIAL_FILE_MATCH`，MediaPipe 0.10.32 实际加载输出 `MODEL_LOAD_OK`。该证据来自用户Mac截图，不是本次GitHub执行环境的独立下载；HTTP响应头已由用户Mac保存至 `/tmp/coachloop-model-headers.txt`，尚未逐项审阅；模型内部元信息也尚待单独审计。旧 `4eaa5eb7…` 来源于第三方镜像，仅保留为历史记录，不可再作为官方URL的预期哈希。
 
 实际结果：65帧/65帧检出、18条候选变化；仅是本视频与本版本的链路结果，不是准确率。真实浏览器证据位于 `docs/local-video-v20-evidence/browser.json` 与 `video-ui.redacted.png`。截图遮蔽原片、骨架与具体事件细节；视频、模型、逐帧关键点和真实逐事件导出未提交。`review_action=automated_local_unverified`明确审核是自动化验收操作，不冒充真实教练。
 
