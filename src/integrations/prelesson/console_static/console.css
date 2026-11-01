@@ -12,3 +12,6 @@ input[type=checkbox]{display:inline-block;width:auto;margin:0 8px 0 0;vertical-a
 #curriculum-entry pre { white-space: pre-wrap; overflow-wrap: anywhere; }
 #curriculum-entry textarea { width: 100%; min-height: 8rem; }
 #curriculum-entry summary { cursor: pointer; font-weight: 700; }
+#lesson-planning-mode pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+#lesson-planning-mode textarea { width: 100%; min-height: 5rem; }
+#lesson-planning-mode summary { cursor: pointer; font-weight: 700; }

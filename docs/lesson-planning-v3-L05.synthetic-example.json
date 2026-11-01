@@ -1,0 +1,205 @@
+{
+  "schema_version": "lesson-framework-v3.1",
+  "mode": "lesson",
+  "lesson": {
+    "lesson_id": "L05",
+    "title": "左前交叉步完整动作练习",
+    "duration_min": 45,
+    "teaching_objective_draft": "围绕“左前交叉步完整动作练习”拟定学习目标；具体动作标准、练习与评价要求待专项教师补充。"
+  },
+  "title": "左前交叉步完整动作练习｜待审核教案框架",
+  "review_status": "pending_review",
+  "requires_teacher_review": true,
+  "execution_status": "withheld_pending_specialist_evidence",
+  "technical_guidance": [],
+  "formal_teaching_evidence": [],
+  "objective_draft": "围绕“左前交叉步完整动作练习”拟定学习目标；具体动作标准、练习与评价要求待专项教师补充。",
+  "conditions": {
+    "class_label": "合成演示班（非真实学生）",
+    "student_count": 20,
+    "skill_level": "初级",
+    "age_band": "青少年",
+    "coach_count": 2,
+    "teacher_count": 1,
+    "usable_area_m2": 200.0,
+    "declared_practice_capacity": 10,
+    "equipment_sets": 20,
+    "safe_waiting_area": true,
+    "ice_available": true,
+    "venue_conditions": "合成场地区域（仅展示组织框架）",
+    "equipment_conditions": "合成齐备装备20套"
+  },
+  "prerequisites": {
+    "teacher_confirmed": true,
+    "verification_status": "unverified",
+    "requirements_status": "missing"
+  },
+  "preparation_checklist": [
+    "核对冰面及场地区域",
+    "逐人核查装备齐备和适配",
+    "核定容量、等待区及人员交接",
+    "补齐专项来源、先修要求与审核记录"
+  ],
+  "teaching_flow": {
+    "total_minutes": 45,
+    "phases": [
+      {
+        "phase": "prep",
+        "minutes": 9,
+        "content": "点名、装备和场地核查；核对先修资料与人员职责。",
+        "teacher_activity": "核查条件与分工，专项审核前不组织实操",
+        "student_activity": "参与条件核对、口头讨论与自评记录",
+        "organization": "拟定分组待现场确认；不是实施许可",
+        "safety_tip": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+        "evaluation": "仅记录组织与资料问题，不评价动作合格与等级"
+      },
+      {
+        "phase": "main",
+        "minutes": 29,
+        "content": "预留示范核查5分钟、轮换组织24分钟（每轮转换1分钟设计假设）；专项内容为空，审核前改为资料核对与口头讨论。",
+        "teacher_activity": "核查条件与分工，专项审核前不组织实操",
+        "student_activity": "参与条件核对、口头讨论与自评记录",
+        "organization": "拟定分组待现场确认；不是实施许可",
+        "safety_tip": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+        "evaluation": "仅记录组织与资料问题，不评价动作合格与等级"
+      },
+      {
+        "phase": "closing",
+        "minutes": 7,
+        "content": "整理记录、学生自评问题收集、教师复核交接；不作技术评分。",
+        "teacher_activity": "核查条件与分工，专项审核前不组织实操",
+        "student_activity": "参与条件核对、口头讨论与自评记录",
+        "organization": "拟定分组待现场确认；不是实施许可",
+        "safety_tip": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+        "evaluation": "仅记录组织与资料问题，不评价动作合格与等级"
+      }
+    ]
+  },
+  "organization": {
+    "status": "pending_confirmation",
+    "reasons": [],
+    "groups": [
+      {
+        "wave": 1,
+        "coach": 1,
+        "students": 5
+      },
+      {
+        "wave": 1,
+        "coach": 2,
+        "students": 5
+      },
+      {
+        "wave": 2,
+        "coach": 1,
+        "students": 5
+      },
+      {
+        "wave": 2,
+        "coach": 2,
+        "students": 5
+      }
+    ],
+    "wave_sizes": [
+      10,
+      10
+    ],
+    "rotation_count": 2,
+    "concurrent_students": 10,
+    "declared_capacity": 10,
+    "capacity_source": "teacher_declared_unverified",
+    "usable_area_m2": 200.0,
+    "core_active_min_per_student": 11.0,
+    "note": "仅为组织设计假设，不证明安全容量或师生比；教师先修确认未经认证。"
+  },
+  "staff_tasks": [
+    {
+      "role": "coach",
+      "number": 1,
+      "task": "负责拟定组的组织与异常报告；专项示范和保护要求待审核，不提供动作要领"
+    },
+    {
+      "role": "coach",
+      "number": 2,
+      "task": "负责拟定组的组织与异常报告；专项示范和保护要求待审核，不提供动作要领"
+    },
+    {
+      "role": "teacher",
+      "number": 1,
+      "task": "核对人员、装备及冰外等待区，确认轮换交接；不替代专项教练"
+    }
+  ],
+  "load_accounting": {
+    "total_minutes": 45,
+    "kind": "estimated",
+    "avg_hr": null,
+    "group_density": {
+      "name": "预计群体活动窗口密度",
+      "kind": "estimated",
+      "formula": "预计活动分钟 / 45分钟 × 100；轮换均匀分配假设，非实测",
+      "numerator": 29.0,
+      "denominator": 45.0,
+      "unit": "%",
+      "result": 64.44444444444444,
+      "target": null,
+      "display_result": 64.44
+    },
+    "individual_density": {
+      "name": "预计人均活动密度",
+      "kind": "estimated",
+      "formula": "预计活动分钟 / 45分钟 × 100；轮换均匀分配假设，非实测",
+      "numerator": 18.0,
+      "denominator": 45.0,
+      "unit": "%",
+      "result": 40.0,
+      "target": null,
+      "display_result": 40.0
+    },
+    "note": "复用原活动窗口算法：准备4+结束3，基本29=示范5+轮换24，每轮转换1；均为条件满足后的设计假设，非当前实施量；专项暂缓期间实际负荷不推定，心率不估计。"
+  },
+  "differentiation": [
+    "支持层：待核实学生先修与支持需求",
+    "巩固层：专项任务待审核后填写",
+    "进阶层：无专项许可不提高难度"
+  ],
+  "knowledge_inventory": [],
+  "missing_materials": [
+    "专项教学目标与动作标准待补充",
+    "练习组织与安全要求待补充",
+    "评价量规与真实来源待补充",
+    "专项先修要求、适用学生水平与审核记录待补充"
+  ],
+  "teacher_review_checklist": [
+    "核实知识条目与来源原文支持关系",
+    "取得可追溯专项审核意见",
+    "确认学生先修与适用水平",
+    "复核现场容量、人员、装备与等待区",
+    "复核分组及预计负荷假设",
+    "逐项复核教师修改，确认前不实施"
+  ],
+  "warning": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+  "teacher_edits": [
+    {
+      "version": 1,
+      "changed_at": "2026-11-01T06:26:16.315251+00:00",
+      "actor": "local_unverified_operator",
+      "review_status": "pending_review",
+      "values": {
+        "goal_draft": "",
+        "organization_note": "",
+        "resource_note": ""
+      }
+    }
+  ],
+  "current_teacher_edits": {
+    "goal_draft": "",
+    "organization_note": "",
+    "resource_note": ""
+  },
+  "plan_id": "383972aa9e5f4772a1b891cf61a8f441",
+  "version": 1,
+  "effective_goal_draft": {
+    "text": "围绕“左前交叉步完整动作练习”拟定学习目标；具体动作标准、练习与评价要求待专项教师补充。",
+    "status": "generated_pending_review"
+  }
+}

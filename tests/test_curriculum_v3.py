@@ -187,10 +187,11 @@ def test_v3_management_not_exposed_to_classroom():
     headers = {'Origin': origin, 'X-CoachLoop-Console': '1', 'X-Forwarded-Proto': 'https'}
     with TestClient(proxy, base_url=origin, client=('127.0.0.1', 55200), headers=headers) as c:
         assert c.post('/classroom/login', json={'code': code, 'mock_acknowledged': True}).status_code == 200
-        for path in ('lessons', 'knowledge', 'history', 'export', 'import'):
+        for path in ('lessons', 'knowledge', 'history', 'export', 'import', 'plans/draft', 'plans/edit', 'plans/export', 'plans/history'):
             assert c.get('/api/v3/' + path).status_code == 404
             assert c.post('/api/v3/' + path, json={}).status_code == 404
         assert c.get('/curriculum.js').status_code == 404
+        assert c.get('/lesson-planning.js').status_code == 404
         assert 'id="curriculum-entry" hidden' in c.get('/').text
 
 

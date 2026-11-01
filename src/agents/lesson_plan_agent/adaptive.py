@@ -77,13 +77,18 @@ class AdaptiveRequest(StrictModel):
             raise ValueError('Unknown theme/skill identifier')
         if len(set(self.mastered_skills)) != len(self.mastered_skills):
             raise ValueError('Duplicate prerequisite declaration')
-        if not self.class_label or not self.venue_conditions or not self.equipment_conditions:
-            raise ValueError('Required text must be nonempty')
-        staff = _parse_staffing(self.venue_conditions + '；' + self.equipment_conditions)
-        for role, count in [('教练', self.coach_count), ('教师', self.teacher_count)]:
-            if staff[role] is not None and staff[role] != count:
-                raise ValueError('Staffing text contradicts structured staffing')
-        return self
+        return validate_classroom_conditions(self)
+
+
+def validate_classroom_conditions(req):
+    """Shared required text and staffing consistency, without a theme lookup."""
+    if not req.class_label or not req.venue_conditions or not req.equipment_conditions:
+        raise ValueError('Required text must be nonempty')
+    staff = _parse_staffing(req.venue_conditions + '；' + req.equipment_conditions)
+    for role, count in [('教练', req.coach_count), ('教师', req.teacher_count)]:
+        if staff[role] is not None and staff[role] != count:
+            raise ValueError('Staffing text contradicts structured staffing')
+    return req
 
 
 class AdaptiveLoad(StrictModel):
@@ -126,12 +131,9 @@ def _metric(name, active):
                       target=None).model_dump()
 
 
-def _payload(req):
-    t = THEMES[req.theme_id]
-    missing = [s for s in t['prerequisites'] if s not in req.mastered_skills]
-    reasons = []
-    if req.skill_level not in t['supported_levels']: reasons.append('主题与学生水平不匹配')
-    if missing: reasons.append('缺少先修技能：' + '、'.join(THEMES[s]['name_zh'] for s in missing))
+def organization_inputs(req, reasons):
+    """Shared resource holds, grouping and activity accounting; no theme lookup."""
+    reasons = list(reasons)
     if not req.coach_count: reasons.append('无专项教练，暂缓冰上练习；体育教师不自动替代教练')
     if req.equipment_sets < req.student_count: reasons.append('齐备个人装备不足，不通过共用冰鞋护具降低核验要求')
     if not req.safe_waiting_area: reasons.append('等待区安全条件未确认')
@@ -159,6 +161,16 @@ def _payload(req):
     # 4 prep + 3 closing gentle activity minutes are design assumptions.
     group_active = 7 + active_window if not blocked else 0
     individual_active = 7 + core_per_student if not blocked else 0
+    return blocked, reasons, slots, lanes, groups, waves, active_window, core_per_student, group_active, individual_active, wave_sizes
+
+
+def _payload(req):
+    t = THEMES[req.theme_id]
+    missing = [s for s in t['prerequisites'] if s not in req.mastered_skills]
+    reasons = []
+    if req.skill_level not in t['supported_levels']: reasons.append('主题与学生水平不匹配')
+    if missing: reasons.append('缺少先修技能：' + '、'.join(THEMES[s]['name_zh'] for s in missing))
+    (blocked, reasons, slots, lanes, groups, waves, active_window, core_per_student, group_active, individual_active, wave_sizes) = organization_inputs(req, reasons)
     rule = LEVEL_RULES[req.skill_level]
     goal = t['goals'] + [rule[0], '目标偏好：' + req.goal_preference]
     if req.teacher_goal_edit: goal += ['教师修改候选目标（未审核）：' + req.teacher_goal_edit]

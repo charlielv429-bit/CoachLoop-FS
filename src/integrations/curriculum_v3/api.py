@@ -2,14 +2,15 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from integrations.prelesson.adaptive_api import local_session
 from integrations.prelesson.api import PrelessonRoute
+from .planning import LessonRequest, EditRequest
 from .registry import Archive, Knowledge, RegistryError, CATEGORIES
 
 BASE = '/api/v3'
-READ_PATHS = {BASE + path for path in ('/lessons', '/knowledge', '/history', '/export')}
-WRITE_PATHS = {BASE + path for path in ('/knowledge', '/import')}
+READ_PATHS = {BASE + path for path in ('/lessons', '/knowledge', '/history', '/export', '/plans/export', '/plans/history')}
+WRITE_PATHS = {BASE + path for path in ('/knowledge', '/import', '/plans/draft', '/plans/edit')}
 
 
-def create_router(store):
+def create_router(store, plans):
     router = APIRouter(route_class=PrelessonRoute, dependencies=[Depends(local_session)])
 
     @router.get(BASE + '/lessons')
@@ -44,5 +45,33 @@ def create_router(store):
             return store.import_archive(archive)
         except RegistryError as error:
             raise HTTPException(409, str(error)) from error
+
+    @router.post(BASE + '/plans/draft')
+    def draft(request: LessonRequest):
+        try:
+            return plans.create(request, store)
+        except RegistryError as error:
+            raise HTTPException(409, str(error)) from error
+
+    @router.post(BASE + '/plans/edit')
+    def edit(request: EditRequest):
+        try:
+            return plans.edit(request)
+        except RegistryError as error:
+            raise HTTPException(409, str(error)) from error
+
+    @router.get(BASE + '/plans/export')
+    def export_plan(plan_id: str = Query(pattern=r'^[a-f0-9]{32}$')):
+        try:
+            return plans.read(plan_id)
+        except RegistryError as error:
+            raise HTTPException(404, str(error)) from error
+
+    @router.get(BASE + '/plans/history')
+    def plan_history(plan_id: str = Query(pattern=r'^[a-f0-9]{32}$')):
+        try:
+            return {'versions': plans.read(plan_id, history=True)}
+        except RegistryError as error:
+            raise HTTPException(404, str(error)) from error
 
     return router
