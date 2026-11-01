@@ -7,3 +7,8 @@ input[type=checkbox]{display:inline-block;width:auto;margin:0 8px 0 0;vertical-a
 .video-stage video{object-fit:contain}
 
 .video-stage{color:#eef8f4}
+
+/* V3 plain-text records stay readable on narrow screens. */
+#curriculum-entry pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+#curriculum-entry textarea { width: 100%; min-height: 8rem; }
+#curriculum-entry summary { cursor: pointer; font-weight: 700; }
