@@ -89,3 +89,26 @@ git diff --check
 第三方cozeloop存在Pydantic旧config弃用警告，无本轮新增失败。
 Chromium实际验收输出：`V3 Chromium acceptance: 8 lessons, selection, create/edit/history, pending labels, original 3 tabs PASS`。
 JS语法与diff空白检查通过。
+
+## PR #15 合并前最终复审
+
+核对原提交28dd3a8与远端main=25cd7dd的真实差异，11文件均在第一阶段范围；
+8课次配置与24主题配置无映射，后者及其生成逻辑未修改。
+逐项检查本地会话/CSRF、严格状态枚举、追加版本和原子导入、文本渲染与内存生命周期。
+未发现专业认证升级、历史覆盖、脚本执行或课堂管理接口暴露路径。
+
+复现并修复一个P2错误：已有500历史版本时，保存或导入第501版本在构造Archive时
+抛出未捕获ValidationError（HTTP 500），而非约定409。将总条目/版本数量检查移到Archive构造前，
+保留先验证再原子替换；回归测试确认两条写入路径均返回409且原数据完整不变。
+额外10项非法Unicode字段/导入测试确认现有校验返回422且无写入，无需改变校验实现。
+
+修复后实际重跑：
+- `PYTHONPATH=src .venv/bin/python -B -m pytest -q -rs -p no:cacheprovider`：852 passed, 193 skipped, 1 warning，43.00秒。
+- V3测试累计37项全部通过（原25项+12项边界测试）。
+- Chromium实际验收、JS语法检查、git diff空白检查通过。
+- 193跳过仍为191项未配置隔离PostgreSQL、2项缺少授权真实视频；
+  本PR不改数据库/生产认证/视频算法，因此不阻塞本地第一阶段合并，但不能代表这些端到端能力已验收。
+
+后续可完善：来源状态rejected时显示专门退回标签（当前结构化状态正确，但完整来源仍显示已登记待核实）；
+可信专项审核身份与审计渠道；持久化和备份恢复体验。上述均不开放本阶段认证升级。
+结论：修复后未发现尚未解决的合并阻断问题，建议人工确认后合并；本次未执行合并或部署。

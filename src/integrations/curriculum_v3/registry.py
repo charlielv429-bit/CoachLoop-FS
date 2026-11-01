@@ -98,10 +98,14 @@ class Registry:
                 raise RegistryError('Version conflict; reload current history')
             history.setdefault(entry.knowledge_id, []).append(entry.model_copy(deep=True))
         count = sum(map(len, history.values()))
+        # Reject aggregate count before Archive's request-schema length validation,
+        # otherwise the 501st stored revision raises an unhandled ValidationError.
+        if len(history) > 200 or count > 500:
+            raise RegistryError('Registry capacity reached; export and restart')
         # Bound the pretty-printed archive too, so every UI export fits one import.
         archive = Archive(entries=[e for h in history.values() for e in h])
         size = len(json.dumps(archive.model_dump(), ensure_ascii=False, indent=2).encode())
-        if len(history) > 200 or count > 500 or size > 900 * 1024:
+        if size > 900 * 1024:
             raise RegistryError('Registry capacity reached; export and restart')
         return history
 

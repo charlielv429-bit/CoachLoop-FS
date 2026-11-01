@@ -192,3 +192,27 @@ def test_v3_management_not_exposed_to_classroom():
             assert c.post('/api/v3/' + path, json={}).status_code == 404
         assert c.get('/curriculum.js').status_code == 404
         assert 'id="curriculum-entry" hidden' in c.get('/').text
+
+
+@pytest.mark.parametrize('path', ['knowledge', 'import'])
+def test_revision_capacity_returns_conflict_without_internal_error(client, path):
+    store = client.app.state.curriculum_registry
+    versions = [Knowledge(**{**record(), 'version': i}) for i in range(1, 501)]
+    store.import_archive(Archive(entries=versions))
+    before = store.export()
+    entry = {**record(), 'version': 501}
+    body = entry if path == 'knowledge' else {'entries': [entry]}
+    response = post(client, path, body)
+    assert response.status_code == 409
+    assert store.export() == before
+
+
+@pytest.mark.parametrize('field', ['title', 'content', 'source_id', 'source_title', 'source_locator'])
+@pytest.mark.parametrize('path', ['knowledge', 'import'])
+def test_invalid_unicode_rejected_atomically(client, field, path):
+    entry = {**record(), field: 'synthetic-invalid-\ud800'}
+    body = entry if path == 'knowledge' else {'entries': [entry]}
+    response = client.post('/api/v3/' + path, content=json.dumps(body),
+                           headers={**HEADERS, 'Content-Type': 'application/json'})
+    assert response.status_code == 422
+    assert client.get('/api/v3/export').json()['entries'] == []
