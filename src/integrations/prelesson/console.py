@@ -19,12 +19,16 @@ from integrations.local_video.service import VideoStore, VideoError, READ_PATHS,
 from integrations.local_video.api import create_router as create_video_routers
 from .adaptive_api import create_adaptive_router, ADAPTIVE, CATALOGUE, LOCAL_AUTH
 
+from integrations.curriculum_v3.api import create_router as create_v3_router, READ_PATHS as V3_READ, WRITE_PATHS as V3_WRITE
+from integrations.curriculum_v3.registry import Registry
+
 STATIC = Path(__file__).with_name('console_static')
 COOKIE = 'coachloop_local_console'
 CANONICAL = '/api/v1/lesson-plans/draft'
 ALLOWED = {('GET', '/'), ('GET', '/console.js'), ('GET', '/console.css'),
            ('GET', '/health'), ('POST', CANONICAL), ('GET', CATALOGUE), ('POST', ADAPTIVE), ('GET','/video-console.js')}
 ALLOWED |= {('GET',path) for path in READ_PATHS} | {('POST',path) for path in WRITE_PATHS}
+ALLOWED |= {('GET', path) for path in V3_READ} | {('POST', path) for path in V3_WRITE} | {('GET', '/curriculum.js')}
 SECURITY_HEADERS = {
     'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer',
     'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'DENY',
@@ -68,7 +72,7 @@ class LocalBoundary:
             return await reject(403, 'Cross-site access refused')
         if request.headers.get('origin') not in (None, self.origin):
             return await reject(403, 'Cross-origin access refused')
-        if scope['path'] in READ_PATHS:
+        if scope['path'] in READ_PATHS | V3_READ:
             cookie = request.cookies.get(COOKIE, '')
             if not cookie or not hmac.compare_digest(cookie.encode(), self.session.encode()):
                 return await reject(401, 'Local console session required')
@@ -92,12 +96,17 @@ def create_console_app(port: int = 8767, *, video_store=None):
         raise ValueError('Local port must be an integer from 1 to 65535')
     session, bearer = secrets.token_urlsafe(32), secrets.token_urlsafe(32)
     store = video_store if video_store is not None else VideoStore()
+    registry = Registry()
     @asynccontextmanager
     async def lifespan(app):
         try:yield
-        finally:store.close()
+        finally:
+            store.close()
+            registry.clear()
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None, lifespan=lifespan)
     app.state.video_store = store
+    app.state.curriculum_registry = registry
+    app.include_router(create_v3_router(registry))
     @app.exception_handler(VideoError)
     async def video_error(request, error):
         return JSONResponse({'detail': error.code},status_code=error.status,headers={'Cache-Control':'no-store'})
@@ -120,6 +129,9 @@ def create_console_app(port: int = 8767, *, video_store=None):
     @app.get('/video-console.js')
     def video_javascript():
         return FileResponse(STATIC / 'video-console.js', media_type='text/javascript')
+    @app.get('/curriculum.js')
+    def curriculum_javascript():
+        return FileResponse(STATIC / 'curriculum.js', media_type='text/javascript')
     @app.get('/console.css')
     def stylesheet():
         return FileResponse(STATIC / 'console.css', media_type='text/css')
