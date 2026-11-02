@@ -1,0 +1,275 @@
+{
+  "schema_version": "course-resource-inventory-v1",
+  "notice": "资源盘点，不是学习通官方模板或专业审核结果",
+  "course_status": "review_only",
+  "platform_uploaded": false,
+  "resources": [
+    {
+      "lesson_id": "L01",
+      "title": "冰上基础技能综合入门",
+      "duration_min": 45,
+      "draft_file": "L01-draft.md",
+      "draft_status": "ready_for_review",
+      "knowledge_ids": [
+        {
+          "knowledge_id": "K001",
+          "version": 1
+        },
+        {
+          "knowledge_id": "K002",
+          "version": 1
+        },
+        {
+          "knowledge_id": "K003",
+          "version": 1
+        },
+        {
+          "knowledge_id": "K004",
+          "version": 1
+        },
+        {
+          "knowledge_id": "K016",
+          "version": 1
+        },
+        {
+          "knowledge_id": "K022",
+          "version": 1
+        },
+        {
+          "knowledge_id": "K023",
+          "version": 1
+        }
+      ],
+      "specialist_review_status": "pending",
+      "teacher_feedback_file": "teacher-feedback-form.md",
+      "teacher_feedback_status": "not_received",
+      "slides_status": "missing",
+      "licensed_demo_video_status": "missing",
+      "approved_observation_rubric_status": "missing",
+      "platform_upload_status": "not_started"
+    },
+    {
+      "lesson_id": "L02",
+      "title": "交替蹬冰滑行与基础停止",
+      "duration_min": 45,
+      "draft_file": "L02-draft.md",
+      "draft_status": "ready_for_review",
+      "knowledge_ids": [
+        {
+          "knowledge_id": "K005",
+          "version": 1
+        },
+        {
+          "knowledge_id": "K006",
+          "version": 1
+        },
+        {
+          "knowledge_id": "K017",
+          "version": 1
+        }
+      ],
+      "specialist_review_status": "pending",
+      "teacher_feedback_file": "teacher-feedback-form.md",
+      "teacher_feedback_status": "not_received",
+      "slides_status": "missing",
+      "licensed_demo_video_status": "missing",
+      "approved_observation_rubric_status": "missing",
+      "platform_upload_status": "not_started"
+    },
+    {
+      "lesson_id": "L03",
+      "title": "单足平衡与重心控制",
+      "duration_min": 45,
+      "draft_file": "L03-draft.md",
+      "draft_status": "ready_for_review",
+      "knowledge_ids": [
+        {
+          "knowledge_id": "K007",
+          "version": 1
+        },
+        {
+          "knowledge_id": "K008",
+          "version": 1
+        },
+        {
+          "knowledge_id": "K017",
+          "version": 1
+        },
+        {
+          "knowledge_id": "K023",
+          "version": 1
+        }
+      ],
+      "specialist_review_status": "pending",
+      "teacher_feedback_file": "teacher-feedback-form.md",
+      "teacher_feedback_status": "not_received",
+      "slides_status": "missing",
+      "licensed_demo_video_status": "missing",
+      "approved_observation_rubric_status": "missing",
+      "platform_upload_status": "not_started"
+    },
+    {
+      "lesson_id": "L04",
+      "title": "左前交叉步的蹬冰",
+      "duration_min": 45,
+      "draft_file": "L04-draft.md",
+      "draft_status": "ready_for_review",
+      "knowledge_ids": [
+        {
+          "knowledge_id": "K009",
+          "version": 1
+        },
+        {
+          "knowledge_id": "K010",
+          "version": 2
+        },
+        {
+          "knowledge_id": "K018",
+          "version": 2
+        },
+        {
+          "knowledge_id": "K019",
+          "version": 1
+        }
+      ],
+      "specialist_review_status": "pending",
+      "teacher_feedback_file": "teacher-feedback-form.md",
+      "teacher_feedback_status": "not_received",
+      "slides_status": "missing",
+      "licensed_demo_video_status": "missing",
+      "approved_observation_rubric_status": "missing",
+      "platform_upload_status": "not_started"
+    },
+    {
+      "lesson_id": "L05",
+      "title": "左前交叉步完整动作练习",
+      "duration_min": 45,
+      "draft_file": "L05-draft.md",
+      "draft_status": "ready_for_review",
+      "knowledge_ids": [
+        {
+          "knowledge_id": "K011",
+          "version": 2
+        },
+        {
+          "knowledge_id": "K012",
+          "version": 2
+        },
+        {
+          "knowledge_id": "K018",
+          "version": 2
+        },
+        {
+          "knowledge_id": "K019",
+          "version": 1
+        }
+      ],
+      "specialist_review_status": "pending",
+      "teacher_feedback_file": "teacher-feedback-form.md",
+      "teacher_feedback_status": "not_received",
+      "slides_status": "missing",
+      "licensed_demo_video_status": "missing",
+      "approved_observation_rubric_status": "missing",
+      "platform_upload_status": "not_started"
+    },
+    {
+      "lesson_id": "L06",
+      "title": "连续左前交叉步练习",
+      "duration_min": 45,
+      "draft_file": "L06-draft.md",
+      "draft_status": "ready_for_review",
+      "knowledge_ids": [
+        {
+          "knowledge_id": "K013",
+          "version": 1
+        },
+        {
+          "knowledge_id": "K018",
+          "version": 2
+        },
+        {
+          "knowledge_id": "K019",
+          "version": 1
+        }
+      ],
+      "specialist_review_status": "pending",
+      "teacher_feedback_file": "teacher-feedback-form.md",
+      "teacher_feedback_status": "not_received",
+      "slides_status": "missing",
+      "licensed_demo_video_status": "missing",
+      "approved_observation_rubric_status": "missing",
+      "platform_upload_status": "not_started"
+    },
+    {
+      "lesson_id": "L07",
+      "title": "基础级步法完整练习（一）",
+      "duration_min": 45,
+      "draft_file": "L07-draft.md",
+      "draft_status": "ready_for_review",
+      "knowledge_ids": [
+        {
+          "knowledge_id": "K014",
+          "version": 1
+        },
+        {
+          "knowledge_id": "K015",
+          "version": 1
+        },
+        {
+          "knowledge_id": "K020",
+          "version": 1
+        }
+      ],
+      "specialist_review_status": "pending",
+      "teacher_feedback_file": "teacher-feedback-form.md",
+      "teacher_feedback_status": "not_received",
+      "slides_status": "missing",
+      "licensed_demo_video_status": "missing",
+      "approved_observation_rubric_status": "missing",
+      "platform_upload_status": "not_started"
+    },
+    {
+      "lesson_id": "L08",
+      "title": "基础级步法完整练习（二）与综合评价",
+      "duration_min": 45,
+      "draft_file": "L08-draft.md",
+      "draft_status": "ready_for_review",
+      "knowledge_ids": [
+        {
+          "knowledge_id": "K014",
+          "version": 1
+        },
+        {
+          "knowledge_id": "K015",
+          "version": 1
+        },
+        {
+          "knowledge_id": "K020",
+          "version": 1
+        },
+        {
+          "knowledge_id": "K021",
+          "version": 1
+        }
+      ],
+      "specialist_review_status": "pending",
+      "teacher_feedback_file": "teacher-feedback-form.md",
+      "teacher_feedback_status": "not_received",
+      "slides_status": "missing",
+      "licensed_demo_video_status": "missing",
+      "approved_observation_rubric_status": "missing",
+      "platform_upload_status": "not_started"
+    }
+  ],
+  "L05_teacher_review": {
+    "markdown": "L05-teacher-review.md",
+    "editable_word": "L05-teacher-review.docx",
+    "document_version": "MVP-review-1",
+    "status": "ready_for_review_not_approved"
+  },
+  "textbook_scans": {
+    "status": "local_restricted",
+    "public_in_package": false
+  },
+  "platform_advice": "xuexitong-resources.md"
+}

@@ -1,0 +1,1382 @@
+{
+  "schema_version": "course-mvp-review-pack-v1",
+  "notice": "待审核教案框架；仅供课程展示与教师修改，不是专项批准、实际授课或学生测评记录。",
+  "scope": "Existing HTTP outputs projected for review; not a KB archive or platform import format",
+  "synthetic_conditions": true,
+  "teacher_feedback_received": false,
+  "platform_uploaded": false,
+  "knowledge_counts": {
+    "ids": 23,
+    "versions": 27,
+    "reports": 50,
+    "decisions": 0
+  },
+  "source_packet_sha256": {
+    "docs/p32-input/p32-knowledge-import.json": "c9103aa8eca6d557ba24112e3a59b26b7cf2d5fb319e32f01a722d538b5c87be",
+    "docs/p32-input/p32-evidence-reports.json": "5e2e070385641b8f00b8951dd6cd6a3f43f58a1521cfb932b6ab275f1b0faee1",
+    "docs/p34/knowledge-revisions.json": "e16db2a498c88e83b854aaa4654a21f37b4ec8a4206c2481694237b90190dcd9",
+    "docs/p34/source-evidence-reports.json": "ac399a137d37e4b0631545ffce279edccafd2ce2116e2dda7edb275a4851290a"
+  },
+  "lessons": [
+    {
+      "lesson": {
+        "lesson_id": "L01",
+        "title": "冰上基础技能综合入门",
+        "duration_min": 45,
+        "teaching_objective_draft": "围绕“冰上基础技能综合入门”拟定学习目标；具体动作标准、练习与评价要求待专项教师补充。"
+      },
+      "notice": "待审核教案框架；仅供课程展示与教师修改，不是专项批准、实际授课或学生测评记录。",
+      "plan_version": 2,
+      "phase_minutes": [
+        9,
+        29,
+        7
+      ],
+      "phases": [
+        {
+          "phase": "prep",
+          "minutes": 9,
+          "content": "点名、装备和场地核查；核对先修资料与人员职责。",
+          "teacher_activity": "核查条件与分工，专项审核前不组织实操",
+          "student_activity": "参与条件核对、口头讨论与自评记录",
+          "organization": "暂缓冰上安排",
+          "safety_tip": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+          "evaluation": "仅记录组织与资料问题，不评价动作合格与等级"
+        },
+        {
+          "phase": "main",
+          "minutes": 29,
+          "content": "暂缓全部冰上组织；29分钟用于核对资源和先修缺项、资料讨论。",
+          "teacher_activity": "核查条件与分工，专项审核前不组织实操",
+          "student_activity": "参与条件核对、口头讨论与自评记录",
+          "organization": "暂缓冰上安排",
+          "safety_tip": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+          "evaluation": "仅记录组织与资料问题，不评价动作合格与等级"
+        },
+        {
+          "phase": "closing",
+          "minutes": 7,
+          "content": "整理记录、学生自评问题收集、教师复核交接；不作技术评分。",
+          "teacher_activity": "核查条件与分工，专项审核前不组织实操",
+          "student_activity": "参与条件核对、口头讨论与自评记录",
+          "organization": "暂缓冰上安排",
+          "safety_tip": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+          "evaluation": "仅记录组织与资料问题，不评价动作合格与等级"
+        }
+      ],
+      "teacher_fields": {
+        "goal_draft": "课程自拟目标草稿（待审核）：明确课程参与约定，列出装备和场地检查项；专项入门动作由教师补齐。",
+        "organization_note": "课程展示设计，非实际授课；先修与专项未确认前仅组织资料核对和口头讨论。",
+        "resource_note": "实际冰面、装备、路线、等待区、保护及应急制度待现场教师确认。",
+        "action_points": "",
+        "practice_steps": "",
+        "common_errors": "",
+        "safety_notes": "",
+        "differentiation_notes": "",
+        "evaluation_observations": ""
+      },
+      "conditions": {
+        "class_label": "合成课程验收情境（非真实班级）",
+        "student_count": 20,
+        "skill_level": "初级",
+        "age_band": "青少年",
+        "coach_count": 2,
+        "teacher_count": 1,
+        "usable_area_m2": 200.0,
+        "declared_practice_capacity": 10,
+        "equipment_sets": 20,
+        "safe_waiting_area": true,
+        "ice_available": true,
+        "venue_conditions": "合成场地，待现场确认",
+        "equipment_conditions": "合成装备，待现场确认"
+      },
+      "execution_status": "withheld_pending_specialist_evidence",
+      "organization": {
+        "status": "withheld",
+        "reasons": [
+          "先修条件未确认，暂缓冰上组织安排；不以旧主题先修ID替代课次先修要求"
+        ],
+        "groups": [],
+        "wave_sizes": [],
+        "rotation_count": 0,
+        "concurrent_students": 0,
+        "declared_capacity": 10,
+        "capacity_source": "teacher_declared_unverified",
+        "usable_area_m2": 200.0,
+        "core_active_min_per_student": 0.0,
+        "note": "仅为组织设计假设，不证明安全容量或师生比；教师先修确认未经认证。"
+      },
+      "preparation_checklist": [
+        "核对冰面及场地区域",
+        "逐人核查装备齐备和适配",
+        "核定容量、等待区及人员交接",
+        "补齐专项来源、先修要求与审核记录"
+      ],
+      "staff_tasks": [
+        {
+          "role": "staff",
+          "number": 0,
+          "task": "仅核对暂缓原因，不组织冰上实施"
+        }
+      ],
+      "missing_materials": [
+        "专项教学目标与动作标准待补充",
+        "练习组织与安全要求待补充",
+        "评价量规与真实来源待补充",
+        "专项先修要求、适用学生水平与审核记录待补充"
+      ],
+      "review_checklist": [
+        "核实知识条目与来源原文支持关系",
+        "取得可追溯专项审核意见",
+        "确认学生先修与适用水平",
+        "复核现场容量、人员、装备与等待区",
+        "复核分组及预计负荷假设",
+        "逐项复核教师修改，确认前不实施"
+      ],
+      "references": [
+        {
+          "knowledge_id": "K001",
+          "version": 1,
+          "category": "KB-S",
+          "source_id": "B01",
+          "source_title": "怎样练习花样滑冰｜沈祖修、杨家声",
+          "source_locator": "PDF9；印刷1",
+          "content_kind": "source_summary",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "c9df76786e6a3ff8186e294b00460c0b9fc739e65c68cb829a098291e3a376ba"
+        },
+        {
+          "knowledge_id": "K002",
+          "version": 1,
+          "category": "KB-S",
+          "source_id": "B01",
+          "source_title": "怎样练习花样滑冰｜沈祖修、杨家声",
+          "source_locator": "PDF10；印刷2",
+          "content_kind": "source_summary",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "ee1ce8b09bd332b10641df6048e8d950d131a032cd61975811c52542ceedebee"
+        },
+        {
+          "knowledge_id": "K003",
+          "version": 1,
+          "category": "KB-S",
+          "source_id": "B01",
+          "source_title": "怎样练习花样滑冰｜沈祖修、杨家声",
+          "source_locator": "PDF10；印刷2；图一、图二",
+          "content_kind": "source_summary",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "419a5f4c264db3a2acb0ddecdbe7ef2df31f6b4b27666d9d2d4418cfd2b0e0d8"
+        },
+        {
+          "knowledge_id": "K004",
+          "version": 1,
+          "category": "KB-S",
+          "source_id": "B04",
+          "source_title": "花样滑冰｜韦迪主编",
+          "source_locator": "PDF5目录；印刷121–127",
+          "content_kind": "catalogue_lead",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "c028e60f52f4d024f28f1d227909667f6dc54a88eb27fd109b932c942999ce50"
+        },
+        {
+          "knowledge_id": "K016",
+          "version": 1,
+          "category": "KB-P",
+          "source_id": "B01",
+          "source_title": "怎样练习花样滑冰｜沈祖修、杨家声",
+          "source_locator": "PDF9–11；印刷1–3",
+          "content_kind": "course_proposal",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "eebe88b3ac1f3b00209380a898b7d993dae6b644803ae16f1ef1819e7c83682d"
+        },
+        {
+          "knowledge_id": "K022",
+          "version": 1,
+          "category": "KB-P",
+          "source_id": "B03",
+          "source_title": "花样滑冰技法与指导｜李乡状等",
+          "source_locator": "PDF26；印刷16",
+          "content_kind": "source_summary",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "7a41a2ef79ad0c1c7d64cc19cbbce06f85047ee932bf4954aa90b274a67dbbff"
+        },
+        {
+          "knowledge_id": "K023",
+          "version": 1,
+          "category": "KB-P",
+          "source_id": "B03",
+          "source_title": "花样滑冰技法与指导｜李乡状等",
+          "source_locator": "PDF26–27；印刷16–17",
+          "content_kind": "source_summary",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "f79dd522f3d15b94b7e23acf9e7953d73648cba938ff7b1df2f3062a20a67297"
+        }
+      ],
+      "technical_guidance": [],
+      "controlled_citations": [],
+      "feedback_status": "not_received",
+      "system_review_status": "pending"
+    },
+    {
+      "lesson": {
+        "lesson_id": "L02",
+        "title": "交替蹬冰滑行与基础停止",
+        "duration_min": 45,
+        "teaching_objective_draft": "围绕“交替蹬冰滑行与基础停止”拟定学习目标；具体动作标准、练习与评价要求待专项教师补充。"
+      },
+      "notice": "待审核教案框架；仅供课程展示与教师修改，不是专项批准、实际授课或学生测评记录。",
+      "plan_version": 2,
+      "phase_minutes": [
+        9,
+        29,
+        7
+      ],
+      "phases": [
+        {
+          "phase": "prep",
+          "minutes": 9,
+          "content": "点名、装备和场地核查；核对先修资料与人员职责。",
+          "teacher_activity": "核查条件与分工，专项审核前不组织实操",
+          "student_activity": "参与条件核对、口头讨论与自评记录",
+          "organization": "暂缓冰上安排",
+          "safety_tip": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+          "evaluation": "仅记录组织与资料问题，不评价动作合格与等级"
+        },
+        {
+          "phase": "main",
+          "minutes": 29,
+          "content": "暂缓全部冰上组织；29分钟用于核对资源和先修缺项、资料讨论。",
+          "teacher_activity": "核查条件与分工，专项审核前不组织实操",
+          "student_activity": "参与条件核对、口头讨论与自评记录",
+          "organization": "暂缓冰上安排",
+          "safety_tip": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+          "evaluation": "仅记录组织与资料问题，不评价动作合格与等级"
+        },
+        {
+          "phase": "closing",
+          "minutes": 7,
+          "content": "整理记录、学生自评问题收集、教师复核交接；不作技术评分。",
+          "teacher_activity": "核查条件与分工，专项审核前不组织实操",
+          "student_activity": "参与条件核对、口头讨论与自评记录",
+          "organization": "暂缓冰上安排",
+          "safety_tip": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+          "evaluation": "仅记录组织与资料问题，不评价动作合格与等级"
+        }
+      ],
+      "teacher_fields": {
+        "goal_draft": "课程自拟目标草稿（待审核）：区分本课滑行与停止的学习任务，建立问题记录；具体停止技术待专项确认。",
+        "organization_note": "课程展示设计，非实际授课；先修与专项未确认前仅组织资料核对和口头讨论。",
+        "resource_note": "实际冰面、装备、路线、等待区、保护及应急制度待现场教师确认。",
+        "action_points": "",
+        "practice_steps": "",
+        "common_errors": "",
+        "safety_notes": "",
+        "differentiation_notes": "",
+        "evaluation_observations": ""
+      },
+      "conditions": {
+        "class_label": "合成课程验收情境（非真实班级）",
+        "student_count": 20,
+        "skill_level": "初级",
+        "age_band": "青少年",
+        "coach_count": 2,
+        "teacher_count": 1,
+        "usable_area_m2": 200.0,
+        "declared_practice_capacity": 10,
+        "equipment_sets": 20,
+        "safe_waiting_area": true,
+        "ice_available": true,
+        "venue_conditions": "合成场地，待现场确认",
+        "equipment_conditions": "合成装备，待现场确认"
+      },
+      "execution_status": "withheld_pending_specialist_evidence",
+      "organization": {
+        "status": "withheld",
+        "reasons": [
+          "先修条件未确认，暂缓冰上组织安排；不以旧主题先修ID替代课次先修要求"
+        ],
+        "groups": [],
+        "wave_sizes": [],
+        "rotation_count": 0,
+        "concurrent_students": 0,
+        "declared_capacity": 10,
+        "capacity_source": "teacher_declared_unverified",
+        "usable_area_m2": 200.0,
+        "core_active_min_per_student": 0.0,
+        "note": "仅为组织设计假设，不证明安全容量或师生比；教师先修确认未经认证。"
+      },
+      "preparation_checklist": [
+        "核对冰面及场地区域",
+        "逐人核查装备齐备和适配",
+        "核定容量、等待区及人员交接",
+        "补齐专项来源、先修要求与审核记录"
+      ],
+      "staff_tasks": [
+        {
+          "role": "staff",
+          "number": 0,
+          "task": "仅核对暂缓原因，不组织冰上实施"
+        }
+      ],
+      "missing_materials": [
+        "专项教学目标与动作标准待补充",
+        "练习组织与安全要求待补充",
+        "评价量规与真实来源待补充",
+        "专项先修要求、适用学生水平与审核记录待补充"
+      ],
+      "review_checklist": [
+        "核实知识条目与来源原文支持关系",
+        "取得可追溯专项审核意见",
+        "确认学生先修与适用水平",
+        "复核现场容量、人员、装备与等待区",
+        "复核分组及预计负荷假设",
+        "逐项复核教师修改，确认前不实施"
+      ],
+      "references": [
+        {
+          "knowledge_id": "K005",
+          "version": 1,
+          "category": "KB-S",
+          "source_id": "B01",
+          "source_title": "怎样练习花样滑冰｜沈祖修、杨家声",
+          "source_locator": "PDF10–11；印刷2–3",
+          "content_kind": "source_summary",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "8f6db09fa6b470a7f2f3671bf6323ea93167c53451ae0d27e46f30bff8a7abdf"
+        },
+        {
+          "knowledge_id": "K006",
+          "version": 1,
+          "category": "KB-S",
+          "source_id": "B01",
+          "source_title": "怎样练习花样滑冰｜沈祖修、杨家声",
+          "source_locator": "PDF6目录；印刷约4–5",
+          "content_kind": "catalogue_lead",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "831c7f83935fa3f0b76d4178b5030862f5aba729aa00c9592842391d5ab49b36"
+        },
+        {
+          "knowledge_id": "K017",
+          "version": 1,
+          "category": "KB-P",
+          "source_id": "B05",
+          "source_title": "少年儿童业余训练教材·花样滑冰｜编写组",
+          "source_locator": "PDF5目录：教学训练计划",
+          "content_kind": "catalogue_lead",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "e04560e3000e0d5bdee360fd8caf74e0aa819217bd1bf5383363692122cb5076"
+        }
+      ],
+      "technical_guidance": [],
+      "controlled_citations": [],
+      "feedback_status": "not_received",
+      "system_review_status": "pending"
+    },
+    {
+      "lesson": {
+        "lesson_id": "L03",
+        "title": "单足平衡与重心控制",
+        "duration_min": 45,
+        "teaching_objective_draft": "围绕“单足平衡与重心控制”拟定学习目标；具体动作标准、练习与评价要求待专项教师补充。"
+      },
+      "notice": "待审核教案框架；仅供课程展示与教师修改，不是专项批准、实际授课或学生测评记录。",
+      "plan_version": 2,
+      "phase_minutes": [
+        9,
+        29,
+        7
+      ],
+      "phases": [
+        {
+          "phase": "prep",
+          "minutes": 9,
+          "content": "点名、装备和场地核查；核对先修资料与人员职责。",
+          "teacher_activity": "核查条件与分工，专项审核前不组织实操",
+          "student_activity": "参与条件核对、口头讨论与自评记录",
+          "organization": "暂缓冰上安排",
+          "safety_tip": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+          "evaluation": "仅记录组织与资料问题，不评价动作合格与等级"
+        },
+        {
+          "phase": "main",
+          "minutes": 29,
+          "content": "暂缓全部冰上组织；29分钟用于核对资源和先修缺项、资料讨论。",
+          "teacher_activity": "核查条件与分工，专项审核前不组织实操",
+          "student_activity": "参与条件核对、口头讨论与自评记录",
+          "organization": "暂缓冰上安排",
+          "safety_tip": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+          "evaluation": "仅记录组织与资料问题，不评价动作合格与等级"
+        },
+        {
+          "phase": "closing",
+          "minutes": 7,
+          "content": "整理记录、学生自评问题收集、教师复核交接；不作技术评分。",
+          "teacher_activity": "核查条件与分工，专项审核前不组织实操",
+          "student_activity": "参与条件核对、口头讨论与自评记录",
+          "organization": "暂缓冰上安排",
+          "safety_tip": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+          "evaluation": "仅记录组织与资料问题，不评价动作合格与等级"
+        }
+      ],
+      "teacher_fields": {
+        "goal_draft": "课程自拟目标草稿（待审核）：说明本课单足平衡观察任务，记录自评问题；不从二维观察推断真实重心。",
+        "organization_note": "课程展示设计，非实际授课；先修与专项未确认前仅组织资料核对和口头讨论。",
+        "resource_note": "实际冰面、装备、路线、等待区、保护及应急制度待现场教师确认。",
+        "action_points": "",
+        "practice_steps": "",
+        "common_errors": "",
+        "safety_notes": "",
+        "differentiation_notes": "",
+        "evaluation_observations": ""
+      },
+      "conditions": {
+        "class_label": "合成课程验收情境（非真实班级）",
+        "student_count": 20,
+        "skill_level": "初级",
+        "age_band": "青少年",
+        "coach_count": 2,
+        "teacher_count": 1,
+        "usable_area_m2": 200.0,
+        "declared_practice_capacity": 10,
+        "equipment_sets": 20,
+        "safe_waiting_area": true,
+        "ice_available": true,
+        "venue_conditions": "合成场地，待现场确认",
+        "equipment_conditions": "合成装备，待现场确认"
+      },
+      "execution_status": "withheld_pending_specialist_evidence",
+      "organization": {
+        "status": "withheld",
+        "reasons": [
+          "先修条件未确认，暂缓冰上组织安排；不以旧主题先修ID替代课次先修要求"
+        ],
+        "groups": [],
+        "wave_sizes": [],
+        "rotation_count": 0,
+        "concurrent_students": 0,
+        "declared_capacity": 10,
+        "capacity_source": "teacher_declared_unverified",
+        "usable_area_m2": 200.0,
+        "core_active_min_per_student": 0.0,
+        "note": "仅为组织设计假设，不证明安全容量或师生比；教师先修确认未经认证。"
+      },
+      "preparation_checklist": [
+        "核对冰面及场地区域",
+        "逐人核查装备齐备和适配",
+        "核定容量、等待区及人员交接",
+        "补齐专项来源、先修要求与审核记录"
+      ],
+      "staff_tasks": [
+        {
+          "role": "staff",
+          "number": 0,
+          "task": "仅核对暂缓原因，不组织冰上实施"
+        }
+      ],
+      "missing_materials": [
+        "专项教学目标与动作标准待补充",
+        "练习组织与安全要求待补充",
+        "评价量规与真实来源待补充",
+        "专项先修要求、适用学生水平与审核记录待补充"
+      ],
+      "review_checklist": [
+        "核实知识条目与来源原文支持关系",
+        "取得可追溯专项审核意见",
+        "确认学生先修与适用水平",
+        "复核现场容量、人员、装备与等待区",
+        "复核分组及预计负荷假设",
+        "逐项复核教师修改，确认前不实施"
+      ],
+      "references": [
+        {
+          "knowledge_id": "K007",
+          "version": 1,
+          "category": "KB-S",
+          "source_id": "B02",
+          "source_title": "花样滑冰｜王树本",
+          "source_locator": "PDF76–77；印刷62–63",
+          "content_kind": "source_summary",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "028c4e707f273a6120dee8b33b4ed4ad9c6e90f031e213eda791f077676518ea"
+        },
+        {
+          "knowledge_id": "K008",
+          "version": 1,
+          "category": "KB-S",
+          "source_id": "B02",
+          "source_title": "花样滑冰｜王树本",
+          "source_locator": "PDF84–94；印刷70–80",
+          "content_kind": "source_summary",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "e2539134e78cc2e5d8cab86023e6a6453211be54302dc375abfe9138e928a89a"
+        },
+        {
+          "knowledge_id": "K017",
+          "version": 1,
+          "category": "KB-P",
+          "source_id": "B05",
+          "source_title": "少年儿童业余训练教材·花样滑冰｜编写组",
+          "source_locator": "PDF5目录：教学训练计划",
+          "content_kind": "catalogue_lead",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "e04560e3000e0d5bdee360fd8caf74e0aa819217bd1bf5383363692122cb5076"
+        },
+        {
+          "knowledge_id": "K023",
+          "version": 1,
+          "category": "KB-P",
+          "source_id": "B03",
+          "source_title": "花样滑冰技法与指导｜李乡状等",
+          "source_locator": "PDF26–27；印刷16–17",
+          "content_kind": "source_summary",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "f79dd522f3d15b94b7e23acf9e7953d73648cba938ff7b1df2f3062a20a67297"
+        }
+      ],
+      "technical_guidance": [],
+      "controlled_citations": [],
+      "feedback_status": "not_received",
+      "system_review_status": "pending"
+    },
+    {
+      "lesson": {
+        "lesson_id": "L04",
+        "title": "左前交叉步的蹬冰",
+        "duration_min": 45,
+        "teaching_objective_draft": "围绕“左前交叉步的蹬冰”拟定学习目标；具体动作标准、练习与评价要求待专项教师补充。"
+      },
+      "notice": "待审核教案框架；仅供课程展示与教师修改，不是专项批准、实际授课或学生测评记录。",
+      "plan_version": 2,
+      "phase_minutes": [
+        9,
+        29,
+        7
+      ],
+      "phases": [
+        {
+          "phase": "prep",
+          "minutes": 9,
+          "content": "点名、装备和场地核查；核对先修资料与人员职责。",
+          "teacher_activity": "核查条件与分工，专项审核前不组织实操",
+          "student_activity": "参与条件核对、口头讨论与自评记录",
+          "organization": "暂缓冰上安排",
+          "safety_tip": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+          "evaluation": "仅记录组织与资料问题，不评价动作合格与等级"
+        },
+        {
+          "phase": "main",
+          "minutes": 29,
+          "content": "暂缓全部冰上组织；29分钟用于核对资源和先修缺项、资料讨论。",
+          "teacher_activity": "核查条件与分工，专项审核前不组织实操",
+          "student_activity": "参与条件核对、口头讨论与自评记录",
+          "organization": "暂缓冰上安排",
+          "safety_tip": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+          "evaluation": "仅记录组织与资料问题，不评价动作合格与等级"
+        },
+        {
+          "phase": "closing",
+          "minutes": 7,
+          "content": "整理记录、学生自评问题收集、教师复核交接；不作技术评分。",
+          "teacher_activity": "核查条件与分工，专项审核前不组织实操",
+          "student_activity": "参与条件核对、口头讨论与自评记录",
+          "organization": "暂缓冰上安排",
+          "safety_tip": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+          "evaluation": "仅记录组织与资料问题，不评价动作合格与等级"
+        }
+      ],
+      "teacher_fields": {
+        "goal_draft": "课程自拟目标草稿（待审核）：识别本课蹬冰学习任务与K010原页定位，提出待教师解释的问题。",
+        "organization_note": "课程展示设计，非实际授课；先修与专项未确认前仅组织资料核对和口头讨论。",
+        "resource_note": "实际冰面、装备、路线、等待区、保护及应急制度待现场教师确认。",
+        "action_points": "",
+        "practice_steps": "",
+        "common_errors": "",
+        "safety_notes": "",
+        "differentiation_notes": "",
+        "evaluation_observations": ""
+      },
+      "conditions": {
+        "class_label": "合成课程验收情境（非真实班级）",
+        "student_count": 20,
+        "skill_level": "初级",
+        "age_band": "青少年",
+        "coach_count": 2,
+        "teacher_count": 1,
+        "usable_area_m2": 200.0,
+        "declared_practice_capacity": 10,
+        "equipment_sets": 20,
+        "safe_waiting_area": true,
+        "ice_available": true,
+        "venue_conditions": "合成场地，待现场确认",
+        "equipment_conditions": "合成装备，待现场确认"
+      },
+      "execution_status": "withheld_pending_specialist_evidence",
+      "organization": {
+        "status": "withheld",
+        "reasons": [
+          "先修条件未确认，暂缓冰上组织安排；不以旧主题先修ID替代课次先修要求"
+        ],
+        "groups": [],
+        "wave_sizes": [],
+        "rotation_count": 0,
+        "concurrent_students": 0,
+        "declared_capacity": 10,
+        "capacity_source": "teacher_declared_unverified",
+        "usable_area_m2": 200.0,
+        "core_active_min_per_student": 0.0,
+        "note": "仅为组织设计假设，不证明安全容量或师生比；教师先修确认未经认证。"
+      },
+      "preparation_checklist": [
+        "核对冰面及场地区域",
+        "逐人核查装备齐备和适配",
+        "核定容量、等待区及人员交接",
+        "补齐专项来源、先修要求与审核记录"
+      ],
+      "staff_tasks": [
+        {
+          "role": "staff",
+          "number": 0,
+          "task": "仅核对暂缓原因，不组织冰上实施"
+        }
+      ],
+      "missing_materials": [
+        "专项教学目标与动作标准待补充",
+        "练习组织与安全要求待补充",
+        "评价量规与真实来源待补充",
+        "专项先修要求、适用学生水平与审核记录待补充"
+      ],
+      "review_checklist": [
+        "核实知识条目与来源原文支持关系",
+        "取得可追溯专项审核意见",
+        "确认学生先修与适用水平",
+        "复核现场容量、人员、装备与等待区",
+        "复核分组及预计负荷假设",
+        "逐项复核教师修改，确认前不实施"
+      ],
+      "references": [
+        {
+          "knowledge_id": "K009",
+          "version": 1,
+          "category": "KB-S",
+          "source_id": "B02",
+          "source_title": "花样滑冰｜王树本",
+          "source_locator": "PDF75–77；印刷61–63",
+          "content_kind": "source_summary",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "785bd3eb6c38ce7dee3db94be0714e3a492da7537812611d3fbf9b385bab9cd8"
+        },
+        {
+          "knowledge_id": "K010",
+          "version": 2,
+          "category": "KB-S",
+          "source_id": "B02",
+          "source_title": "花样滑冰｜王树本",
+          "source_locator": "原PDF90–93；印刷76–79；前压步动作方法与图29见原PDF91／印刷77",
+          "content_kind": "source_summary",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "dbcf53482c62d62c4906383129c6106e36a0c447c14a3f99175ed207a5772adc"
+        },
+        {
+          "knowledge_id": "K018",
+          "version": 2,
+          "category": "KB-P",
+          "source_id": "B02",
+          "source_title": "花样滑冰｜王树本",
+          "source_locator": "背景依据：原PDF91–93／印刷77–79／前压步练习方法；三课次安排为课程自拟，无教材逐字出处",
+          "content_kind": "course_proposal",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "f1ef702a26b807bccffdd895eed3b9dcdfe6c559cc3c00f5987901323969beda"
+        },
+        {
+          "knowledge_id": "K019",
+          "version": 1,
+          "category": "KB-E",
+          "source_id": "B02",
+          "source_title": "花样滑冰｜王树本",
+          "source_locator": "PDF75–77；印刷61–63",
+          "content_kind": "course_proposal",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "eda721d74d69d682d99bfd9eb0576f7eb5a74c2b776e0dfde77c9a8c2f2b4fcd"
+        }
+      ],
+      "technical_guidance": [],
+      "controlled_citations": [],
+      "feedback_status": "not_received",
+      "system_review_status": "pending"
+    },
+    {
+      "lesson": {
+        "lesson_id": "L05",
+        "title": "左前交叉步完整动作练习",
+        "duration_min": 45,
+        "teaching_objective_draft": "围绕“左前交叉步完整动作练习”拟定学习目标；具体动作标准、练习与评价要求待专项教师补充。"
+      },
+      "notice": "待审核教案框架；仅供课程展示与教师修改，不是专项批准、实际授课或学生测评记录。",
+      "plan_version": 2,
+      "phase_minutes": [
+        9,
+        29,
+        7
+      ],
+      "phases": [
+        {
+          "phase": "prep",
+          "minutes": 9,
+          "content": "点名、装备和场地核查；核对先修资料与人员职责。",
+          "teacher_activity": "核查条件与分工，专项审核前不组织实操",
+          "student_activity": "参与条件核对、口头讨论与自评记录",
+          "organization": "暂缓冰上安排",
+          "safety_tip": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+          "evaluation": "仅记录组织与资料问题，不评价动作合格与等级"
+        },
+        {
+          "phase": "main",
+          "minutes": 29,
+          "content": "暂缓全部冰上组织；29分钟用于核对资源和先修缺项、资料讨论。",
+          "teacher_activity": "核查条件与分工，专项审核前不组织实操",
+          "student_activity": "参与条件核对、口头讨论与自评记录",
+          "organization": "暂缓冰上安排",
+          "safety_tip": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+          "evaluation": "仅记录组织与资料问题，不评价动作合格与等级"
+        },
+        {
+          "phase": "closing",
+          "minutes": 7,
+          "content": "整理记录、学生自评问题收集、教师复核交接；不作技术评分。",
+          "teacher_activity": "核查条件与分工，专项审核前不组织实操",
+          "student_activity": "参与条件核对、口头讨论与自评记录",
+          "organization": "暂缓冰上安排",
+          "safety_tip": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+          "evaluation": "仅记录组织与资料问题，不评价动作合格与等级"
+        }
+      ],
+      "teacher_fields": {
+        "goal_draft": "课程自拟目标草稿（待审核）：说明单次完整动作的学习任务，区分前压步、后压步与课程自拟安排，建立观察记录；动作达成标准待专项补齐。",
+        "organization_note": "课程展示设计，非实际授课；先修与专项未确认前仅组织资料核对和口头讨论。",
+        "resource_note": "实际冰面、装备、路线、等待区、保护及应急制度待现场教师确认。",
+        "action_points": "待专项逐条填写。对照K011 v2／B02／原PDF91印刷77图29，及K012 v2／B03／原PDF39印刷29；不自动生成脚序、用刃或纠错指令。",
+        "practice_steps": "准备9分钟核查；基本29分钟资料核对5分钟、讨论与待定组织窗口24分钟；结束7分钟整理。专项未审阅前不实施冰上练习。",
+        "common_errors": "由专项教师逐项填写观察表现、教材定位、适用条件及修改意见；不自动诊断。",
+        "safety_notes": "现场教师核对装备、场地、先修、人员、保护和应急安排；保留所有暂缓提示。",
+        "differentiation_notes": "支持／巩固／进阶的任务与进入条件由教师填写；K018 v2是自拟课次安排，不作为教材规定。",
+        "evaluation_observations": "教师评价与反馈待填写；没有实际课堂或学生测评数据。只记录观察项、待核问题与改进建议，不给分、不作通过结论。"
+      },
+      "conditions": {
+        "class_label": "合成课程验收情境（非真实班级）",
+        "student_count": 20,
+        "skill_level": "初级",
+        "age_band": "青少年",
+        "coach_count": 2,
+        "teacher_count": 1,
+        "usable_area_m2": 200.0,
+        "declared_practice_capacity": 10,
+        "equipment_sets": 20,
+        "safe_waiting_area": true,
+        "ice_available": true,
+        "venue_conditions": "合成场地，待现场确认",
+        "equipment_conditions": "合成装备，待现场确认"
+      },
+      "execution_status": "withheld_pending_specialist_evidence",
+      "organization": {
+        "status": "withheld",
+        "reasons": [
+          "先修条件未确认，暂缓冰上组织安排；不以旧主题先修ID替代课次先修要求"
+        ],
+        "groups": [],
+        "wave_sizes": [],
+        "rotation_count": 0,
+        "concurrent_students": 0,
+        "declared_capacity": 10,
+        "capacity_source": "teacher_declared_unverified",
+        "usable_area_m2": 200.0,
+        "core_active_min_per_student": 0.0,
+        "note": "仅为组织设计假设，不证明安全容量或师生比；教师先修确认未经认证。"
+      },
+      "preparation_checklist": [
+        "核对冰面及场地区域",
+        "逐人核查装备齐备和适配",
+        "核定容量、等待区及人员交接",
+        "补齐专项来源、先修要求与审核记录"
+      ],
+      "staff_tasks": [
+        {
+          "role": "staff",
+          "number": 0,
+          "task": "仅核对暂缓原因，不组织冰上实施"
+        }
+      ],
+      "missing_materials": [
+        "专项教学目标与动作标准待补充",
+        "练习组织与安全要求待补充",
+        "评价量规与真实来源待补充",
+        "专项先修要求、适用学生水平与审核记录待补充"
+      ],
+      "review_checklist": [
+        "核实知识条目与来源原文支持关系",
+        "取得可追溯专项审核意见",
+        "确认学生先修与适用水平",
+        "复核现场容量、人员、装备与等待区",
+        "复核分组及预计负荷假设",
+        "逐项复核教师修改，确认前不实施"
+      ],
+      "references": [
+        {
+          "knowledge_id": "K011",
+          "version": 2,
+          "category": "KB-S",
+          "source_id": "B02",
+          "source_title": "花样滑冰｜王树本",
+          "source_locator": "背景依据：原PDF91／印刷77／图29左前压步连续动作；本条课程提取原则无教材逐字出处",
+          "content_kind": "course_proposal",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "8074c7f22c1f977d56f7de52fef88bbfefe21db3cd05dc17bc8ab48de77113f0"
+        },
+        {
+          "knowledge_id": "K012",
+          "version": 2,
+          "category": "KB-S",
+          "source_id": "B03",
+          "source_title": "花样滑冰技法与指导｜李乡状等",
+          "source_locator": "原PDF39／印刷29／第三节一、前压步；区别后压步：原PDF41／印刷31；目录原PDF5／印刷2",
+          "content_kind": "source_summary",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "b218498c99b3fe7342299ef13f8c65dc1af90e053c5b64173ee460735140bde2"
+        },
+        {
+          "knowledge_id": "K018",
+          "version": 2,
+          "category": "KB-P",
+          "source_id": "B02",
+          "source_title": "花样滑冰｜王树本",
+          "source_locator": "背景依据：原PDF91–93／印刷77–79／前压步练习方法；三课次安排为课程自拟，无教材逐字出处",
+          "content_kind": "course_proposal",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "f1ef702a26b807bccffdd895eed3b9dcdfe6c559cc3c00f5987901323969beda"
+        },
+        {
+          "knowledge_id": "K019",
+          "version": 1,
+          "category": "KB-E",
+          "source_id": "B02",
+          "source_title": "花样滑冰｜王树本",
+          "source_locator": "PDF75–77；印刷61–63",
+          "content_kind": "course_proposal",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "eda721d74d69d682d99bfd9eb0576f7eb5a74c2b776e0dfde77c9a8c2f2b4fcd"
+        }
+      ],
+      "technical_guidance": [],
+      "controlled_citations": [],
+      "feedback_status": "not_received",
+      "system_review_status": "pending"
+    },
+    {
+      "lesson": {
+        "lesson_id": "L06",
+        "title": "连续左前交叉步练习",
+        "duration_min": 45,
+        "teaching_objective_draft": "围绕“连续左前交叉步练习”拟定学习目标；具体动作标准、练习与评价要求待专项教师补充。"
+      },
+      "notice": "待审核教案框架；仅供课程展示与教师修改，不是专项批准、实际授课或学生测评记录。",
+      "plan_version": 2,
+      "phase_minutes": [
+        9,
+        29,
+        7
+      ],
+      "phases": [
+        {
+          "phase": "prep",
+          "minutes": 9,
+          "content": "点名、装备和场地核查；核对先修资料与人员职责。",
+          "teacher_activity": "核查条件与分工，专项审核前不组织实操",
+          "student_activity": "参与条件核对、口头讨论与自评记录",
+          "organization": "暂缓冰上安排",
+          "safety_tip": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+          "evaluation": "仅记录组织与资料问题，不评价动作合格与等级"
+        },
+        {
+          "phase": "main",
+          "minutes": 29,
+          "content": "暂缓全部冰上组织；29分钟用于核对资源和先修缺项、资料讨论。",
+          "teacher_activity": "核查条件与分工，专项审核前不组织实操",
+          "student_activity": "参与条件核对、口头讨论与自评记录",
+          "organization": "暂缓冰上安排",
+          "safety_tip": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+          "evaluation": "仅记录组织与资料问题，不评价动作合格与等级"
+        },
+        {
+          "phase": "closing",
+          "minutes": 7,
+          "content": "整理记录、学生自评问题收集、教师复核交接；不作技术评分。",
+          "teacher_activity": "核查条件与分工，专项审核前不组织实操",
+          "student_activity": "参与条件核对、口头讨论与自评记录",
+          "organization": "暂缓冰上安排",
+          "safety_tip": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+          "evaluation": "仅记录组织与资料问题，不评价动作合格与等级"
+        }
+      ],
+      "teacher_fields": {
+        "goal_draft": "课程自拟目标草稿（待审核）：说明连续练习与L05单次任务的课程差别，列出进入条件待教师确认。",
+        "organization_note": "课程展示设计，非实际授课；先修与专项未确认前仅组织资料核对和口头讨论。",
+        "resource_note": "实际冰面、装备、路线、等待区、保护及应急制度待现场教师确认。",
+        "action_points": "",
+        "practice_steps": "",
+        "common_errors": "",
+        "safety_notes": "",
+        "differentiation_notes": "",
+        "evaluation_observations": ""
+      },
+      "conditions": {
+        "class_label": "合成课程验收情境（非真实班级）",
+        "student_count": 20,
+        "skill_level": "初级",
+        "age_band": "青少年",
+        "coach_count": 2,
+        "teacher_count": 1,
+        "usable_area_m2": 200.0,
+        "declared_practice_capacity": 10,
+        "equipment_sets": 20,
+        "safe_waiting_area": true,
+        "ice_available": true,
+        "venue_conditions": "合成场地，待现场确认",
+        "equipment_conditions": "合成装备，待现场确认"
+      },
+      "execution_status": "withheld_pending_specialist_evidence",
+      "organization": {
+        "status": "withheld",
+        "reasons": [
+          "先修条件未确认，暂缓冰上组织安排；不以旧主题先修ID替代课次先修要求"
+        ],
+        "groups": [],
+        "wave_sizes": [],
+        "rotation_count": 0,
+        "concurrent_students": 0,
+        "declared_capacity": 10,
+        "capacity_source": "teacher_declared_unverified",
+        "usable_area_m2": 200.0,
+        "core_active_min_per_student": 0.0,
+        "note": "仅为组织设计假设，不证明安全容量或师生比；教师先修确认未经认证。"
+      },
+      "preparation_checklist": [
+        "核对冰面及场地区域",
+        "逐人核查装备齐备和适配",
+        "核定容量、等待区及人员交接",
+        "补齐专项来源、先修要求与审核记录"
+      ],
+      "staff_tasks": [
+        {
+          "role": "staff",
+          "number": 0,
+          "task": "仅核对暂缓原因，不组织冰上实施"
+        }
+      ],
+      "missing_materials": [
+        "专项教学目标与动作标准待补充",
+        "练习组织与安全要求待补充",
+        "评价量规与真实来源待补充",
+        "专项先修要求、适用学生水平与审核记录待补充"
+      ],
+      "review_checklist": [
+        "核实知识条目与来源原文支持关系",
+        "取得可追溯专项审核意见",
+        "确认学生先修与适用水平",
+        "复核现场容量、人员、装备与等待区",
+        "复核分组及预计负荷假设",
+        "逐项复核教师修改，确认前不实施"
+      ],
+      "references": [
+        {
+          "knowledge_id": "K013",
+          "version": 1,
+          "category": "KB-S",
+          "source_id": "B02",
+          "source_title": "花样滑冰｜王树本",
+          "source_locator": "PDF76；印刷62",
+          "content_kind": "source_summary",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "9d1a5c871f96e3172ac4f4a7da9326dfd57d5f7ef391b16892f0e00eb1afee31"
+        },
+        {
+          "knowledge_id": "K018",
+          "version": 2,
+          "category": "KB-P",
+          "source_id": "B02",
+          "source_title": "花样滑冰｜王树本",
+          "source_locator": "背景依据：原PDF91–93／印刷77–79／前压步练习方法；三课次安排为课程自拟，无教材逐字出处",
+          "content_kind": "course_proposal",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "f1ef702a26b807bccffdd895eed3b9dcdfe6c559cc3c00f5987901323969beda"
+        },
+        {
+          "knowledge_id": "K019",
+          "version": 1,
+          "category": "KB-E",
+          "source_id": "B02",
+          "source_title": "花样滑冰｜王树本",
+          "source_locator": "PDF75–77；印刷61–63",
+          "content_kind": "course_proposal",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "eda721d74d69d682d99bfd9eb0576f7eb5a74c2b776e0dfde77c9a8c2f2b4fcd"
+        }
+      ],
+      "technical_guidance": [],
+      "controlled_citations": [],
+      "feedback_status": "not_received",
+      "system_review_status": "pending"
+    },
+    {
+      "lesson": {
+        "lesson_id": "L07",
+        "title": "基础级步法完整练习（一）",
+        "duration_min": 45,
+        "teaching_objective_draft": "围绕“基础级步法完整练习（一）”拟定学习目标；具体动作标准、练习与评价要求待专项教师补充。"
+      },
+      "notice": "待审核教案框架；仅供课程展示与教师修改，不是专项批准、实际授课或学生测评记录。",
+      "plan_version": 2,
+      "phase_minutes": [
+        9,
+        29,
+        7
+      ],
+      "phases": [
+        {
+          "phase": "prep",
+          "minutes": 9,
+          "content": "点名、装备和场地核查；核对先修资料与人员职责。",
+          "teacher_activity": "核查条件与分工，专项审核前不组织实操",
+          "student_activity": "参与条件核对、口头讨论与自评记录",
+          "organization": "暂缓冰上安排",
+          "safety_tip": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+          "evaluation": "仅记录组织与资料问题，不评价动作合格与等级"
+        },
+        {
+          "phase": "main",
+          "minutes": 29,
+          "content": "暂缓全部冰上组织；29分钟用于核对资源和先修缺项、资料讨论。",
+          "teacher_activity": "核查条件与分工，专项审核前不组织实操",
+          "student_activity": "参与条件核对、口头讨论与自评记录",
+          "organization": "暂缓冰上安排",
+          "safety_tip": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+          "evaluation": "仅记录组织与资料问题，不评价动作合格与等级"
+        },
+        {
+          "phase": "closing",
+          "minutes": 7,
+          "content": "整理记录、学生自评问题收集、教师复核交接；不作技术评分。",
+          "teacher_activity": "核查条件与分工，专项审核前不组织实操",
+          "student_activity": "参与条件核对、口头讨论与自评记录",
+          "organization": "暂缓冰上安排",
+          "safety_tip": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+          "evaluation": "仅记录组织与资料问题，不评价动作合格与等级"
+        }
+      ],
+      "teacher_fields": {
+        "goal_draft": "课程自拟目标草稿（待审核）：梳理第一组完整步法任务和材料缺项；具体步法组合由教师核定。",
+        "organization_note": "课程展示设计，非实际授课；先修与专项未确认前仅组织资料核对和口头讨论。",
+        "resource_note": "实际冰面、装备、路线、等待区、保护及应急制度待现场教师确认。",
+        "action_points": "",
+        "practice_steps": "",
+        "common_errors": "",
+        "safety_notes": "",
+        "differentiation_notes": "",
+        "evaluation_observations": ""
+      },
+      "conditions": {
+        "class_label": "合成课程验收情境（非真实班级）",
+        "student_count": 20,
+        "skill_level": "初级",
+        "age_band": "青少年",
+        "coach_count": 2,
+        "teacher_count": 1,
+        "usable_area_m2": 200.0,
+        "declared_practice_capacity": 10,
+        "equipment_sets": 20,
+        "safe_waiting_area": true,
+        "ice_available": true,
+        "venue_conditions": "合成场地，待现场确认",
+        "equipment_conditions": "合成装备，待现场确认"
+      },
+      "execution_status": "withheld_pending_specialist_evidence",
+      "organization": {
+        "status": "withheld",
+        "reasons": [
+          "先修条件未确认，暂缓冰上组织安排；不以旧主题先修ID替代课次先修要求"
+        ],
+        "groups": [],
+        "wave_sizes": [],
+        "rotation_count": 0,
+        "concurrent_students": 0,
+        "declared_capacity": 10,
+        "capacity_source": "teacher_declared_unverified",
+        "usable_area_m2": 200.0,
+        "core_active_min_per_student": 0.0,
+        "note": "仅为组织设计假设，不证明安全容量或师生比；教师先修确认未经认证。"
+      },
+      "preparation_checklist": [
+        "核对冰面及场地区域",
+        "逐人核查装备齐备和适配",
+        "核定容量、等待区及人员交接",
+        "补齐专项来源、先修要求与审核记录"
+      ],
+      "staff_tasks": [
+        {
+          "role": "staff",
+          "number": 0,
+          "task": "仅核对暂缓原因，不组织冰上实施"
+        }
+      ],
+      "missing_materials": [
+        "专项教学目标与动作标准待补充",
+        "练习组织与安全要求待补充",
+        "评价量规与真实来源待补充",
+        "专项先修要求、适用学生水平与审核记录待补充"
+      ],
+      "review_checklist": [
+        "核实知识条目与来源原文支持关系",
+        "取得可追溯专项审核意见",
+        "确认学生先修与适用水平",
+        "复核现场容量、人员、装备与等待区",
+        "复核分组及预计负荷假设",
+        "逐项复核教师修改，确认前不实施"
+      ],
+      "references": [
+        {
+          "knowledge_id": "K014",
+          "version": 1,
+          "category": "KB-S",
+          "source_id": "B02",
+          "source_title": "花样滑冰｜王树本",
+          "source_locator": "PDF75–77；印刷61–63",
+          "content_kind": "source_summary",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "a7224694e0bc54aa19fb281020d2a727519dbe2a5ad6dfeadd9e87411304b0a2"
+        },
+        {
+          "knowledge_id": "K015",
+          "version": 1,
+          "category": "KB-S",
+          "source_id": "B06",
+          "source_title": "国际滑联技术组手册·单人滑2025–2026（中文版）",
+          "source_locator": "PDF3–4；印刷3–4",
+          "content_kind": "source_summary",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "c777ee1bbafe2093875f385b5550d2020b4e990ffb1874cd22f1e0feeeef3649"
+        },
+        {
+          "knowledge_id": "K020",
+          "version": 1,
+          "category": "KB-E",
+          "source_id": "B06",
+          "source_title": "国际滑联技术组手册·单人滑2025–2026（中文版）",
+          "source_locator": "PDF3–4；印刷3–4",
+          "content_kind": "course_proposal",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "7b1caa2ce32bedcb4ee7fef017dcebe6865560f257fa7815f261485fc5ce653e"
+        }
+      ],
+      "technical_guidance": [],
+      "controlled_citations": [],
+      "feedback_status": "not_received",
+      "system_review_status": "pending"
+    },
+    {
+      "lesson": {
+        "lesson_id": "L08",
+        "title": "基础级步法完整练习（二）与综合评价",
+        "duration_min": 45,
+        "teaching_objective_draft": "围绕“基础级步法完整练习（二）与综合评价”拟定学习目标；具体动作标准、练习与评价要求待专项教师补充。"
+      },
+      "notice": "待审核教案框架；仅供课程展示与教师修改，不是专项批准、实际授课或学生测评记录。",
+      "plan_version": 2,
+      "phase_minutes": [
+        9,
+        29,
+        7
+      ],
+      "phases": [
+        {
+          "phase": "prep",
+          "minutes": 9,
+          "content": "点名、装备和场地核查；核对先修资料与人员职责。",
+          "teacher_activity": "核查条件与分工，专项审核前不组织实操",
+          "student_activity": "参与条件核对、口头讨论与自评记录",
+          "organization": "暂缓冰上安排",
+          "safety_tip": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+          "evaluation": "仅记录组织与资料问题，不评价动作合格与等级"
+        },
+        {
+          "phase": "main",
+          "minutes": 29,
+          "content": "暂缓全部冰上组织；29分钟用于核对资源和先修缺项、资料讨论。",
+          "teacher_activity": "核查条件与分工，专项审核前不组织实操",
+          "student_activity": "参与条件核对、口头讨论与自评记录",
+          "organization": "暂缓冰上安排",
+          "safety_tip": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+          "evaluation": "仅记录组织与资料问题，不评价动作合格与等级"
+        },
+        {
+          "phase": "closing",
+          "minutes": 7,
+          "content": "整理记录、学生自评问题收集、教师复核交接；不作技术评分。",
+          "teacher_activity": "核查条件与分工，专项审核前不组织实操",
+          "student_activity": "参与条件核对、口头讨论与自评记录",
+          "organization": "暂缓冰上安排",
+          "safety_tip": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+          "evaluation": "仅记录组织与资料问题，不评价动作合格与等级"
+        }
+      ],
+      "teacher_fields": {
+        "goal_draft": "课程自拟目标草稿（待审核）：梳理第二组任务与课程回顾问题，分开记录自评、教师意见和待核事项，不生成官方等级。",
+        "organization_note": "课程展示设计，非实际授课；先修与专项未确认前仅组织资料核对和口头讨论。",
+        "resource_note": "实际冰面、装备、路线、等待区、保护及应急制度待现场教师确认。",
+        "action_points": "",
+        "practice_steps": "",
+        "common_errors": "",
+        "safety_notes": "",
+        "differentiation_notes": "",
+        "evaluation_observations": ""
+      },
+      "conditions": {
+        "class_label": "合成课程验收情境（非真实班级）",
+        "student_count": 20,
+        "skill_level": "初级",
+        "age_band": "青少年",
+        "coach_count": 2,
+        "teacher_count": 1,
+        "usable_area_m2": 200.0,
+        "declared_practice_capacity": 10,
+        "equipment_sets": 20,
+        "safe_waiting_area": true,
+        "ice_available": true,
+        "venue_conditions": "合成场地，待现场确认",
+        "equipment_conditions": "合成装备，待现场确认"
+      },
+      "execution_status": "withheld_pending_specialist_evidence",
+      "organization": {
+        "status": "withheld",
+        "reasons": [
+          "先修条件未确认，暂缓冰上组织安排；不以旧主题先修ID替代课次先修要求"
+        ],
+        "groups": [],
+        "wave_sizes": [],
+        "rotation_count": 0,
+        "concurrent_students": 0,
+        "declared_capacity": 10,
+        "capacity_source": "teacher_declared_unverified",
+        "usable_area_m2": 200.0,
+        "core_active_min_per_student": 0.0,
+        "note": "仅为组织设计假设，不证明安全容量或师生比；教师先修确认未经认证。"
+      },
+      "preparation_checklist": [
+        "核对冰面及场地区域",
+        "逐人核查装备齐备和适配",
+        "核定容量、等待区及人员交接",
+        "补齐专项来源、先修要求与审核记录"
+      ],
+      "staff_tasks": [
+        {
+          "role": "staff",
+          "number": 0,
+          "task": "仅核对暂缓原因，不组织冰上实施"
+        }
+      ],
+      "missing_materials": [
+        "专项教学目标与动作标准待补充",
+        "练习组织与安全要求待补充",
+        "评价量规与真实来源待补充",
+        "专项先修要求、适用学生水平与审核记录待补充"
+      ],
+      "review_checklist": [
+        "核实知识条目与来源原文支持关系",
+        "取得可追溯专项审核意见",
+        "确认学生先修与适用水平",
+        "复核现场容量、人员、装备与等待区",
+        "复核分组及预计负荷假设",
+        "逐项复核教师修改，确认前不实施"
+      ],
+      "references": [
+        {
+          "knowledge_id": "K014",
+          "version": 1,
+          "category": "KB-S",
+          "source_id": "B02",
+          "source_title": "花样滑冰｜王树本",
+          "source_locator": "PDF75–77；印刷61–63",
+          "content_kind": "source_summary",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "a7224694e0bc54aa19fb281020d2a727519dbe2a5ad6dfeadd9e87411304b0a2"
+        },
+        {
+          "knowledge_id": "K015",
+          "version": 1,
+          "category": "KB-S",
+          "source_id": "B06",
+          "source_title": "国际滑联技术组手册·单人滑2025–2026（中文版）",
+          "source_locator": "PDF3–4；印刷3–4",
+          "content_kind": "source_summary",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "c777ee1bbafe2093875f385b5550d2020b4e990ffb1874cd22f1e0feeeef3649"
+        },
+        {
+          "knowledge_id": "K020",
+          "version": 1,
+          "category": "KB-E",
+          "source_id": "B06",
+          "source_title": "国际滑联技术组手册·单人滑2025–2026（中文版）",
+          "source_locator": "PDF3–4；印刷3–4",
+          "content_kind": "course_proposal",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "7b1caa2ce32bedcb4ee7fef017dcebe6865560f257fa7815f261485fc5ce653e"
+        },
+        {
+          "knowledge_id": "K021",
+          "version": 1,
+          "category": "KB-E",
+          "source_id": "B07",
+          "source_title": "花样滑冰竞赛规则（1987）",
+          "source_locator": "PDF5–9；印刷目录和1–4",
+          "content_kind": "course_proposal",
+          "source_verification_status": "pending",
+          "specialist_review_status": "pending",
+          "knowledge_digest": "526a63da98534a1d619b82384847847425727ee2362892053ad633bdd57ec1bd"
+        }
+      ],
+      "technical_guidance": [],
+      "controlled_citations": [],
+      "feedback_status": "not_received",
+      "system_review_status": "pending"
+    }
+  ]
+}

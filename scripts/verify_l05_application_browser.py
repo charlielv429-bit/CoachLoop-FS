@@ -19,7 +19,9 @@ from websockets.sync.client import connect
 
 parser=argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--p34',action='store_true',help='Also load pending original-page revisions into the isolated test KB')
+parser.add_argument('--course-mvp',action='store_true',help='Check all eight lesson views and L05 feedback draft in the existing UI')
 args=parser.parse_args()
+if args.course_mvp:args.p34=True
 
 root=Path(__file__).resolve().parents[1]
 work=Path(tempfile.mkdtemp(prefix='coachloop-ui-browser-'))
@@ -76,6 +78,8 @@ try:
                 if response.get('id')==sequence:return response
         def evaluate(expression):
             response=command('Runtime.evaluate',{'expression':expression,'returnByValue':True,'awaitPromise':True})
+            if response.get('result',{}).get('exceptionDetails'):
+                raise AssertionError(response['result']['exceptionDetails'])
             return response.get('result',{}).get('result',{}).get('value')
         command('Emulation.setDeviceMetricsOverride',{'width':1440,'height':1100,'deviceScaleFactor':1,'mobile':False})
         for _ in range(100):
@@ -93,6 +97,16 @@ try:
         wait_for("document.querySelector('#lp-lesson').options.length===8")
         evaluate("document.querySelector('#lesson-planning-mode').open=true;true")
         assert evaluate("document.querySelector('#lp-lesson').value")=='L05'
+        if args.course_mvp:
+            for number in range(1,9):
+                lesson_id=f'L0{number}'
+                evaluate("(()=>{const courseForm=document.querySelector('#lp-form');courseForm.elements.lesson_id.value="+json.dumps(lesson_id)+";courseForm.elements.venue_conditions.value='合成课程展示场地';courseForm.elements.equipment_conditions.value='合成课程展示装备';courseForm.elements.safe_waiting_area.checked=true;courseForm.elements.prerequisites_confirmed.checked=false;courseForm.dispatchEvent(new Event('input',{bubbles:true}));courseForm.requestSubmit();return true;})()")
+                wait_for("!document.querySelector('#lp-output').hidden && document.querySelector('#lp-result').textContent.includes("+json.dumps('"lesson_id": "'+lesson_id+'"')+")")
+                text=evaluate("document.querySelector('#lp-result').textContent")
+                assert all(f'"minutes": {minutes}' in text for minutes in (9,29,7))
+                assert 'withheld' in text and 'pending' in text
+            evaluate("document.querySelector('#lp-lesson').value='L05';document.querySelector('#lp-form').dispatchEvent(new Event('input',{bubbles:true}));true")
+
         evaluate("""const f=document.querySelector('#lp-form');f.elements.venue_conditions.value='模拟场地';f.elements.equipment_conditions.value='模拟装备';f.elements.safe_waiting_area.checked=true;f.elements.prerequisites_confirmed.checked=true;f.requestSubmit();true""")
         wait_for("!document.querySelector('#lp-output').hidden")
         assert evaluate("document.querySelector('#lp-result').textContent.includes('左前交叉步完整动作练习')")
@@ -106,12 +120,14 @@ try:
             assert evaluate("document.querySelector('#lp-result').textContent.includes('页码定位冲突')")
         names=['goal_draft','action_points','practice_steps','common_errors','safety_notes','differentiation_notes','evaluation_observations']
         for name in names:
-            evaluate("document.querySelector('#lp-edit-form').elements["+json.dumps(name)+"].value="+json.dumps('模拟教师填写：'+name)+";document.querySelector('#lp-edit-form').elements["+json.dumps(name)+"].dispatchEvent(new Event('input',{bubbles:true}));true")
+            evaluate("document.querySelector('#lp-edit-form').elements["+json.dumps(name)+"].value="+json.dumps('教师反馈草稿（合成操作验收，非实际评价）' if args.course_mvp and name=='evaluation_observations' else '模拟教师填写：'+name)+";document.querySelector('#lp-edit-form').elements["+json.dumps(name)+"].dispatchEvent(new Event('input',{bubbles:true}));true")
         evaluate("document.querySelector('#lp-export').click();true")
         wait_for("document.querySelector('#lp-message').textContent.includes('未保存修改')")
         evaluate("document.querySelector('#lp-edit-form').requestSubmit();true")
         wait_for("document.querySelector('#lp-message').textContent.includes('版本2')")
         assert evaluate("document.querySelector('#lp-result').textContent.includes('模拟教师填写：action_points')")
+        if args.course_mvp:
+            assert evaluate("document.querySelector('#lp-result').textContent.includes('教师反馈草稿（合成操作验收，非实际评价）') && document.querySelector('#lp-result').textContent.includes('待教师复核')")
         downloads=work/'downloads';downloads.mkdir()
         command('Browser.setDownloadBehavior',{'behavior':'allow','downloadPath':str(downloads)})
         evaluate("document.querySelector('#lp-export').click();true")
@@ -129,7 +145,7 @@ try:
             assert len([r for r in exported['evidence_reports'] if r['evidence_id'].startswith('P34_')])==3
         assert [p['minutes'] for p in exported['teaching_flow']['phases']]==[9,29,7]
         for name in names:
-            assert exported['l05_teaching_design']['areas'][name]['text']=='模拟教师填写：'+name
+            assert exported['l05_teaching_design']['areas'][name]['text']==('教师反馈草稿（合成操作验收，非实际评价）' if args.course_mvp and name=='evaluation_observations' else '模拟教师填写：'+name)
             assert exported['l05_teaching_design']['areas'][name]['review_status']=='pending_review'
         registry=SQLiteRegistry(work/'knowledge')
         registry.save(Knowledge(**{**probe.model_dump(),'version':2,'content':'SYNTHETIC_NEW_VERSION'}));registry.close()
@@ -164,7 +180,7 @@ try:
             evaluate("document.querySelector('[data-stage="+stage+"]').click();true")
             assert evaluate("!document.querySelector('#"+stage+"-pane').hidden")
         assert evaluate("document.querySelectorAll('[name=theme_id] option').length")>0
-        print(('P3.4' if args.p34 else 'P3.3')+' Chromium PASS: L05 real candidate groups/conflicts, seven teacher fields, saved versions, actual exports, stale-reference refresh, holds, legacy tabs')
+        print(('Course MVP eight lessons and feedback draft' if args.course_mvp else 'P3.4' if args.p34 else 'P3.3')+' Chromium PASS: L05 real candidate groups/conflicts, seven teacher fields, saved versions, actual exports, stale-reference refresh, holds, legacy tabs')
 finally:
     if browser is not None:
         browser.terminate()

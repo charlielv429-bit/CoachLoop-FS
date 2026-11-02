@@ -85,3 +85,6 @@ assets/mock/
 
 # Complete review-history snapshots (private, never commit)
 *.kb-full-backup.json
+
+# Explicit blank teacher review deliverable; never allow textbook scans or real reviews.
+!docs/course-mvp/L05-teacher-review.docx
