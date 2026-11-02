@@ -20,7 +20,7 @@
       const text=document.createElement('pre');text.textContent=area.text;box.append(title,text);container.append(box);
     }
     const labels={specialist_knowledge:'专项知识素材',teaching_progression:'课程进阶建议（自拟内容不冒充教材原文）',evaluation_suggestions:'评价观察建议（不自动评分）'};
-    const states={registered_not_verified:'来源已登记，原文和专项审核待确认',locator_conflict_pending:'页码定位冲突，尚无原PDF核查，不得认证',reviewed_for_draft_only:'满足受控草稿引用条件，仍待现场教师复核',superseded_or_unlinked:'条目已失效或更新，请重新生成',withdrawn_pending_regeneration:'审核已撤回，已撤下素材正文'};
+    const states={registered_not_verified:'来源已登记，原文和专项审核待确认',locator_conflict_pending:'旧版本页码定位冲突，请核对原页及修订版本，不得认证',reviewed_for_draft_only:'满足受控草稿引用条件，仍待现场教师复核',superseded_or_unlinked:'条目已失效或更新，请重新生成',withdrawn_pending_regeneration:'审核已撤回，已撤下素材正文'};
     for(const [group,cards] of Object.entries(design.material_groups)){
       const title=document.createElement('h3');title.textContent=labels[group];container.append(title);
       if(!cards.length){const empty=document.createElement('p');empty.textContent='暂无关联条目；由教师补充，不生成虚构内容。';container.append(empty);}

@@ -1,0 +1,29 @@
+{
+  "scope": "用户提供的22页扫描片段图像核验；不是完整教材或专业认证",
+  "original_pdf_mapping_basis": "用户说明；印刷页码通过图像核对",
+  "artifacts": [
+    {
+      "file": "Wang_Shuben_pages_88-97.pdf",
+      "sha256": "b65c324da8de30be979ade3e2899132e1924c32779b6e21fc781f5fc888c580d",
+      "mapping": {
+        "excerpt_pages": "1–10",
+        "original_pdf_pages": "88–97",
+        "printed_pages": "74–83"
+      }
+    },
+    {
+      "file": "Li_Xiangzhuang_TOC_4-6_and_pages_36-44.pdf",
+      "sha256": "72867a46e93243cee74961e6ed7191dab8d6c8ae6488704ad42c087d8dde2d13",
+      "mapping": {
+        "excerpt_pages": "1–3；4–12",
+        "original_pdf_pages": "4–6；36–44",
+        "printed_pages": "目录1–3；正文26–34"
+      }
+    }
+  ],
+  "reviewer": null,
+  "review_date": null,
+  "system_review_status": "pending",
+  "specialist_item_reviews_received": false,
+  "public_repository_contains_scans": false
+}

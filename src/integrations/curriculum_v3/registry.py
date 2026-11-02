@@ -79,7 +79,7 @@ def source_conflict(entry):
     if (entry.knowledge_id in ('K010','K011','K018') and entry.version==1
             and entry.source_id=='B02' and entry.candidate_version=='draft-0.1'
             and entry.source_locator=='PDF94–104；印刷80–90'):
-        return '用户说明PDF90–93主要为压步/前压步，PDF94起转入后压步；尚无原PDF可核查，原定位保留，待逐页复核，不得认证为前压步原文。'
+        return '旧候选将PDF94–104笼统关联前压步；PDF94起转入后压步（页首先有前压步注意事项收尾），不能据此认证为前压步原文。请对照原页及追加修订版本；旧记录保留，审核限制不变。'
     return ''
 
 
