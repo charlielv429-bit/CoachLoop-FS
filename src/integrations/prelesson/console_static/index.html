@@ -68,10 +68,18 @@
           <label>教师目标草稿修改<input name="goal_draft" maxlength="500"></label>
           <label>课堂组织说明修改<textarea name="organization_note" maxlength="1000"></textarea></label>
           <label>资源备注修改<textarea name="resource_note" maxlength="1000"></textarea></label>
+          <fieldset id="lp-l05-fields" hidden><legend>L05 教学设计填写区 · 所有修改均待复核</legend>
+          <label>动作要点（候选，不是正式技术指导）<textarea name="action_points" maxlength="1500"></textarea></label>
+          <label>练习步骤（不改动9/29/7分钟结构）<textarea name="practice_steps" maxlength="2000"></textarea></label>
+          <label>常见错误与待复核问题（不自动诊断）<textarea name="common_errors" maxlength="1500"></textarea></label>
+          <label>安全提示（不覆盖资源暂缓）<textarea name="safety_notes" maxlength="1500"></textarea></label>
+          <label>分层练习（不自动提高难度）<textarea name="differentiation_notes" maxlength="1500"></textarea></label>
+          <label>评价观察项（不设官方评分）<textarea name="evaluation_observations" maxlength="1500"></textarea></label>
+          </fieldset>
           <p>教师修改独立标记为待复核，不覆盖资源暂缓、时间、知识审核状态或生成技术指导。</p>
           <button type="submit">保存教师修改（追加版本，待复核）</button>
         </form>
-        <button id="lp-export" type="button">导出服务端待审核框架 JSON</button><button id="lp-history" type="button">查看教案历史版本</button><pre id="lp-history-result"></pre>
+        <button id="lp-refresh-evidence" type="button">重新核对资料与引用</button><button id="lp-export" type="button">导出服务端待审核框架 JSON</button><button id="lp-history" type="button">查看教案历史版本</button><pre id="lp-history-result"></pre>
       </section>
     </details>
 
