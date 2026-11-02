@@ -79,7 +79,7 @@
           <p>教师修改独立标记为待复核，不覆盖资源暂缓、时间、知识审核状态或生成技术指导。</p>
           <button type="submit">保存教师修改（追加版本，待复核）</button>
         </form>
-        <button id="lp-refresh-evidence" type="button">重新核对资料与引用</button><button id="lp-export" type="button">导出服务端待审核框架 JSON</button><button id="lp-history" type="button">查看教案历史版本</button><pre id="lp-history-result"></pre>
+        <button id="lp-refresh-evidence" type="button">重新核对资料与引用</button><button id="lp-export" type="button">导出服务端待审核框架 JSON</button><button id="lp-history" type="button">查看教案历史版本</button><button id="lp-loop" type="button">进入L05教学闭环</button><pre id="lp-history-result"></pre>
       </section>
     </details>
 
@@ -149,6 +149,7 @@
       <button id="video-start" type="submit" disabled>上传到本机并分析</button></form>
       <button id="video-delete" type="button" class="secondary">取消并清除本机任务</button>
       <p id="video-message" role="status" aria-live="polite"></p>
+      <button id="loop-demo-analysis" type="button" class="secondary">创建合成关键点演示（不调用MediaPipe）</button>
       <p class="hint">原始文件不归档，转换后删除。预览、特征与未认证审核暂存最多20分钟；退出服务会清除。请自行保管必要导出，不在此保存学生身份。</p>
       </section><section class="panel">
       <div class="video-stage"><video id="analysis-video" controls playsinline preload="metadata"></video><canvas id="pose-overlay" aria-label="二维观测骨架"></canvas></div>
@@ -159,6 +160,22 @@
       <section class="panel"><h2>候选变化事件与本地人工审核</h2><p>confirmed 仅确认可观察变化；不是已证实技术错误。操作由服务端记为本机会话操作者，不能认证为专业教练。</p><div id="video-events"></div></section>
     </section>
     <section id="feedback-pane" hidden><h1>训练反馈草稿</h1><p class="notice">仅引用本次本机分析。所有本地审核均未认证，不冒充正式教练结论；没有数据库写入或自动批准。</p><button id="feedback-refresh" type="button">根据当前记录生成草稿</button><button id="feedback-export" type="button" class="secondary" disabled>导出反馈草稿</button><p id="feedback-message" role="status"></p><section id="feedback-content" class="panel" hidden></section></section>
+    <details id="teaching-loop" class="panel" hidden><summary>L05教学闭环 · 匿名观察与复练任务</summary>
+      <p class="notice">关联当前浏览器中的L05教案与本机分析；不自动认定技术错误。教师自报确认仍未认证，不是专业审核。合成演示不代表真实视频或实际授课。</p>
+      <p>记录只保存在本机进程内存，随视频任务/会话失效而不可读，退出清空；最多100个累计版本／2MiB。匿名编号也属于私有数据，请及时导出并自行保管，不填写真实身份或健康信息。</p>
+      <button id="loop-use-context" type="button">读取当前L05教案与本机任务</button><p id="loop-context"></p>
+      <form id="loop-form"><label>匿名学员编号（如ANON-001；非真实学号）<input name="learner_code" value="ANON-001" pattern="ANON-[0-9]{3,8}" maxlength="13" required></label>
+      <label>教师观察结论（自填，未认证）<textarea name="observation" maxlength="1500"></textarea></label>
+      <label>后续复练任务（自填，待安全/专业确认，不自动生成纠错）<textarea name="practice_task" maxlength="1500"></textarea></label>
+      <button type="submit">关联并保存一次观察草稿</button></form>
+      <button id="loop-save" type="button">追加保存反馈版本</button>
+      <label><input id="loop-ack" type="checkbox">我已自行核对质量、候选变化、观察文字与复练任务；不宣称专业认证</label>
+      <button id="loop-confirm" type="button">本地教师自报确认当前版本</button>
+      <button id="loop-refresh" type="button">重新核对当前证据</button><button id="loop-export" type="button">导出完整闭环 JSON</button>
+      <button id="loop-list" type="button">恢复本会话已保存记录</button><select id="loop-records" aria-label="本会话闭环记录"></select><button id="loop-open" type="button">打开记录</button>
+      <button id="loop-delete" type="button">删除当前闭环记录</button><p id="loop-message" role="status" aria-live="polite"></p>
+      <section id="loop-report" hidden><h2>教师反馈报告</h2><p id="loop-review-label" class="notice"></p><pre id="loop-report-text"></pre></section>
+    </details>
   </main>
   <footer>本地视频与反馈不连接Coze或数据库；Cloudflare模拟课堂禁止真实视频上传。教学与安全规则仍待专项教练确认。</footer>
 </body>

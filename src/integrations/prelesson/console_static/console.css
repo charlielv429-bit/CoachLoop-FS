@@ -15,3 +15,5 @@ input[type=checkbox]{display:inline-block;width:auto;margin:0 8px 0 0;vertical-a
 #lesson-planning-mode pre { white-space: pre-wrap; overflow-wrap: anywhere; }
 #lesson-planning-mode textarea { width: 100%; min-height: 5rem; }
 #lesson-planning-mode summary { cursor: pointer; font-weight: 700; }
+/* Scoped teaching-loop controls; private feedback remains plain text. */
+#teaching-loop>button{width:auto;margin-right:8px}#loop-form button{width:auto}#loop-records{max-width:520px}#loop-report-text{white-space:pre-wrap;overflow-wrap:anywhere;max-height:650px;overflow:auto}

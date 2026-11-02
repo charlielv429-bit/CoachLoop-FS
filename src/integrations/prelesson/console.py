@@ -24,6 +24,9 @@ from integrations.curriculum_v3.registry import Registry
 from integrations.curriculum_v3.persistence import PersistenceError
 from integrations.curriculum_v3.planning import PlanStore, PlanSessions, PLAN_COOKIE
 
+from integrations.teaching_loop.service import LoopStore, READ_PATHS as LOOP_READ, WRITE_PATHS as LOOP_WRITE
+from integrations.teaching_loop.api import create_router as create_loop_router
+
 STATIC = Path(__file__).with_name('console_static')
 COOKIE = 'coachloop_local_console'
 CANONICAL = '/api/v1/lesson-plans/draft'
@@ -31,6 +34,7 @@ ALLOWED = {('GET', '/'), ('GET', '/console.js'), ('GET', '/console.css'),
            ('GET', '/health'), ('POST', CANONICAL), ('GET', CATALOGUE), ('POST', ADAPTIVE), ('GET','/video-console.js')}
 ALLOWED |= {('GET',path) for path in READ_PATHS} | {('POST',path) for path in WRITE_PATHS}
 ALLOWED |= {('GET', path) for path in V3_READ} | {('POST', path) for path in V3_WRITE} | {('GET', '/curriculum.js'), ('GET', '/lesson-planning.js')}
+ALLOWED |= {('GET',p) for p in LOOP_READ} | {('POST',p) for p in LOOP_WRITE} | {('GET','/teaching-loop.js')}
 SECURITY_HEADERS = {
     'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer',
     'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'DENY',
@@ -75,7 +79,7 @@ class LocalBoundary:
             return await reject(403, 'Cross-site access refused')
         if request.headers.get('origin') not in (None, self.origin):
             return await reject(403, 'Cross-origin access refused')
-        if scope['path'] in READ_PATHS | V3_READ:
+        if scope['path'] in READ_PATHS | V3_READ | LOOP_READ:
             cookie = request.cookies.get(COOKIE, '')
             if not cookie or not hmac.compare_digest(cookie.encode(), self.session.encode()):
                 return await reject(401, 'Local console session required')
@@ -91,7 +95,7 @@ class LocalBoundary:
                     or any(k.lower() == b'authorization' for k, _ in headers)):
                 return await reject(403, 'Local session and same-origin JSON request required')
             scope = {**scope, 'coachloop_local_auth': LOCAL_AUTH, 'headers': [*headers, (b'authorization', ('Bearer ' + self.bearer).encode())]}
-        if scope['path'].startswith('/api/v3/plans/'):
+        if scope['path'].startswith(('/api/v3/plans/','/api/v3/loops/')):
             owner = self.plan_sessions.owner(request.cookies.get(PLAN_COOKIE))
             if owner is None:
                 return await reject(401, 'Open the local console to start a plan session')
@@ -107,10 +111,12 @@ def create_console_app(port: int = 8767, *, video_store=None, knowledge_store=No
     registry = knowledge_store if knowledge_store is not None else Registry()
     plans = PlanStore()
     plan_sessions = PlanSessions()
+    loops = LoopStore(plans,registry,store)
     @asynccontextmanager
     async def lifespan(app):
         try:yield
         finally:
+            loops.clear()
             store.close()
             registry.clear()
             plans.clear()
@@ -118,6 +124,8 @@ def create_console_app(port: int = 8767, *, video_store=None, knowledge_store=No
     app.state.video_store = store
     app.state.curriculum_registry = registry
     app.state.lesson_plans = plans
+    app.state.teaching_loops = loops
+    app.include_router(create_loop_router(loops))
     app.include_router(create_v3_router(registry, plans))
     @app.exception_handler(PersistenceError)
     async def knowledge_error(request, error):
@@ -151,6 +159,9 @@ def create_console_app(port: int = 8767, *, video_store=None, knowledge_store=No
     @app.get('/lesson-planning.js')
     def lesson_planning_javascript():
         return FileResponse(STATIC / 'lesson-planning.js', media_type='text/javascript')
+    @app.get('/teaching-loop.js')
+    def loop_javascript():
+        return FileResponse(STATIC / 'teaching-loop.js', media_type='text/javascript')
     @app.get('/console.css')
     def stylesheet():
         return FileResponse(STATIC / 'console.css', media_type='text/css')

@@ -235,7 +235,7 @@ class VideoStore:
         with self.lock:
             job=self.get(token,key)
             return dict(job_id=key,state=job.state,error=job.error,
-                source_kind='real_video_upload',authenticated_coach=False,
+                source_kind='synthetic_keypoints_demo' if job.result and job.result.get('synthetic_demo') else 'real_video_upload',authenticated_coach=False,
                 quality=copy.deepcopy(job.result['quality']) if job.result else None)
 
     def result(self, token, key):

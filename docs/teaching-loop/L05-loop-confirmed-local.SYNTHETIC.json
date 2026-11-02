@@ -1,0 +1,1106 @@
+{
+  "loop_id": "834fee6534604924828006482d92a1ec",
+  "version": 2,
+  "plan_id": "4a0d5b5b570c46caadae08db60743d94",
+  "plan_version": 2,
+  "job_id": "f9d25c7ef070463491c3d752be878bd3",
+  "learner_code": "ANON-005",
+  "lesson_id": "L05",
+  "observation": "合成验收：可见候选二维角度变化，事件状态仅作本地观察；不能认定技术错误。",
+  "practice_task": "合成复练任务：先复核拍摄条件与L05教材定位，专项与现场安全未确认前不安排冰上实操。",
+  "changed_at": "2026-11-02T13:44:33.872575+00:00",
+  "operation": "locally_confirmed",
+  "confirmation": {
+    "at": "2026-11-02T13:44:33.872550+00:00",
+    "actor": "local_unverified_operator",
+    "verification": "local_unverified",
+    "acknowledgement": "已自行核对质量、候选变化、观察文字和复练任务；身份与专业资格未认证。"
+  },
+  "saved_analysis": {
+    "job_id": "f9d25c7ef070463491c3d752be878bd3",
+    "is_mock": true,
+    "synthetic_demo": true,
+    "origin": "synthetic_keypoints_demo",
+    "quality": {
+      "n_frames": 40,
+      "side": "left",
+      "knee_detect_ratio": 1,
+      "torso_detect_ratio": 1,
+      "hip_ankle_detect_ratio": 1,
+      "degenerate_frames": 0,
+      "source_frames": 40,
+      "detected_frames": 40,
+      "valid_frame_ratio": 1,
+      "synthetic": true
+    },
+    "metadata": {
+      "duration_seconds": 4,
+      "fps": 10,
+      "analysis_fps": 10,
+      "synthetic": true
+    },
+    "candidate_changes": [
+      {
+        "event_id": "evt_4b18ee943009",
+        "candidate": {
+          "feature": "knee_angle_deg",
+          "frame_start": 14,
+          "frame_end": 25,
+          "start_time_ms": 1400,
+          "end_time_ms": 2500,
+          "duration_ms": 1100,
+          "n_frames": 12,
+          "deviation_max": 112.62,
+          "swing": 90.096
+        },
+        "status": "confirmed",
+        "note": "合成浏览器观察，非技术错误",
+        "sequence": 1,
+        "local_review_history": [
+          {
+            "reviewed_at": "2026-11-02T13:44:33+00:00",
+            "status": "confirmed",
+            "note": "合成浏览器观察，非技术错误"
+          }
+        ],
+        "interpretation": "候选二维变化；本地状态或文字不证明技术错误。"
+      }
+    ],
+    "limitations": [
+      "合成关键点演示，不是真实视频、学生记录或花滑技术验证。",
+      "只复用几何、V4事件和V5复核；没有调用MediaPipe或训练模型。"
+    ],
+    "time_basis": "analysis_preview_milliseconds",
+    "technical_error_assessment": "not_assessed",
+    "authenticated_coach": false
+  },
+  "evidence_digest": "42ece3a5102c91b12f1a30f46de6f857ed5bdbd0ca4e1132a7ca24acba69748a",
+  "schema_version": "l05-teaching-loop-v1",
+  "plan": {
+    "schema_version": "lesson-framework-v3.1",
+    "mode": "lesson",
+    "lesson": {
+      "lesson_id": "L05",
+      "title": "左前交叉步完整动作练习",
+      "duration_min": 45,
+      "teaching_objective_draft": "围绕“左前交叉步完整动作练习”拟定学习目标；具体动作标准、练习与评价要求待专项教师补充。"
+    },
+    "title": "左前交叉步完整动作练习｜待审核教案框架",
+    "review_status": "pending_review",
+    "requires_teacher_review": true,
+    "execution_status": "withheld_pending_specialist_evidence",
+    "technical_guidance": [],
+    "formal_teaching_evidence": [],
+    "objective_draft": "围绕“左前交叉步完整动作练习”拟定学习目标；具体动作标准、练习与评价要求待专项教师补充。",
+    "conditions": {
+      "class_label": "匿名班级",
+      "student_count": 20,
+      "skill_level": "初级",
+      "age_band": "青少年",
+      "coach_count": 2,
+      "teacher_count": 1,
+      "usable_area_m2": 200,
+      "declared_practice_capacity": 10,
+      "equipment_sets": 20,
+      "safe_waiting_area": true,
+      "ice_available": true,
+      "venue_conditions": "模拟场地",
+      "equipment_conditions": "模拟装备"
+    },
+    "prerequisites": {
+      "teacher_confirmed": true,
+      "verification_status": "unverified",
+      "requirements_status": "missing"
+    },
+    "preparation_checklist": [
+      "核对冰面及场地区域",
+      "逐人核查装备齐备和适配",
+      "核定容量、等待区及人员交接",
+      "补齐专项来源、先修要求与审核记录"
+    ],
+    "teaching_flow": {
+      "total_minutes": 45,
+      "phases": [
+        {
+          "phase": "prep",
+          "minutes": 9,
+          "content": "点名、装备和场地核查；核对先修资料与人员职责。",
+          "teacher_activity": "核查条件与分工，专项审核前不组织实操",
+          "student_activity": "参与条件核对、口头讨论与自评记录",
+          "organization": "拟定分组待现场确认；不是实施许可",
+          "safety_tip": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+          "evaluation": "仅记录组织与资料问题，不评价动作合格与等级"
+        },
+        {
+          "phase": "main",
+          "minutes": 29,
+          "content": "预留示范核查5分钟、轮换组织24分钟（每轮转换1分钟设计假设）；专项内容为空，审核前改为资料核对与口头讨论。",
+          "teacher_activity": "核查条件与分工，专项审核前不组织实操",
+          "student_activity": "参与条件核对、口头讨论与自评记录",
+          "organization": "拟定分组待现场确认；不是实施许可",
+          "safety_tip": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+          "evaluation": "仅记录组织与资料问题，不评价动作合格与等级"
+        },
+        {
+          "phase": "closing",
+          "minutes": 7,
+          "content": "整理记录、学生自评问题收集、教师复核交接；不作技术评分。",
+          "teacher_activity": "核查条件与分工，专项审核前不组织实操",
+          "student_activity": "参与条件核对、口头讨论与自评记录",
+          "organization": "拟定分组待现场确认；不是实施许可",
+          "safety_tip": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+          "evaluation": "仅记录组织与资料问题，不评价动作合格与等级"
+        }
+      ]
+    },
+    "organization": {
+      "status": "pending_confirmation",
+      "reasons": [],
+      "groups": [
+        {
+          "wave": 1,
+          "coach": 1,
+          "students": 5
+        },
+        {
+          "wave": 1,
+          "coach": 2,
+          "students": 5
+        },
+        {
+          "wave": 2,
+          "coach": 1,
+          "students": 5
+        },
+        {
+          "wave": 2,
+          "coach": 2,
+          "students": 5
+        }
+      ],
+      "wave_sizes": [
+        10,
+        10
+      ],
+      "rotation_count": 2,
+      "concurrent_students": 10,
+      "declared_capacity": 10,
+      "capacity_source": "teacher_declared_unverified",
+      "usable_area_m2": 200,
+      "core_active_min_per_student": 11,
+      "note": "仅为组织设计假设，不证明安全容量或师生比；教师先修确认未经认证。"
+    },
+    "staff_tasks": [
+      {
+        "role": "coach",
+        "number": 1,
+        "task": "负责拟定组的组织与异常报告；专项示范和保护要求待审核，不提供动作要领"
+      },
+      {
+        "role": "coach",
+        "number": 2,
+        "task": "负责拟定组的组织与异常报告；专项示范和保护要求待审核，不提供动作要领"
+      },
+      {
+        "role": "teacher",
+        "number": 1,
+        "task": "核对人员、装备及冰外等待区，确认轮换交接；不替代专项教练"
+      }
+    ],
+    "load_accounting": {
+      "total_minutes": 45,
+      "kind": "estimated",
+      "avg_hr": null,
+      "group_density": {
+        "name": "预计群体活动窗口密度",
+        "kind": "estimated",
+        "formula": "预计活动分钟 / 45分钟 × 100；轮换均匀分配假设，非实测",
+        "numerator": 29,
+        "denominator": 45,
+        "unit": "%",
+        "result": 64.44444444444444,
+        "target": null,
+        "display_result": 64.44
+      },
+      "individual_density": {
+        "name": "预计人均活动密度",
+        "kind": "estimated",
+        "formula": "预计活动分钟 / 45分钟 × 100；轮换均匀分配假设，非实测",
+        "numerator": 18,
+        "denominator": 45,
+        "unit": "%",
+        "result": 40,
+        "target": null,
+        "display_result": 40
+      },
+      "note": "复用原活动窗口算法：准备4+结束3，基本29=示范5+轮换24，每轮转换1；均为条件满足后的设计假设，非当前实施量；专项暂缓期间实际负荷不推定，心率不估计。"
+    },
+    "differentiation": [
+      "支持层：待核实学生先修与支持需求",
+      "巩固层：专项任务待审核后填写",
+      "进阶层：无专项许可不提高难度"
+    ],
+    "knowledge_inventory": [
+      {
+        "knowledge_id": "K011",
+        "category": "KB-S",
+        "title": "L05完整动作资料提取原则与教材背景",
+        "version": 2,
+        "source_id": "B02",
+        "source_title": "花样滑冰｜王树本",
+        "source_locator": "背景依据：原PDF91／印刷77／图29左前压步连续动作；本条课程提取原则无教材逐字出处",
+        "source_verification_status": "pending",
+        "specialist_review_status": "pending",
+        "chapter": "教材背景：第五章／二、压步／（一）前压步；课程自拟提取原则",
+        "candidate_version": "p3.4-original-pages-v2",
+        "applicability_limitations": "不把课程名称、单次完整动作任务或提取原则归因于教材原文；待专项教师逐项确认动作、保护及教学适用性。旧PDF94–104定位不再用于左前压步图29。",
+        "content_kind": "course_proposal",
+        "source_conflict_status": "not_flagged",
+        "source_conflict_note": "",
+        "source_registered": true,
+        "source_content_verified": false,
+        "specialist_verified": false,
+        "reported_inspection_note": "已对用户上传扫描原页进行图像核对，定位见独立P34原页核验声明；无逐条专项签署材料。人工身份与日期未提供，系统可信审核仍pending。",
+        "specialist_confirmation_reported": false,
+        "system_review_status": "pending",
+        "usage": "metadata_only_not_teaching_guidance",
+        "exclusion_reason": "来源登记不等于正文核实；尚无可信专项审核。不得用作确定性动作指导。"
+      },
+      {
+        "knowledge_id": "K012",
+        "category": "KB-S",
+        "title": "李乡状教材前压步与后压步的准确定位",
+        "version": 2,
+        "source_id": "B03",
+        "source_title": "花样滑冰技法与指导｜李乡状等",
+        "source_locator": "原PDF39／印刷29／第三节一、前压步；区别后压步：原PDF41／印刷31；目录原PDF5／印刷2",
+        "source_verification_status": "pending",
+        "specialist_review_status": "pending",
+        "chapter": "第二章 花样滑冰的学习／第三节 花样滑冰的步法／一、前压步",
+        "candidate_version": "p3.4-original-pages-v2",
+        "applicability_limitations": "原PDF36／印刷26的后交叉步滑行与原PDF41／印刷31的后压步均不是本课左前压步定位。所供前压步页为文字，没有对应编号动作图；脚序、用刃、错误及保护须逐条专项复核，不将此摘要当作技术指令。",
+        "content_kind": "source_summary",
+        "source_conflict_status": "not_flagged",
+        "source_conflict_note": "",
+        "source_registered": true,
+        "source_content_verified": false,
+        "specialist_verified": false,
+        "reported_inspection_note": "已对用户上传扫描原页进行图像核对，定位见独立P34原页核验声明；无逐条专项签署材料。人工身份与日期未提供，系统可信审核仍pending。",
+        "specialist_confirmation_reported": false,
+        "system_review_status": "pending",
+        "usage": "metadata_only_not_teaching_guidance",
+        "exclusion_reason": "来源登记不等于正文核实；尚无可信专项审核。不得用作确定性动作指导。"
+      },
+      {
+        "knowledge_id": "K018",
+        "category": "KB-P",
+        "title": "L04至L06课次进阶安排属于课程自拟方案",
+        "version": 2,
+        "source_id": "B02",
+        "source_title": "花样滑冰｜王树本",
+        "source_locator": "背景依据：原PDF91–93／印刷77–79／前压步练习方法；三课次安排为课程自拟，无教材逐字出处",
+        "source_verification_status": "pending",
+        "specialist_review_status": "pending",
+        "chapter": "教材背景：第五章／二、压步／（一）前压步／练习方法；课程自拟进阶",
+        "candidate_version": "p3.4-original-pages-v2",
+        "applicability_limitations": "教材练习素材只作背景；三课次顺序、难度、分层、先修与负荷须由专项及现场教师确认。不得将其写作教材原文、官方标准或已批准教学安排。",
+        "content_kind": "course_proposal",
+        "source_conflict_status": "not_flagged",
+        "source_conflict_note": "",
+        "source_registered": true,
+        "source_content_verified": false,
+        "specialist_verified": false,
+        "reported_inspection_note": "已对用户上传扫描原页进行图像核对，定位见独立P34原页核验声明；无逐条专项签署材料。人工身份与日期未提供，系统可信审核仍pending。",
+        "specialist_confirmation_reported": false,
+        "system_review_status": "pending",
+        "usage": "metadata_only_not_teaching_guidance",
+        "exclusion_reason": "来源登记不等于正文核实；尚无可信专项审核。不得用作确定性动作指导。"
+      },
+      {
+        "knowledge_id": "K019",
+        "category": "KB-E",
+        "title": "评价应分开记录算法观察、教练判断和学生复练建议",
+        "version": 1,
+        "source_id": "B02",
+        "source_title": "花样滑冰｜王树本",
+        "source_locator": "PDF75–77；印刷61–63",
+        "source_verification_status": "pending",
+        "specialist_review_status": "pending",
+        "chapter": "",
+        "candidate_version": "draft-0.1",
+        "applicability_limitations": "不可声称该教材定义AI评价方法",
+        "content_kind": "course_proposal",
+        "source_conflict_status": "not_flagged",
+        "source_conflict_note": "",
+        "source_registered": true,
+        "source_content_verified": false,
+        "specialist_verified": false,
+        "reported_inspection_note": "课程自拟评价流程",
+        "specialist_confirmation_reported": false,
+        "system_review_status": "pending",
+        "usage": "metadata_only_not_teaching_guidance",
+        "exclusion_reason": "来源登记不等于正文核实；尚无可信专项审核。不得用作确定性动作指导。"
+      },
+      {
+        "knowledge_id": "SYNTHETIC_P33_BROWSER",
+        "category": "KB-S",
+        "title": "模拟浏览器失效素材（非教材）",
+        "version": 1,
+        "source_id": "SYNTHETIC_SOURCE",
+        "source_title": "模拟来源非教材",
+        "source_locator": "模拟页码",
+        "source_verification_status": "pending",
+        "specialist_review_status": "pending",
+        "chapter": "",
+        "candidate_version": "",
+        "applicability_limitations": "",
+        "content_kind": "source_summary",
+        "source_conflict_status": "not_flagged",
+        "source_conflict_note": "",
+        "source_registered": true,
+        "source_content_verified": false,
+        "specialist_verified": false,
+        "reported_inspection_note": "",
+        "specialist_confirmation_reported": false,
+        "system_review_status": "pending",
+        "usage": "metadata_only_not_teaching_guidance",
+        "exclusion_reason": "来源登记不等于正文核实；尚无可信专项审核。不得用作确定性动作指导。"
+      }
+    ],
+    "missing_materials": [
+      "专项教学目标与动作标准待补充",
+      "练习组织与安全要求待补充",
+      "评价量规与真实来源待补充",
+      "专项先修要求、适用学生水平与审核记录待补充"
+    ],
+    "teacher_review_checklist": [
+      "核实知识条目与来源原文支持关系",
+      "取得可追溯专项审核意见",
+      "确认学生先修与适用水平",
+      "复核现场容量、人员、装备与等待区",
+      "复核分组及预计负荷假设",
+      "逐项复核教师修改，确认前不实施"
+    ],
+    "teaching_suggestions": [],
+    "evidence_reports": [
+      {
+        "evidence_id": "REPORT_K011_SOURCE",
+        "knowledge_id": "K011",
+        "knowledge_version": 1,
+        "knowledge_digest": "3c1e0843fe2069f747c89ab5f248a2794d900ffe5af262be848aa058bf2112bf",
+        "kind": "source_report",
+        "basis_kind": "supplied_summary",
+        "artifact_name": "03_Knowledge_Candidates.json",
+        "artifact_sha256": "a927a62f471f1bdc688dac335ac29bf524031d738392502fcdab02b6a78a3559",
+        "source_id": "B02",
+        "locator": "PDF94–104；印刷80–90",
+        "statement": "上传整理材料声明：正文抽样核对；本次未获得教材原PDF，系统未核实原文。",
+        "reviewer": null,
+        "review_date": null
+      },
+      {
+        "evidence_id": "REPORT_K011_CONTEXT",
+        "knowledge_id": "K011",
+        "knowledge_version": 1,
+        "knowledge_digest": "3c1e0843fe2069f747c89ab5f248a2794d900ffe5af262be848aa058bf2112bf",
+        "kind": "user_confirmation",
+        "basis_kind": "user_statement",
+        "artifact_name": "01_Expert_Reviewed_Answers.docx",
+        "artifact_sha256": "cc47d12b5a7a68c367e59414834c824a46c1a94d1657f6feb649f44091296c94",
+        "source_id": "B02",
+        "locator": "五问填答稿及本会话用户说明（不是逐条专项审核）",
+        "statement": "用户说明专项同学认可五问内容；未提供本条具名审核记录。该文件自述不是专项教师签署的审核证明。不得推定此条已获得逐条确认。",
+        "reviewer": null,
+        "review_date": null
+      },
+      {
+        "evidence_id": "REPORT_K012_SOURCE",
+        "knowledge_id": "K012",
+        "knowledge_version": 1,
+        "knowledge_digest": "4150a173b7087d85a6aed6fdfd0a37ab1b29f35ff94ff648a1c3d21d31ca1ad0",
+        "kind": "source_report",
+        "basis_kind": "supplied_summary",
+        "artifact_name": "03_Knowledge_Candidates.json",
+        "artifact_sha256": "a927a62f471f1bdc688dac335ac29bf524031d738392502fcdab02b6a78a3559",
+        "source_id": "B03",
+        "locator": "PDF29–55；印刷19–45",
+        "statement": "上传整理材料声明：正文抽样核对；本次未获得教材原PDF，系统未核实原文。",
+        "reviewer": null,
+        "review_date": null
+      },
+      {
+        "evidence_id": "REPORT_K012_CONTEXT",
+        "knowledge_id": "K012",
+        "knowledge_version": 1,
+        "knowledge_digest": "4150a173b7087d85a6aed6fdfd0a37ab1b29f35ff94ff648a1c3d21d31ca1ad0",
+        "kind": "user_confirmation",
+        "basis_kind": "user_statement",
+        "artifact_name": "01_Expert_Reviewed_Answers.docx",
+        "artifact_sha256": "cc47d12b5a7a68c367e59414834c824a46c1a94d1657f6feb649f44091296c94",
+        "source_id": "B03",
+        "locator": "五问填答稿及本会话用户说明（不是逐条专项审核）",
+        "statement": "用户说明专项同学认可五问内容；未提供本条具名审核记录。该文件自述不是专项教师签署的审核证明。不得推定此条已获得逐条确认。",
+        "reviewer": null,
+        "review_date": null
+      },
+      {
+        "evidence_id": "REPORT_K018_SOURCE",
+        "knowledge_id": "K018",
+        "knowledge_version": 1,
+        "knowledge_digest": "f1cfc47e3897b5b2c24fc933042861e60e02ba6f261a505ad762dee9b833460d",
+        "kind": "source_report",
+        "basis_kind": "supplied_summary",
+        "artifact_name": "03_Knowledge_Candidates.json",
+        "artifact_sha256": "a927a62f471f1bdc688dac335ac29bf524031d738392502fcdab02b6a78a3559",
+        "source_id": "B02",
+        "locator": "PDF94–104；印刷80–90",
+        "statement": "上传整理材料声明：课程安排而非来源原文；本次未获得教材原PDF，系统未核实原文。",
+        "reviewer": null,
+        "review_date": null
+      },
+      {
+        "evidence_id": "REPORT_K018_CONTEXT",
+        "knowledge_id": "K018",
+        "knowledge_version": 1,
+        "knowledge_digest": "f1cfc47e3897b5b2c24fc933042861e60e02ba6f261a505ad762dee9b833460d",
+        "kind": "user_confirmation",
+        "basis_kind": "user_statement",
+        "artifact_name": "01_Expert_Reviewed_Answers.docx",
+        "artifact_sha256": "cc47d12b5a7a68c367e59414834c824a46c1a94d1657f6feb649f44091296c94",
+        "source_id": "B02",
+        "locator": "五问填答稿及本会话用户说明（不是逐条专项审核）",
+        "statement": "用户说明专项同学认可五问内容；未提供本条具名审核记录。该文件自述不是专项教师签署的审核证明。不得推定此条已获得逐条确认。",
+        "reviewer": null,
+        "review_date": null
+      },
+      {
+        "evidence_id": "REPORT_K019_SOURCE",
+        "knowledge_id": "K019",
+        "knowledge_version": 1,
+        "knowledge_digest": "eda721d74d69d682d99bfd9eb0576f7eb5a74c2b776e0dfde77c9a8c2f2b4fcd",
+        "kind": "source_report",
+        "basis_kind": "supplied_summary",
+        "artifact_name": "03_Knowledge_Candidates.json",
+        "artifact_sha256": "a927a62f471f1bdc688dac335ac29bf524031d738392502fcdab02b6a78a3559",
+        "source_id": "B02",
+        "locator": "PDF75–77；印刷61–63",
+        "statement": "上传整理材料声明：课程自拟评价流程；本次未获得教材原PDF，系统未核实原文。",
+        "reviewer": null,
+        "review_date": null
+      },
+      {
+        "evidence_id": "REPORT_K019_CONTEXT",
+        "knowledge_id": "K019",
+        "knowledge_version": 1,
+        "knowledge_digest": "eda721d74d69d682d99bfd9eb0576f7eb5a74c2b776e0dfde77c9a8c2f2b4fcd",
+        "kind": "user_confirmation",
+        "basis_kind": "user_statement",
+        "artifact_name": "01_Expert_Reviewed_Answers.docx",
+        "artifact_sha256": "cc47d12b5a7a68c367e59414834c824a46c1a94d1657f6feb649f44091296c94",
+        "source_id": "B02",
+        "locator": "五问填答稿及本会话用户说明（不是逐条专项审核）",
+        "statement": "用户说明专项同学认可五问内容；未提供本条具名审核记录。该文件自述不是专项教师签署的审核证明。不得推定此条已获得逐条确认。",
+        "reviewer": null,
+        "review_date": null
+      },
+      {
+        "evidence_id": "P34_K011_V2_SOURCE",
+        "knowledge_id": "K011",
+        "knowledge_version": 2,
+        "knowledge_digest": "8074c7f22c1f977d56f7de52fef88bbfefe21db3cd05dc17bc8ab48de77113f0",
+        "kind": "source_report",
+        "basis_kind": "original_source_excerpt",
+        "artifact_name": "Wang_Shuben_pages_88-97.pdf",
+        "artifact_sha256": "b65c324da8de30be979ade3e2899132e1924c32779b6e21fc781f5fc888c580d",
+        "source_id": "B02",
+        "locator": "背景依据：原PDF91／印刷77／图29左前压步连续动作；本条课程提取原则无教材逐字出处",
+        "statement": "系统辅助图像核验记录：课程自拟资料提取原则：L05应分开记录教材连续动作图示与教师认定的专项要求。教材背景为王树本左前压步图29；该提取原则及L05任务安排不是教材原文，也不是教材评分规则。；不把课程名称、单次完整动作任务或提取原则归因于教材原文；待专项教师逐项确认动作、保护及教学适用性。旧PDF94–104定位不再用于左前压步图29。；这是原页定位与内容性质核验声明，不是专项逐条认可、身份认证或系统审核批准。原PDF页序由用户提供，印刷页码及图注由扫描图像核对；原书版本信息尚待版权页。",
+        "reviewer": null,
+        "review_date": null
+      },
+      {
+        "evidence_id": "P34_K018_V2_SOURCE",
+        "knowledge_id": "K018",
+        "knowledge_version": 2,
+        "knowledge_digest": "f1ef702a26b807bccffdd895eed3b9dcdfe6c559cc3c00f5987901323969beda",
+        "kind": "source_report",
+        "basis_kind": "original_source_excerpt",
+        "artifact_name": "Wang_Shuben_pages_88-97.pdf",
+        "artifact_sha256": "b65c324da8de30be979ade3e2899132e1924c32779b6e21fc781f5fc888c580d",
+        "source_id": "B02",
+        "locator": "背景依据：原PDF91–93／印刷77–79／前压步练习方法；三课次安排为课程自拟，无教材逐字出处",
+        "statement": "系统辅助图像核验记录：课程自拟方案：L04蹬冰、L05完整单次、L06连续练习是本课程既定课次安排。王树本前压步部分有分解、单次及连续练习的相关文字，但未在所供原页规定这三个课次或45分钟安排，不据此宣称教材给出了本课程进阶。；教材练习素材只作背景；三课次顺序、难度、分层、先修与负荷须由专项及现场教师确认。不得将其写作教材原文、官方标准或已批准教学安排。；这是原页定位与内容性质核验声明，不是专项逐条认可、身份认证或系统审核批准。原PDF页序由用户提供，印刷页码及图注由扫描图像核对；原书版本信息尚待版权页。",
+        "reviewer": null,
+        "review_date": null
+      },
+      {
+        "evidence_id": "P34_K012_V2_SOURCE",
+        "knowledge_id": "K012",
+        "knowledge_version": 2,
+        "knowledge_digest": "b218498c99b3fe7342299ef13f8c65dc1af90e053c5b64173ee460735140bde2",
+        "kind": "source_report",
+        "basis_kind": "original_source_excerpt",
+        "artifact_name": "Li_Xiangzhuang_TOC_4-6_and_pages_36-44.pdf",
+        "artifact_sha256": "72867a46e93243cee74961e6ed7191dab8d6c8ae6488704ad42c087d8dde2d13",
+        "source_id": "B03",
+        "locator": "原PDF39／印刷29／第三节一、前压步；区别后压步：原PDF41／印刷31；目录原PDF5／印刷2",
+        "statement": "系统辅助图像核验记录：李乡状等教材第二章第三节在前压步部分以左前压步为例，列有动作要领与练习中易犯的错误及注意事项；后压步另列。该原页支持教材存在相关内容的事实，不自动构成本课程可实施的技术指导。；原PDF36／印刷26的后交叉步滑行与原PDF41／印刷31的后压步均不是本课左前压步定位。所供前压步页为文字，没有对应编号动作图；脚序、用刃、错误及保护须逐条专项复核，不将此摘要当作技术指令。；这是原页定位与内容性质核验声明，不是专项逐条认可、身份认证或系统审核批准。原PDF页序由用户提供，印刷页码及图注由扫描图像核对；原书版本信息尚待版权页。",
+        "reviewer": null,
+        "review_date": null
+      }
+    ],
+    "evidence_status": "insufficient",
+    "warning": "待审核教案框架；缺少正式专项依据，暂缓专项实操、示范与技术评价。",
+    "teacher_edits": [
+      {
+        "version": 1,
+        "changed_at": "2026-11-02T13:44:32.210755+00:00",
+        "actor": "local_unverified_operator",
+        "review_status": "pending_review",
+        "values": {
+          "goal_draft": "",
+          "organization_note": "",
+          "resource_note": "",
+          "action_points": "",
+          "practice_steps": "",
+          "common_errors": "",
+          "safety_notes": "",
+          "differentiation_notes": "",
+          "evaluation_observations": ""
+        }
+      },
+      {
+        "version": 2,
+        "changed_at": "2026-11-02T13:44:32.542915+00:00",
+        "actor": "local_unverified_operator",
+        "review_status": "pending_review",
+        "values": {
+          "goal_draft": "模拟教师填写：goal_draft",
+          "organization_note": "",
+          "resource_note": "",
+          "action_points": "模拟教师填写：action_points",
+          "practice_steps": "模拟教师填写：practice_steps",
+          "common_errors": "模拟教师填写：common_errors",
+          "safety_notes": "模拟教师填写：safety_notes",
+          "differentiation_notes": "模拟教师填写：differentiation_notes",
+          "evaluation_observations": "模拟教师填写：evaluation_observations"
+        }
+      }
+    ],
+    "current_teacher_edits": {
+      "goal_draft": "模拟教师填写：goal_draft",
+      "organization_note": "",
+      "resource_note": "",
+      "action_points": "模拟教师填写：action_points",
+      "practice_steps": "模拟教师填写：practice_steps",
+      "common_errors": "模拟教师填写：common_errors",
+      "safety_notes": "模拟教师填写：safety_notes",
+      "differentiation_notes": "模拟教师填写：differentiation_notes",
+      "evaluation_observations": "模拟教师填写：evaluation_observations"
+    },
+    "l05_teaching_design": {
+      "title": "L05 左前交叉步完整动作练习｜教师可审阅教学设计草稿",
+      "review_status": "pending_review",
+      "notice": "仅为教师工作底稿。下列候选摘要与教师填写内容未经专项审核；不得作为正式技术指导或实施许可。",
+      "material_groups": {
+        "specialist_knowledge": [
+          {
+            "knowledge_id": "K011",
+            "version": 2,
+            "category": "KB-S",
+            "title": "L05完整动作资料提取原则与教材背景",
+            "source_id": "B02",
+            "source_title": "花样滑冰｜王树本",
+            "source_locator": "背景依据：原PDF91／印刷77／图29左前压步连续动作；本条课程提取原则无教材逐字出处",
+            "chapter": "教材背景：第五章／二、压步／（一）前压步；课程自拟提取原则",
+            "content_kind": "course_proposal",
+            "applicability_limitations": "不把课程名称、单次完整动作任务或提取原则归因于教材原文；待专项教师逐项确认动作、保护及教学适用性。旧PDF94–104定位不再用于左前压步图29。",
+            "source_verification_status": "pending",
+            "specialist_review_status": "pending",
+            "source_conflict_status": "not_flagged",
+            "source_conflict_note": "",
+            "candidate_text": "课程自拟资料提取原则：L05应分开记录教材连续动作图示与教师认定的专项要求。教材背景为王树本左前压步图29；该提取原则及L05任务安排不是教材原文，也不是教材评分规则。",
+            "citation_status": "registered_not_verified",
+            "label": "候选素材引用，不是已核实教材原文或正式技术指导；课程自拟内容不归因于教材原文。",
+            "is_formal_guidance": false
+          },
+          {
+            "knowledge_id": "K012",
+            "version": 2,
+            "category": "KB-S",
+            "title": "李乡状教材前压步与后压步的准确定位",
+            "source_id": "B03",
+            "source_title": "花样滑冰技法与指导｜李乡状等",
+            "source_locator": "原PDF39／印刷29／第三节一、前压步；区别后压步：原PDF41／印刷31；目录原PDF5／印刷2",
+            "chapter": "第二章 花样滑冰的学习／第三节 花样滑冰的步法／一、前压步",
+            "content_kind": "source_summary",
+            "applicability_limitations": "原PDF36／印刷26的后交叉步滑行与原PDF41／印刷31的后压步均不是本课左前压步定位。所供前压步页为文字，没有对应编号动作图；脚序、用刃、错误及保护须逐条专项复核，不将此摘要当作技术指令。",
+            "source_verification_status": "pending",
+            "specialist_review_status": "pending",
+            "source_conflict_status": "not_flagged",
+            "source_conflict_note": "",
+            "candidate_text": "李乡状等教材第二章第三节在前压步部分以左前压步为例，列有动作要领与练习中易犯的错误及注意事项；后压步另列。该原页支持教材存在相关内容的事实，不自动构成本课程可实施的技术指导。",
+            "citation_status": "registered_not_verified",
+            "label": "候选素材引用，不是已核实教材原文或正式技术指导；课程自拟内容不归因于教材原文。",
+            "is_formal_guidance": false
+          },
+          {
+            "knowledge_id": "SYNTHETIC_P33_BROWSER",
+            "version": 1,
+            "category": "KB-S",
+            "title": "模拟浏览器失效素材（非教材）",
+            "source_id": "SYNTHETIC_SOURCE",
+            "source_title": "模拟来源非教材",
+            "source_locator": "模拟页码",
+            "chapter": "",
+            "content_kind": "source_summary",
+            "applicability_limitations": "",
+            "source_verification_status": "pending",
+            "specialist_review_status": "pending",
+            "source_conflict_status": "not_flagged",
+            "source_conflict_note": "",
+            "candidate_text": "SYNTHETIC_QUOTE_TO_WITHDRAW",
+            "citation_status": "registered_not_verified",
+            "label": "候选素材引用，不是已核实教材原文或正式技术指导；课程自拟内容不归因于教材原文。",
+            "is_formal_guidance": false
+          }
+        ],
+        "teaching_progression": [
+          {
+            "knowledge_id": "K018",
+            "version": 2,
+            "category": "KB-P",
+            "title": "L04至L06课次进阶安排属于课程自拟方案",
+            "source_id": "B02",
+            "source_title": "花样滑冰｜王树本",
+            "source_locator": "背景依据：原PDF91–93／印刷77–79／前压步练习方法；三课次安排为课程自拟，无教材逐字出处",
+            "chapter": "教材背景：第五章／二、压步／（一）前压步／练习方法；课程自拟进阶",
+            "content_kind": "course_proposal",
+            "applicability_limitations": "教材练习素材只作背景；三课次顺序、难度、分层、先修与负荷须由专项及现场教师确认。不得将其写作教材原文、官方标准或已批准教学安排。",
+            "source_verification_status": "pending",
+            "specialist_review_status": "pending",
+            "source_conflict_status": "not_flagged",
+            "source_conflict_note": "",
+            "candidate_text": "课程自拟方案：L04蹬冰、L05完整单次、L06连续练习是本课程既定课次安排。王树本前压步部分有分解、单次及连续练习的相关文字，但未在所供原页规定这三个课次或45分钟安排，不据此宣称教材给出了本课程进阶。",
+            "citation_status": "registered_not_verified",
+            "label": "候选素材引用，不是已核实教材原文或正式技术指导；课程自拟内容不归因于教材原文。",
+            "is_formal_guidance": false
+          }
+        ],
+        "evaluation_suggestions": [
+          {
+            "knowledge_id": "K019",
+            "version": 1,
+            "category": "KB-E",
+            "title": "评价应分开记录算法观察、教练判断和学生复练建议",
+            "source_id": "B02",
+            "source_title": "花样滑冰｜王树本",
+            "source_locator": "PDF75–77；印刷61–63",
+            "chapter": "",
+            "content_kind": "course_proposal",
+            "applicability_limitations": "不可声称该教材定义AI评价方法",
+            "source_verification_status": "pending",
+            "specialist_review_status": "pending",
+            "source_conflict_status": "not_flagged",
+            "source_conflict_note": "",
+            "candidate_text": "评价应分开记录算法观察、教练判断和学生复练建议",
+            "citation_status": "registered_not_verified",
+            "label": "候选素材引用，不是已核实教材原文或正式技术指导；课程自拟内容不归因于教材原文。",
+            "is_formal_guidance": false
+          }
+        ]
+      },
+      "location_checks": [
+        {
+          "knowledge_id": "K010",
+          "version": 2,
+          "source_id": "B02",
+          "source_title": "花样滑冰｜王树本",
+          "source_locator": "原PDF90–93；印刷76–79；前压步动作方法与图29见原PDF91／印刷77",
+          "content_kind": "source_summary",
+          "source_conflict_status": "not_flagged",
+          "source_conflict_note": ""
+        },
+        {
+          "knowledge_id": "K011",
+          "version": 2,
+          "source_id": "B02",
+          "source_title": "花样滑冰｜王树本",
+          "source_locator": "背景依据：原PDF91／印刷77／图29左前压步连续动作；本条课程提取原则无教材逐字出处",
+          "content_kind": "course_proposal",
+          "source_conflict_status": "not_flagged",
+          "source_conflict_note": ""
+        },
+        {
+          "knowledge_id": "K018",
+          "version": 2,
+          "source_id": "B02",
+          "source_title": "花样滑冰｜王树本",
+          "source_locator": "背景依据：原PDF91–93／印刷77–79／前压步练习方法；三课次安排为课程自拟，无教材逐字出处",
+          "content_kind": "course_proposal",
+          "source_conflict_status": "not_flagged",
+          "source_conflict_note": ""
+        }
+      ],
+      "areas": {
+        "goal_draft": {
+          "label": "教学目标",
+          "text": "模拟教师填写：goal_draft",
+          "origin": "teacher_unverified",
+          "review_status": "pending_review",
+          "is_formal_guidance": false
+        },
+        "action_points": {
+          "label": "动作要点",
+          "text": "模拟教师填写：action_points",
+          "origin": "teacher_unverified",
+          "review_status": "pending_review",
+          "is_formal_guidance": false
+        },
+        "practice_steps": {
+          "label": "练习步骤",
+          "text": "模拟教师填写：practice_steps",
+          "origin": "teacher_unverified",
+          "review_status": "pending_review",
+          "is_formal_guidance": false
+        },
+        "common_errors": {
+          "label": "常见错误与待复核问题",
+          "text": "模拟教师填写：common_errors",
+          "origin": "teacher_unverified",
+          "review_status": "pending_review",
+          "is_formal_guidance": false
+        },
+        "safety_notes": {
+          "label": "安全提示",
+          "text": "模拟教师填写：safety_notes",
+          "origin": "teacher_unverified",
+          "review_status": "pending_review",
+          "is_formal_guidance": false
+        },
+        "differentiation_notes": {
+          "label": "分层练习",
+          "text": "模拟教师填写：differentiation_notes",
+          "origin": "teacher_unverified",
+          "review_status": "pending_review",
+          "is_formal_guidance": false
+        },
+        "evaluation_observations": {
+          "label": "评价观察项",
+          "text": "模拟教师填写：evaluation_observations",
+          "origin": "teacher_unverified",
+          "review_status": "pending_review",
+          "is_formal_guidance": false
+        }
+      },
+      "reviewed_citations": [],
+      "reference_scope_note": "L05候选与来源定位保留原记录；K010属于L04先修资料定位核查，不作为L05教材引用。"
+    },
+    "plan_id": "4a0d5b5b570c46caadae08db60743d94",
+    "version": 2,
+    "effective_goal_draft": {
+      "text": "模拟教师填写：goal_draft",
+      "status": "teacher_pending_review"
+    }
+  },
+  "current_plan_version": 2,
+  "analysis": {
+    "job_id": "f9d25c7ef070463491c3d752be878bd3",
+    "is_mock": true,
+    "synthetic_demo": true,
+    "origin": "synthetic_keypoints_demo",
+    "quality": {
+      "n_frames": 40,
+      "side": "left",
+      "knee_detect_ratio": 1,
+      "torso_detect_ratio": 1,
+      "hip_ankle_detect_ratio": 1,
+      "degenerate_frames": 0,
+      "source_frames": 40,
+      "detected_frames": 40,
+      "valid_frame_ratio": 1,
+      "synthetic": true
+    },
+    "metadata": {
+      "duration_seconds": 4,
+      "fps": 10,
+      "analysis_fps": 10,
+      "synthetic": true
+    },
+    "candidate_changes": [
+      {
+        "event_id": "evt_4b18ee943009",
+        "candidate": {
+          "feature": "knee_angle_deg",
+          "frame_start": 14,
+          "frame_end": 25,
+          "start_time_ms": 1400,
+          "end_time_ms": 2500,
+          "duration_ms": 1100,
+          "n_frames": 12,
+          "deviation_max": 112.62,
+          "swing": 90.096
+        },
+        "status": "confirmed",
+        "note": "合成浏览器观察，非技术错误",
+        "sequence": 1,
+        "local_review_history": [
+          {
+            "reviewed_at": "2026-11-02T13:44:33+00:00",
+            "status": "confirmed",
+            "note": "合成浏览器观察，非技术错误"
+          }
+        ],
+        "interpretation": "候选二维变化；本地状态或文字不证明技术错误。"
+      }
+    ],
+    "limitations": [
+      "合成关键点演示，不是真实视频、学生记录或花滑技术验证。",
+      "只复用几何、V4事件和V5复核；没有调用MediaPipe或训练模型。"
+    ],
+    "time_basis": "analysis_preview_milliseconds",
+    "technical_error_assessment": "not_assessed",
+    "authenticated_coach": false
+  },
+  "current_evidence_digest": "42ece3a5102c91b12f1a30f46de6f857ed5bdbd0ca4e1132a7ca24acba69748a",
+  "evidence_changed": false,
+  "is_mock": true,
+  "data_origin": "synthetic_keypoints_demo",
+  "feedback_review_status": "locally_confirmed_unverified",
+  "review_label": "本地教师自报确认（身份未认证，非专业审核）",
+  "confirmation_current": true,
+  "requires_teacher_confirmation": false,
+  "authenticated_teacher": false,
+  "specialist_review_status": "pending",
+  "technical_error_assessment": "not_assessed",
+  "trusted_observations": [],
+  "base_feedback": {
+    "schema_version": "local-postlesson-v2",
+    "generated_at": "2026-11-02T13:44:33.973962+00:00",
+    "analysis_id": "f9d25c7ef070463491c3d752be878bd3",
+    "data_origin": "mock_keypoints",
+    "is_mock": true,
+    "review_status": "draft",
+    "requires_teacher_review": true,
+    "knowledge_status": "unverified",
+    "authenticated_coach": false,
+    "review_verification": "local_unverified",
+    "technical_error_assessment": "not_assessed",
+    "training_information": {
+      "duration_seconds": 4,
+      "fps": 10,
+      "analysis_fps": 10,
+      "synthetic": true
+    },
+    "video_quality": {
+      "n_frames": 40,
+      "side": "left",
+      "knee_detect_ratio": 1,
+      "torso_detect_ratio": 1,
+      "hip_ankle_detect_ratio": 1,
+      "degenerate_frames": 0,
+      "source_frames": 40,
+      "detected_frames": 40,
+      "valid_frame_ratio": 1,
+      "synthetic": true
+    },
+    "time_basis": "normalized_preview_milliseconds",
+    "analysis_scope": "bounded_normalized_preview",
+    "limitations": [
+      "合成关键点演示，不是真实视频、学生记录或花滑技术验证。",
+      "只复用几何、V4事件和V5复核；没有调用MediaPipe或训练模型。"
+    ],
+    "trusted_observations": [],
+    "reported_observations": [
+      {
+        "event_id": "evt_4b18ee943009",
+        "status": "confirmed",
+        "start_time_ms": 1400,
+        "end_time_ms": 2500,
+        "frame_start": 14,
+        "frame_end": 25,
+        "feature": "knee_angle_deg",
+        "deviation_max": 112.62,
+        "interpretation": "用户本机会话报告存在可观察变化",
+        "verification": "local_unverified",
+        "eligible_for_technical_conclusions": false
+      }
+    ],
+    "review_sequences": {
+      "evt_4b18ee943009": 1
+    },
+    "pending_questions": [
+      "本地操作者身份与教练资格未认证，以上不是正式教练结论。",
+      "pending、tracking_error、uncertain不进入动作评价依据；confirmed仅报告变化，不证明技术错误。",
+      "需现场核实拍摄视角、可见度与冰面情境，二维数据不能证明重心或用刃。"
+    ],
+    "excluded_event_count": 0,
+    "candidate_practice": [
+      "信息复核：教师先核对视频质量与事件原片，不根据噪声纠错。",
+      "基础复习：教师确认安全条件后，在已掌握主题内选择低复杂度复习，不由事件自动分级。",
+      "专项指导：仅在专业教练核实后选择练习；本稿不生成医学、技术错误或合格线判断。"
+    ],
+    "teacher_review_checklist": [
+      "确认合法视频与隐私授权",
+      "核实操作者及教练资格",
+      "核对每项观察与原片",
+      "专业复核后再作评价",
+      "本应用不执行批准或数据库归档"
+    ]
+  },
+  "warning": "仅为合成演示，未执行MediaPipe或真实授课。",
+  "lifecycle": "本机进程内存；受原视频20分钟任务/30分钟会话限制，删除或失效后不可读，访问时清理，退出清空；请自行保管导出。",
+  "history": [
+    {
+      "loop_id": "834fee6534604924828006482d92a1ec",
+      "version": 1,
+      "plan_id": "4a0d5b5b570c46caadae08db60743d94",
+      "plan_version": 2,
+      "job_id": "f9d25c7ef070463491c3d752be878bd3",
+      "learner_code": "ANON-005",
+      "lesson_id": "L05",
+      "observation": "合成验收：可见候选二维角度变化，事件状态仅作本地观察；不能认定技术错误。",
+      "practice_task": "合成复练任务：先复核拍摄条件与L05教材定位，专项与现场安全未确认前不安排冰上实操。",
+      "changed_at": "2026-11-02T13:44:33.682904+00:00",
+      "operation": "linked",
+      "confirmation": null,
+      "saved_analysis": {
+        "job_id": "f9d25c7ef070463491c3d752be878bd3",
+        "is_mock": true,
+        "synthetic_demo": true,
+        "origin": "synthetic_keypoints_demo",
+        "quality": {
+          "n_frames": 40,
+          "side": "left",
+          "knee_detect_ratio": 1,
+          "torso_detect_ratio": 1,
+          "hip_ankle_detect_ratio": 1,
+          "degenerate_frames": 0,
+          "source_frames": 40,
+          "detected_frames": 40,
+          "valid_frame_ratio": 1,
+          "synthetic": true
+        },
+        "metadata": {
+          "duration_seconds": 4,
+          "fps": 10,
+          "analysis_fps": 10,
+          "synthetic": true
+        },
+        "candidate_changes": [
+          {
+            "event_id": "evt_4b18ee943009",
+            "candidate": {
+              "feature": "knee_angle_deg",
+              "frame_start": 14,
+              "frame_end": 25,
+              "start_time_ms": 1400,
+              "end_time_ms": 2500,
+              "duration_ms": 1100,
+              "n_frames": 12,
+              "deviation_max": 112.62,
+              "swing": 90.096
+            },
+            "status": "confirmed",
+            "note": "合成浏览器观察，非技术错误",
+            "sequence": 1,
+            "local_review_history": [
+              {
+                "reviewed_at": "2026-11-02T13:44:33+00:00",
+                "status": "confirmed",
+                "note": "合成浏览器观察，非技术错误"
+              }
+            ],
+            "interpretation": "候选二维变化；本地状态或文字不证明技术错误。"
+          }
+        ],
+        "limitations": [
+          "合成关键点演示，不是真实视频、学生记录或花滑技术验证。",
+          "只复用几何、V4事件和V5复核；没有调用MediaPipe或训练模型。"
+        ],
+        "time_basis": "analysis_preview_milliseconds",
+        "technical_error_assessment": "not_assessed",
+        "authenticated_coach": false
+      },
+      "evidence_digest": "42ece3a5102c91b12f1a30f46de6f857ed5bdbd0ca4e1132a7ca24acba69748a"
+    },
+    {
+      "loop_id": "834fee6534604924828006482d92a1ec",
+      "version": 2,
+      "plan_id": "4a0d5b5b570c46caadae08db60743d94",
+      "plan_version": 2,
+      "job_id": "f9d25c7ef070463491c3d752be878bd3",
+      "learner_code": "ANON-005",
+      "lesson_id": "L05",
+      "observation": "合成验收：可见候选二维角度变化，事件状态仅作本地观察；不能认定技术错误。",
+      "practice_task": "合成复练任务：先复核拍摄条件与L05教材定位，专项与现场安全未确认前不安排冰上实操。",
+      "changed_at": "2026-11-02T13:44:33.872575+00:00",
+      "operation": "locally_confirmed",
+      "confirmation": {
+        "at": "2026-11-02T13:44:33.872550+00:00",
+        "actor": "local_unverified_operator",
+        "verification": "local_unverified",
+        "acknowledgement": "已自行核对质量、候选变化、观察文字和复练任务；身份与专业资格未认证。"
+      },
+      "saved_analysis": {
+        "job_id": "f9d25c7ef070463491c3d752be878bd3",
+        "is_mock": true,
+        "synthetic_demo": true,
+        "origin": "synthetic_keypoints_demo",
+        "quality": {
+          "n_frames": 40,
+          "side": "left",
+          "knee_detect_ratio": 1,
+          "torso_detect_ratio": 1,
+          "hip_ankle_detect_ratio": 1,
+          "degenerate_frames": 0,
+          "source_frames": 40,
+          "detected_frames": 40,
+          "valid_frame_ratio": 1,
+          "synthetic": true
+        },
+        "metadata": {
+          "duration_seconds": 4,
+          "fps": 10,
+          "analysis_fps": 10,
+          "synthetic": true
+        },
+        "candidate_changes": [
+          {
+            "event_id": "evt_4b18ee943009",
+            "candidate": {
+              "feature": "knee_angle_deg",
+              "frame_start": 14,
+              "frame_end": 25,
+              "start_time_ms": 1400,
+              "end_time_ms": 2500,
+              "duration_ms": 1100,
+              "n_frames": 12,
+              "deviation_max": 112.62,
+              "swing": 90.096
+            },
+            "status": "confirmed",
+            "note": "合成浏览器观察，非技术错误",
+            "sequence": 1,
+            "local_review_history": [
+              {
+                "reviewed_at": "2026-11-02T13:44:33+00:00",
+                "status": "confirmed",
+                "note": "合成浏览器观察，非技术错误"
+              }
+            ],
+            "interpretation": "候选二维变化；本地状态或文字不证明技术错误。"
+          }
+        ],
+        "limitations": [
+          "合成关键点演示，不是真实视频、学生记录或花滑技术验证。",
+          "只复用几何、V4事件和V5复核；没有调用MediaPipe或训练模型。"
+        ],
+        "time_basis": "analysis_preview_milliseconds",
+        "technical_error_assessment": "not_assessed",
+        "authenticated_coach": false
+      },
+      "evidence_digest": "42ece3a5102c91b12f1a30f46de6f857ed5bdbd0ca4e1132a7ca24acba69748a"
+    }
+  ]
+}
