@@ -18,8 +18,8 @@
     const sections=[['课次与目标草稿', {lesson:plan.lesson,objective_draft:plan.effective_goal_draft,warning:plan.warning}],
       ['课堂准备与资源条件',{checks:plan.preparation_checklist,conditions:plan.conditions,prerequisites:plan.prerequisites}],
       ['45分钟阶段框架',plan.teaching_flow],['师生组织与预计负荷',{organization:plan.organization,staff_tasks:plan.staff_tasks,load_accounting:plan.load_accounting}],
-      ['分层占位',plan.differentiation],['可用正式教学依据（无可信专项审核时为空）',plan.formal_teaching_evidence],
-      ['关联资料登记与审核状态（不作为动作指导）',plan.knowledge_inventory],['尚缺专项资料',plan.missing_materials],
+      ['分层占位',plan.differentiation],['满足本地审核条件的草稿依据（不等于官方认证）',plan.formal_teaching_evidence],
+      ['受控审阅教学建议（仍待现场教师复核，含条目与出处）',plan.teaching_suggestions],['独立材料声明（不等于系统审核）',plan.evidence_reports],['关联资料登记与审核状态（不作为动作指导）',plan.knowledge_inventory],['尚缺专项资料',plan.missing_materials],
       ['教师审核清单',plan.teacher_review_checklist],['教师修改记录（待复核）',plan.teacher_edits]];
     for(const [title,value] of sections){const heading=document.createElement('h3');heading.textContent=title;const pre=document.createElement('pre');pre.textContent=JSON.stringify(value,null,2);byId('result').append(heading,pre);}
     for(const input of edit.elements)if(input.name)input.value=plan.current_teacher_edits[input.name];

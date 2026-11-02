@@ -26,13 +26,18 @@
         <label>类别<select name="category"><option value="KB-S">KB-S · 花样滑冰专项技能</option><option value="KB-P">KB-P · 体育教学方法</option><option value="KB-A">KB-A · AI技术</option><option value="KB-E">KB-E · 学习评价与反馈</option></select></label>
         <label>标题<input name="title" required maxlength="200"></label><label>内容（纯文本）<textarea name="content" required maxlength="10000"></textarea></label>
         <label>关联课次（逗号分隔，如 L01,L02）<input name="lesson_ids" maxlength="31"></label>
+        <label>章节（未提供时留空，不自动推断）<input name="chapter" maxlength="300"></label>
+        <label>原候选版本<input name="candidate_version" maxlength="100"></label>
+        <label>条目性质<select name="content_kind"><option value="unspecified">未说明</option><option value="source_summary">来源整理陈述</option><option value="catalogue_lead">仅目录线索</option><option value="course_proposal">课程自拟建议</option></select></label>
+        <label>材料中的核对声明（不代表系统核实）<input name="evidence_inspection_note" maxlength="1000"></label>
+        <label>适用范围限制<textarea name="applicability_limitations" maxlength="2000"></textarea></label>
         <label>来源ID<input name="source_id" maxlength="64"></label><label>来源标题<input name="source_title" maxlength="300"></label><label>来源定位<input name="source_locator" maxlength="1000"></label>
         <label>来源状态<select name="source_verification_status"><option value="pending">待补充／待核实</option><option value="submitted">已登记，待核实</option><option value="rejected">退回补充</option></select></label>
         <label>专项审核状态<select name="specialist_review_status"><option value="pending">待审核</option><option value="requested">申请审核（仍待审核）</option><option value="rejected">退回（仍待审核）</option></select></label>
         <label>新版本号（首次1，编辑递增）<input name="version" type="number" min="1" max="10000" value="1" required></label>
         <button type="submit">保存未审核条目</button><button id="v3-new" type="button">清空表单新增</button>
       </form>
-      <button id="v3-export" type="button">备份全部版本 JSON</button><button id="v3-review" type="button">导出离线待审核材料</button><label>导入JSON（追加，冲突时整批拒绝；≤1MiB）<input id="v3-import-file" type="file" accept=".json,application/json"></label><button id="v3-import" type="button">导入未审核知识</button>
+      <button id="v3-export" type="button">仅备份知识版本 JSON</button><span class="hint">完整材料、审核决定及撤回历史请停服使用离线 full-backup / full-restore；此JSON与审核材料导出均不是完整备份。</span><button id="v3-review" type="button">导出离线待审核材料</button><label>导入JSON（追加，冲突时整批拒绝；≤1MiB）<input id="v3-import-file" type="file" accept=".json,application/json"></label><button id="v3-import" type="button">导入未审核知识</button>
       <p id="v3-message" role="status" aria-live="polite"></p>
     </details>
     <section id="prelesson-pane">

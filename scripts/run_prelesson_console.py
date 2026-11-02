@@ -11,6 +11,7 @@ def main():
     parser = RedactedParser(description=__doc__)
     parser.add_argument('--port', type=int, default=8767)
     parser.add_argument('--kb-dir', type=Path, default=ROOT / '.local' / 'coachloop-kb', help='Private local shared knowledge directory (0700)')
+    parser.add_argument('--review-key-file',type=Path,default=None,help='Optional private local operator review key; no web approval')
     args = parser.parse_args()
     if not 1 <= args.port <= 65535:
         parser.error('Invalid local port')
@@ -18,8 +19,8 @@ def main():
     from integrations.prelesson.console import create_console_app
     from integrations.curriculum_v3.persistence import SQLiteRegistry, PersistenceError
     try:
-        knowledge_store = SQLiteRegistry(args.kb_dir)
-    except (PersistenceError, OSError):
+        knowledge_store = SQLiteRegistry(args.kb_dir, review_key_file=args.review_key_file)
+    except (PersistenceError, OSError, ValueError):
         parser.error('Local knowledge database unavailable; check directory permissions, schema and backup. No reset performed.')
     app = create_console_app(args.port, knowledge_store=knowledge_store)
     print(f'CoachLoop-FS interactive console: http://127.0.0.1:{args.port}', flush=True)

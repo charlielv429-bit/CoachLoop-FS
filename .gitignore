@@ -78,3 +78,10 @@ assets/mock/
 *.db-journal
 *.kb-backup.json
 *.kb-review.json
+
+# Local incoming documents and scratch validation artifacts
+/work/
+*.review-key
+
+# Complete review-history snapshots (private, never commit)
+*.kb-full-backup.json
