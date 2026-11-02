@@ -68,3 +68,13 @@ assets/mock/
 # V2 local isolated runtime, models and private real-video artifacts
 .venv-video/
 .video-evidence/
+
+# P3.1 local knowledge data and private backup files
+/.local/
+*.sqlite
+*.sqlite3
+*.sqlite3-*
+*.sqlite-*
+*.db-journal
+*.kb-backup.json
+*.kb-review.json

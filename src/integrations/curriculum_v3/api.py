@@ -3,10 +3,11 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from integrations.prelesson.adaptive_api import local_session
 from integrations.prelesson.api import PrelessonRoute
 from .planning import LessonRequest, EditRequest
+from .persistence import review_materials
 from .registry import Archive, Knowledge, RegistryError, CATEGORIES
 
 BASE = '/api/v3'
-READ_PATHS = {BASE + path for path in ('/lessons', '/knowledge', '/history', '/export', '/plans/export', '/plans/history')}
+READ_PATHS = {BASE + path for path in ('/lessons', '/knowledge', '/history', '/export', '/plans/export', '/plans/history', '/review-materials')}
 WRITE_PATHS = {BASE + path for path in ('/knowledge', '/import', '/plans/draft', '/plans/edit')}
 
 
@@ -23,7 +24,11 @@ def create_router(store, plans):
     @router.get(BASE + '/lessons')
     def lessons(lesson_id: str | None = Query(None, pattern=r'^L0[1-8]$')):
         return {'lessons': store.lessons(lesson_id), 'categories': CATEGORIES,
-                'storage': '进程内存；所有本机控制台会话共享；重启或退出清空，请导出备份。'}
+                'storage': store.storage_description}
+
+    @router.get(BASE + '/review-materials')
+    def offline_review():
+        return review_materials(store)
 
     @router.get(BASE + '/knowledge')
     def search(category: str | None = Query(None, pattern=r'^KB-[SPAE]$'),

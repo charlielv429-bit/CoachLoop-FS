@@ -41,7 +41,7 @@ Path(__file__).with_name('ready.txt').write_text('ready')
         sock.bind(('127.0.0.1',0))
         port=sock.getsockname()[1]
     base=f'http://127.0.0.1:{port}'
-    process=subprocess.Popen([sys.executable,'-B',str(ROOT/'scripts/run_prelesson_console.py'),'--port',str(port)],
+    process=subprocess.Popen([sys.executable,'-B',str(ROOT/'scripts/run_prelesson_console.py'),'--port',str(port),'--kb-dir',str(tmp_path/'knowledge')],
         cwd=ROOT,env=env,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
     opener=urllib.request.build_opener(urllib.request.ProxyHandler({}),urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
     def request(path,payload=None):

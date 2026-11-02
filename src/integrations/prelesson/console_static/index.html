@@ -15,8 +15,9 @@
     <nav id="stage-nav" aria-label="教学阶段"><button type="button" data-stage="prelesson" aria-pressed="true">智能备课</button><button type="button" data-stage="video" aria-pressed="false" disabled>视频动作分析</button><button type="button" data-stage="feedback" aria-pressed="false" disabled>训练反馈</button></nav>
     <details class="panel" id="curriculum-entry" hidden><summary>V3.0 · 8课次课程目录与知识库管理</summary>
       <p class="notice">8课次与24候选主题独立，不自动映射。所有目标为草稿、知识待核实，不能作为正式专项教学依据。</p>
-      <p>知识保存在本次服务进程内存中，本机控制台会话共享；退出或重启清空。请导出JSON自行备份，勿存学生身份或敏感资料。</p>
+      <p>四类知识库是所有已授权本机会话共享的资料库，不是私有笔记。正式本地启动器使用SQLite保存，重启保留历史；请导出JSON备份。禁止存储学生身份、私人教案修改、凭据或教材PDF原件。</p>
       <label>选择课次<select id="v3-lesson"></select></label><pre id="v3-detail"></pre>
+      <p id="v3-storage" role="status"></p>
       <h2>四类知识库</h2><label>类别筛选<select id="v3-category"><option value="">全部</option><option value="KB-S">KB-S · 花样滑冰专项技能</option><option value="KB-P">KB-P · 体育教学方法</option><option value="KB-A">KB-A · AI技术</option><option value="KB-E">KB-E · 学习评价与反馈</option></select></label>
       <label>关键词<input id="v3-keyword" maxlength="200"></label><label><input id="v3-only-lesson" type="checkbox">仅当前课次</label><button id="v3-search" type="button">检索知识</button><div id="v3-list"></div>
       <h2>新增／追加版本</h2><p>点击条目可编辑并保留旧版本。来源定位填写真实文献页码、章节或网址；登记不代表核实，不会自动访问网址。缺少来源显示“待补充”，未专业审核显示“待审核”。</p>
@@ -31,7 +32,7 @@
         <label>新版本号（首次1，编辑递增）<input name="version" type="number" min="1" max="10000" value="1" required></label>
         <button type="submit">保存未审核条目</button><button id="v3-new" type="button">清空表单新增</button>
       </form>
-      <button id="v3-export" type="button">导出全部版本 JSON</button><label>导入JSON（追加，冲突时整批拒绝；≤1MiB）<input id="v3-import-file" type="file" accept=".json,application/json"></label><button id="v3-import" type="button">导入未审核知识</button>
+      <button id="v3-export" type="button">备份全部版本 JSON</button><button id="v3-review" type="button">导出离线待审核材料</button><label>导入JSON（追加，冲突时整批拒绝；≤1MiB）<input id="v3-import-file" type="file" accept=".json,application/json"></label><button id="v3-import" type="button">导入未审核知识</button>
       <p id="v3-message" role="status" aria-live="polite"></p>
     </details>
     <section id="prelesson-pane">
@@ -71,7 +72,7 @@
 
     <section class="intro"><p class="eyebrow">课前 · 智能备课</p><h1>从教学需求到可审核的教案</h1>
       <p>填写班级与教学条件，调用现有教案 Agent 动态生成七要素草稿。支持24个候选主题、四个水平，45分钟；教学内容与安全规则均待专业核实。</p>
-      <p class="notice">仅在本机运行，不连接 Coze 或数据库。生成结果需教师复核，知识依据未核实，运动负荷为预计设计值。</p>
+      <p class="notice">仅在本机运行，不连接 Coze 或生产数据库；共享知识库由本地SQLite保存。生成结果需教师复核，知识依据未核实，运动负荷为预计设计值。</p>
     </section>
     <div class="workspace">
       <section class="panel input-panel"><h2>教学需求</h2>

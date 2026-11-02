@@ -21,6 +21,7 @@ from .adaptive_api import create_adaptive_router, ADAPTIVE, CATALOGUE, LOCAL_AUT
 
 from integrations.curriculum_v3.api import create_router as create_v3_router, READ_PATHS as V3_READ, WRITE_PATHS as V3_WRITE
 from integrations.curriculum_v3.registry import Registry
+from integrations.curriculum_v3.persistence import PersistenceError
 from integrations.curriculum_v3.planning import PlanStore, PlanSessions, PLAN_COOKIE
 
 STATIC = Path(__file__).with_name('console_static')
@@ -98,12 +99,12 @@ class LocalBoundary:
         return await self.app(scope, receive, secured)
 
 
-def create_console_app(port: int = 8767, *, video_store=None):
+def create_console_app(port: int = 8767, *, video_store=None, knowledge_store=None):
     if type(port) is not int or not 1 <= port <= 65535:
         raise ValueError('Local port must be an integer from 1 to 65535')
     session, bearer = secrets.token_urlsafe(32), secrets.token_urlsafe(32)
     store = video_store if video_store is not None else VideoStore()
-    registry = Registry()
+    registry = knowledge_store if knowledge_store is not None else Registry()
     plans = PlanStore()
     plan_sessions = PlanSessions()
     @asynccontextmanager
@@ -118,6 +119,9 @@ def create_console_app(port: int = 8767, *, video_store=None):
     app.state.curriculum_registry = registry
     app.state.lesson_plans = plans
     app.include_router(create_v3_router(registry, plans))
+    @app.exception_handler(PersistenceError)
+    async def knowledge_error(request, error):
+        return JSONResponse({'detail':'Local knowledge storage unavailable; no reset performed'},status_code=503,headers={'Cache-Control':'no-store'})
     @app.exception_handler(VideoError)
     async def video_error(request, error):
         return JSONResponse({'detail': error.code},status_code=error.status,headers={'Cache-Control':'no-store'})
@@ -152,6 +156,6 @@ def create_console_app(port: int = 8767, *, video_store=None):
         return FileResponse(STATIC / 'console.css', media_type='text/css')
     @app.get('/health')
     def health():
-        return {'status': 'ok', 'mode': 'local_interactive_console', 'database': 'not_used'}
+        return {'status': 'ok', 'mode': 'local_interactive_console', 'database': 'local_sqlite_knowledge_only' if hasattr(registry, 'path') else 'not_used'}
     app.add_middleware(LocalBoundary, port=port, session=session, bearer=bearer, plan_sessions=plan_sessions)
     return app
