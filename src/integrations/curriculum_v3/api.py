@@ -1,15 +1,23 @@
 """Only mounted by the loopback console, never production or classroom."""
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from integrations.prelesson.adaptive_api import local_session
 from integrations.prelesson.api import PrelessonRoute
+from .planning import LessonRequest, EditRequest
 from .registry import Archive, Knowledge, RegistryError, CATEGORIES
 
 BASE = '/api/v3'
-READ_PATHS = {BASE + path for path in ('/lessons', '/knowledge', '/history', '/export')}
-WRITE_PATHS = {BASE + path for path in ('/knowledge', '/import')}
+READ_PATHS = {BASE + path for path in ('/lessons', '/knowledge', '/history', '/export', '/plans/export', '/plans/history')}
+WRITE_PATHS = {BASE + path for path in ('/knowledge', '/import', '/plans/draft', '/plans/edit')}
 
 
-def create_router(store):
+def plan_owner(request: Request):
+    owner = request.scope.get('coachloop_plan_owner')
+    if not isinstance(owner, str) or len(owner) != 64:
+        raise HTTPException(401, 'Local plan session required')
+    return owner
+
+
+def create_router(store, plans):
     router = APIRouter(route_class=PrelessonRoute, dependencies=[Depends(local_session)])
 
     @router.get(BASE + '/lessons')
@@ -44,5 +52,33 @@ def create_router(store):
             return store.import_archive(archive)
         except RegistryError as error:
             raise HTTPException(409, str(error)) from error
+
+    @router.post(BASE + '/plans/draft')
+    def draft(request: LessonRequest, owner: str = Depends(plan_owner)):
+        try:
+            return plans.create(request, store, owner=owner)
+        except RegistryError as error:
+            raise HTTPException(409, str(error)) from error
+
+    @router.post(BASE + '/plans/edit')
+    def edit(request: EditRequest, owner: str = Depends(plan_owner)):
+        try:
+            return plans.edit(request, owner=owner)
+        except RegistryError as error:
+            raise HTTPException(409, str(error)) from error
+
+    @router.get(BASE + '/plans/export')
+    def export_plan(plan_id: str = Query(pattern=r'^[a-f0-9]{32}$'), owner: str = Depends(plan_owner)):
+        try:
+            return plans.read(plan_id, owner=owner)
+        except RegistryError as error:
+            raise HTTPException(404, str(error)) from error
+
+    @router.get(BASE + '/plans/history')
+    def plan_history(plan_id: str = Query(pattern=r'^[a-f0-9]{32}$'), owner: str = Depends(plan_owner)):
+        try:
+            return {'versions': plans.read(plan_id, history=True, owner=owner)}
+        except RegistryError as error:
+            raise HTTPException(404, str(error)) from error
 
     return router

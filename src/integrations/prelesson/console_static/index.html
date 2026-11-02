@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="/console.css">
   <script src="/console.js" defer></script>
   <script src="/curriculum.js" defer></script>
+  <script src="/lesson-planning.js" defer></script>
 </head>
 <body>
   <header><span class="brand">CoachLoop-FS</span><span class="mode">V1.1 多主题 · 本地交互版</span></header>
@@ -34,6 +35,40 @@
       <p id="v3-message" role="status" aria-live="polite"></p>
     </details>
     <section id="prelesson-pane">
+    <details id="lesson-planning-mode" class="panel" hidden><summary>按课次备课模式 · L01–L08（独立于24主题）</summary>
+      <p class="notice">只生成待审核教案框架；来源登记、正文核实与专项审核分别记录。无正式专项依据时不生成动作要领、纠错或技术评分。</p>
+      <p>本机服务进程按浏览器会话隔离修改历史，刷新保留，退出或重启清空；清除会话Cookie后无法恢复旧记录，同一浏览器配置文件的标签页共享。全服务最多100个累计教案版本／2MiB，请及时导出，不填写身份或健康资料。</p>
+      <form id="lp-form">
+        <label>课程课次<select name="lesson_id" id="lp-lesson" required></select></label>
+        <label>匿名班级<input name="class_label" value="匿名班级" required maxlength="80"></label>
+        <label>人数<input name="student_count" type="number" min="1" max="500" value="20" required></label>
+        <label>学生水平<select name="skill_level"><option>零基础</option><option selected>初级</option><option>初中级</option><option>中级</option></select></label>
+        <label>年龄段<select name="age_band"><option>儿童</option><option selected>青少年</option><option>成人</option><option>混合年龄</option></select></label>
+        <label>专项教练人数<input name="coach_count" type="number" value="2" min="0" max="50" required></label>
+        <label>体育教师人数<input name="teacher_count" type="number" value="1" min="0" max="50" required></label>
+        <label>场地条件<input name="venue_conditions" maxlength="500" required></label>
+        <label>装备条件<input name="equipment_conditions" maxlength="500" required></label>
+        <label>可用面积（平方米，不推算安全容量）<input name="usable_area_m2" type="number" min="0.01" max="100000" step="any" value="200" required></label>
+        <label>现场拟定同时练习容量<input name="declared_practice_capacity" type="number" min="1" max="500" value="10" required></label>
+        <label>齐备装备套数<input name="equipment_sets" type="number" min="0" max="500" value="20" required></label>
+        <label><input name="safe_waiting_area" type="checkbox">已具备冰外等待区（教师自报）</label>
+        <label><input name="ice_available" type="checkbox" checked>冰面当前可用（待现场复核）</label>
+        <label><input name="prerequisites_confirmed" type="checkbox">教师已在应用外核对先修条件（未认证，不代替专项审核）</label>
+        <button type="submit">生成45分钟课次框架</button>
+      </form>
+      <p id="lp-message" role="status" aria-live="polite"></p>
+      <section id="lp-output" hidden><h2>待审核教案框架</h2><div id="lp-result"></div>
+        <form id="lp-edit-form">
+          <label>教师目标草稿修改<input name="goal_draft" maxlength="500"></label>
+          <label>课堂组织说明修改<textarea name="organization_note" maxlength="1000"></textarea></label>
+          <label>资源备注修改<textarea name="resource_note" maxlength="1000"></textarea></label>
+          <p>教师修改独立标记为待复核，不覆盖资源暂缓、时间、知识审核状态或生成技术指导。</p>
+          <button type="submit">保存教师修改（追加版本，待复核）</button>
+        </form>
+        <button id="lp-export" type="button">导出服务端待审核框架 JSON</button><button id="lp-history" type="button">查看教案历史版本</button><pre id="lp-history-result"></pre>
+      </section>
+    </details>
+
     <section class="intro"><p class="eyebrow">课前 · 智能备课</p><h1>从教学需求到可审核的教案</h1>
       <p>填写班级与教学条件，调用现有教案 Agent 动态生成七要素草稿。支持24个候选主题、四个水平，45分钟；教学内容与安全规则均待专业核实。</p>
       <p class="notice">仅在本机运行，不连接 Coze 或数据库。生成结果需教师复核，知识依据未核实，运动负荷为预计设计值。</p>
