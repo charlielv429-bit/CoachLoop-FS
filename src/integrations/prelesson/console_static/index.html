@@ -37,7 +37,7 @@
         <label>新版本号（首次1，编辑递增）<input name="version" type="number" min="1" max="10000" value="1" required></label>
         <button type="submit">保存未审核条目</button><button id="v3-new" type="button">清空表单新增</button>
       </form>
-      <button id="v3-export" type="button">备份全部版本 JSON</button><button id="v3-review" type="button">导出离线待审核材料</button><label>导入JSON（追加，冲突时整批拒绝；≤1MiB）<input id="v3-import-file" type="file" accept=".json,application/json"></label><button id="v3-import" type="button">导入未审核知识</button>
+      <button id="v3-export" type="button">仅备份知识版本 JSON</button><span class="hint">完整材料、审核决定及撤回历史请停服使用离线 full-backup / full-restore；此JSON与审核材料导出均不是完整备份。</span><button id="v3-review" type="button">导出离线待审核材料</button><label>导入JSON（追加，冲突时整批拒绝；≤1MiB）<input id="v3-import-file" type="file" accept=".json,application/json"></label><button id="v3-import" type="button">导入未审核知识</button>
       <p id="v3-message" role="status" aria-live="polite"></p>
     </details>
     <section id="prelesson-pane">

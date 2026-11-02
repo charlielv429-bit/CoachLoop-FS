@@ -34,7 +34,7 @@ def main():
         transformations={'claim':'content','version':'draft-0.1 retained as candidate_version; integer version=1',
                          'source_verification_status':'unverified mapped to pending, never verified'},
         missing=['教材原PDF/授权原文片段','逐条绑定的专项复核记录与审核人信息','大部分章节名与书籍版次'],
-        locator_conflicts=[{'knowledge_id':k,'note':'候选条目B02定位PDF94–104；五问填答前压步为PDF90–93，保留原值，待原文逐页核对'} for k in ('K010','K011','K018')],
+        locator_conflicts=[{'knowledge_id':k,'note':'候选条目B02定位PDF94–104；用户说明PDF90–93主要涉及压步/前压步，PDF94起转入后压步。未获得原PDF，保留原值及冲突标记，不认证；K011/K018课程自拟安排不当作教材原文'} for k in ('K010','K011','K018')],
         professional_identity_created=False,system_approvals_created=0)
     args.output_dir.mkdir(parents=True,exist_ok=True)
     for name,value in [('p32-knowledge-import.json',archive.model_dump()),('p32-evidence-reports.json',{'reports':[r.model_dump() for r in reports]}),('p32-validation-report.json',report)]:

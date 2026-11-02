@@ -23,7 +23,7 @@ chapter字段留空表示待补充，不猜章节或版次。区分source_summar
 - docs/p32-input/L05-candidate-framework.json：由实际候选知识库生成；班级和资源是明确合成演示条件，知识不是模拟教材。
 
 资料差异：K010/K011/K018的B02候选定位为PDF94–104，五问稿的前压步定位为PDF90–93。
-保留原值并报告冲突，须原文逐页核对后追加新版本，不静默修正。课程自拟流程和评价不能改称教材原文或官方评分。
+用户补充说明PDF90–93主要为压步/前压步、PDF94起转入后压步。尚未获得原PDF，保留原值并报告冲突；这三条现有候选增加只读冲突标记且不能被受控批准，须原文逐页核对后追加新版本，不静默修正。课程自拟流程和评价不能改称教材原文或官方评分。
 
 ## 本轮实际接入
 
@@ -97,7 +97,7 @@ KB-S的来源整理陈述才可进入technical_guidance；KB-P/KB-E和course_pro
 
 知识和材料/决定表在SQLite重启保留，权限沿用P3.1；报告和决定各最多500条，报告累计900KiB。
 P3.1 Archive JSON仍只备份知识版本；离线审核材料导出另外包含evidence_reports。普通JSON恢复不会激活机器认证记录。
-完整保留系统决定与撤回历史，需要停止服务后备份整个SQLite文件，并另行私下保管密钥；缺少密钥时恢复库仍不采用受控决定。
+完整保留系统决定与撤回历史，请使用下面的离线full-backup/full-restore；包含决定时必须提供匹配的审核密钥，密钥另行私下保管，不进入备份。恢复只允许空库，普通网页及Archive导入不能恢复审核权限。
 不把数据库或密钥提交Git。公开交付包不含任何真实批准记录。没有自动下载或保存原PDF，没有OCR。
 私有教案仍在独立浏览器会话内存中，不与知识库共享。
 
@@ -117,3 +117,40 @@ git diff --check
 193跳过仍为191项未配置隔离PostgreSQL、2项未提供获授权真实视频；不计为通过。第三方cozeloop保留Pydantic弃用警告。
 两个现有Chromium脚本回归通过；JS语法和diff检查通过。数据库中实际候选23、材料声明46、系统决定0，重开后一致。
 原24主题引擎、生产main、视频算法和生产数据库/mock隔离文件无改动。
+
+
+## PR #18 合并前最终修复：完整备份与恢复
+
+原“备份”仅保存知识版本，原审核材料导出也遗漏决定/撤回顺序，不能当作完整审核历史备份。
+保留这些旧接口兼容性，并在界面和CLI明确标记其范围；新增仅离线的完整快照入口。
+完整快照含全部知识/版本、独立材料声明、按原SQLite插入顺序的所有决定（包括拒绝和撤回）、校验摘要。
+含审核决定时，对整个快照作独立域的HMAC认证，绑定顺序及完整性；仅校验每条决定的tag无法发现撤回记录被删，因此不够安全。
+有历史但无匹配密钥时拒绝完整导出或恢复，不降级为丢失审核历史的“成功”备份。
+
+```sh
+# 停止指向该库的服务；当前实际库没有审核决定，因此不需要密钥
+PYTHONPATH=src .venv/bin/python scripts/manage_local_knowledge.py --kb-dir .local/coachloop-kb full-backup --file .local/backups/example.kb-full-backup.json
+PYTHONPATH=src .venv/bin/python scripts/manage_local_knowledge.py --kb-dir .local/empty-restored-kb full-restore --file .local/backups/example.kb-full-backup.json
+# 若已存在审核决定，两条命令均增加：--review-key-file /private/operator.review-key
+```
+
+输出文件0600、排他创建、不覆盖已有文件；完整JSON读取上限32MiB。完整备份后缀被Git排除。
+恢复校验快照认证/摘要、Schema、证据引用、版本、重复ID及容量，并在单事务内写入。
+目标任一表非空则拒绝，不合并、不替换；任一错误回滚，不破坏目标已有数据。
+原决定tag、材料、审核日期null/原值及插入顺序原样保留，不重新封装决定，不制作新批准。
+恢复后的撤回继续生效；不配置审核密钥运行时仍不采用通过记录。
+完整备份只代表其创建时点，之后新增的撤回不在旧备份里，恢复前须核对最新备份/撤回记录，不能把旧时点当当前授权。
+外部原文文件不嵌入备份，仍需另外保管对应原件；没有引入PDF解析、P3.3或新认证体系。
+
+实际本地库在修复前后均为23条候选、46条声明、0条系统决定，全部pending；知识/声明与交付包逐字段一致。
+已完整备份到本地私有目录 `.local/backups/pr18-final.kb-full-backup.json`，并在临时空库恢复核对完全一致；原库未覆盖。
+K010/K011/K018的原定位和知识版本不改写，K011/K018仍为course_proposal。
+新增测试覆盖真实候选包往返不提升、批准→撤回顺序重启恢复、删除/重排撤回的篡改拒绝、错误/缺失密钥、非空目标拒绝、事务回滚、CLI以及普通网页不得恢复审核权限。
+
+最终复审实际测试：
+- 全量 `PYTHONPATH=src .venv/bin/python -B -m pytest -q -rs -p no:cacheprovider`：930 passed, 193 skipped, 1 warning（59.28秒）。
+- 在全量检查后补充定位冲突的受控批准拒绝用例；`PYTHONPATH=src .venv/bin/python -B -m pytest -q -p no:cacheprovider tests/test_p32_full_backup.py`：11 passed（3.58秒）。
+- 两个Chromium回归脚本、JS语法、git diff检查均通过。
+- 193跳过仍为191项未配置隔离PostgreSQL和2项缺少授权真实视频，不能计为验收通过；第三方Pydantic弃用警告保留。
+- 原23条知识JSON与46条声明JSON文件未修改；实际SQLite记录与原交付包一致，未批准或提升任何真实条目。
+复审结论：已修复完整备份容易遗漏审核/撤回历史的问题，未发现剩余合并阻断项，建议人工确认后合并。未合并、未部署、未创建P3.3。

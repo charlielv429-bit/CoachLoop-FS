@@ -11,7 +11,7 @@ import sqlite3
 import stat
 
 from integrations.reviewed_training.json_codec import decode
-from .registry import Registry, RegistryError, Knowledge, Archive, presented
+from .registry import Registry, RegistryError, Knowledge, Archive, presented, source_conflict
 from .review import EvidenceReport, AuthenticatedDecision, knowledge_digest, authenticated, read_key
 
 DEFAULT_DIRECTORY = Path(__file__).resolve().parents[3] / '.local' / 'coachloop-kb'
@@ -83,6 +83,7 @@ class SQLiteRegistry(Registry):
                     self._connection.execute('PRAGMA user_version=2')
                 self._load()
                 self._reports()
+                self._decisions()
         except Exception as error:
             if self._connection is not None:
                 self._connection.close()
@@ -155,7 +156,7 @@ class SQLiteRegistry(Registry):
     def _reports(self):
         sizes=self._connection.execute('SELECT length(CAST(payload AS BLOB)) FROM evidence_reports LIMIT 501').fetchall()
         if len(sizes)>500 or any(size is None or size>128*1024 for (size,) in sizes):raise PersistenceError('Evidence capacity exceeded')
-        rows=self._connection.execute('SELECT record_id,payload FROM evidence_reports LIMIT 501').fetchall()
+        rows=self._connection.execute('SELECT record_id,payload FROM evidence_reports ORDER BY rowid LIMIT 501').fetchall()
         if len(rows)>500:raise PersistenceError('Too many evidence reports')
         result=[]
         for record_id,payload in rows:
@@ -194,8 +195,10 @@ class SQLiteRegistry(Registry):
         with self._transaction():
             return [r.model_dump() for r in self._reports() if knowledge_id is None or r.knowledge_id==knowledge_id]
 
-    def _decision_supported(self, record):
+    def _decision_supported(self, record, *, archival=False):
         entry=self._entry(record.knowledge_id,record.knowledge_version)
+        if not archival and record.decision=='approved_for_lesson_draft' and source_conflict(entry):
+            raise RegistryError('Unresolved supplied-source locator conflict; verify original pages and append a corrected version')
         if (knowledge_digest(entry.model_dump())!=record.knowledge_digest or record.approved_statement!=entry.content
                 or not set(record.lesson_ids)<=set(entry.lesson_ids) or len(set(record.lesson_ids))!=len(record.lesson_ids)
                 or not all((entry.source_id,entry.source_title,entry.source_locator))
@@ -245,16 +248,66 @@ class SQLiteRegistry(Registry):
             self._connection.execute('INSERT INTO review_decisions VALUES(?,?)',(record.review_id,envelope.model_dump_json()))
         return {'review_id':record.review_id,'decision':record.decision,'identity_assurance':'local_operator_attestation_only'}
 
+    def _decisions(self):
+        sizes=self._connection.execute('SELECT length(CAST(payload AS BLOB)) FROM review_decisions LIMIT 501').fetchall()
+        if len(sizes)>500 or any(size is None or size>128*1024 for (size,) in sizes):raise PersistenceError('Review capacity exceeded')
+        result=[]
+        for record_id,payload in self._connection.execute('SELECT record_id,payload FROM review_decisions ORDER BY rowid LIMIT 501'):
+            envelope=AuthenticatedDecision.model_validate(decode(payload))
+            if envelope.record.review_id!=record_id:raise PersistenceError('Review identity mismatch')
+            result.append(envelope)
+        return result
+
+    def export_full(self):
+        from .full_backup import snapshot
+        with self._transaction():
+            self._load()
+            decisions=self._decisions()
+            if decisions and not any(authenticated(envelope,self._review_key) for envelope in decisions):
+                raise RegistryError('Private key does not authenticate this review history')
+            body={'schema_version':'coachloop-kb-full-v1','archive':super().export(),
+                  'evidence_reports':[r.model_dump() for r in self._reports()],
+                  'review_decisions':[r.model_dump() for r in decisions]}
+            return snapshot(body,self._review_key).model_dump()
+
+    def restore_full(self, backup):
+        from .full_backup import verified_body
+        backup=verified_body(backup,self._review_key)
+        with self._transaction(write=True):
+            # Never replace, merge or discard existing knowledge/review history.
+            if any(self._connection.execute(f'SELECT 1 FROM {table} LIMIT 1').fetchone()
+                   for table in ('revisions','evidence_reports','review_decisions')):
+                raise RegistryError('Complete restore requires an empty knowledge database')
+            self._history={}
+            self._history=self._merged(backup.archive.entries)
+            for entry in backup.archive.entries:
+                self._connection.execute('INSERT INTO revisions VALUES(?,?,?)',(entry.knowledge_id,entry.version,entry.model_dump_json()))
+            ids=set()
+            if sum(len(r.model_dump_json().encode()) for r in backup.evidence_reports)>900*1024:
+                raise RegistryError('Evidence capacity reached')
+            for report in backup.evidence_reports:
+                entry=self._entry(report.knowledge_id,report.knowledge_version)
+                if (report.evidence_id in ids or report.knowledge_digest!=knowledge_digest(entry.model_dump())
+                        or report.source_id!=entry.source_id):raise RegistryError('Restored evidence binding conflict')
+                ids.add(report.evidence_id)
+                self._connection.execute('INSERT INTO evidence_reports VALUES(?,?)',(report.evidence_id,report.model_dump_json()))
+            ids=set()
+            for envelope in backup.review_decisions:
+                record=envelope.record
+                if record.review_id in ids:raise RegistryError('Duplicate restored review ID')
+                ids.add(record.review_id)
+                # Verify references even for inactive historical authority keys.
+                self._decision_supported(record,archival=True)
+                self._connection.execute('INSERT INTO review_decisions VALUES(?,?)',(record.review_id,envelope.model_dump_json()))
+        return {'knowledge_versions':len(backup.archive.entries),'evidence_reports':len(backup.evidence_reports),
+                'review_decisions':len(backup.review_decisions)}
+
     def teaching_evidence(self, lesson_id):
         if self._review_key is None:return []
         with self._transaction():
             self._load()
-            sizes=self._connection.execute('SELECT length(CAST(payload AS BLOB)) FROM review_decisions LIMIT 501').fetchall()
-            if len(sizes)>500 or any(size is None or size>128*1024 for (size,) in sizes):raise PersistenceError('Review capacity exceeded')
-            rows=self._connection.execute('SELECT payload FROM review_decisions ORDER BY rowid LIMIT 501').fetchall()
             latest={}
-            for (payload,) in rows:
-                envelope=AuthenticatedDecision.model_validate(decode(payload))
+            for envelope in self._decisions():
                 if not authenticated(envelope,self._review_key):continue
                 record=envelope.record
                 latest[(record.knowledge_id,record.knowledge_version)]=record

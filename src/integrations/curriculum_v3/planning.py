@@ -128,7 +128,7 @@ def build_framework(request, registry):
     reports=registry.evidence_reports()
     for entry in lesson['linked_knowledge']:
         source_complete = all(entry[k] for k in ('source_id','source_title','source_locator'))
-        materials.append({k: deepcopy(entry[k]) for k in ('knowledge_id','category','title','version','source_id','source_title','source_locator','source_verification_status','specialist_review_status','chapter','candidate_version','applicability_limitations','content_kind')})
+        materials.append({k: deepcopy(entry[k]) for k in ('knowledge_id','category','title','version','source_id','source_title','source_locator','source_verification_status','specialist_review_status','chapter','candidate_version','applicability_limitations','content_kind','source_conflict_status','source_conflict_note')})
         materials[-1].update(source_registered=source_complete, source_content_verified=entry['knowledge_id'] in reviewed_ids,
                              specialist_verified=entry['knowledge_id'] in reviewed_ids,
                              reported_inspection_note=entry.get('evidence_inspection_note',''),

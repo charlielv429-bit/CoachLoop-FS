@@ -152,7 +152,9 @@
       "specialist_confirmation_reported": false,
       "system_review_status": "pending",
       "usage": "metadata_only_not_teaching_guidance",
-      "exclusion_reason": "来源登记不等于正文核实；尚无可信专项审核。不得用作确定性动作指导。"
+      "exclusion_reason": "来源登记不等于正文核实；尚无可信专项审核。不得用作确定性动作指导。",
+      "source_conflict_status": "unresolved",
+      "source_conflict_note": "用户说明PDF90–93主要为压步/前压步，PDF94起转入后压步；尚无原PDF可核查，原定位保留，待逐页复核，不得认证为前压步原文。"
     },
     {
       "knowledge_id": "K012",
@@ -198,7 +200,9 @@
       "specialist_confirmation_reported": false,
       "system_review_status": "pending",
       "usage": "metadata_only_not_teaching_guidance",
-      "exclusion_reason": "来源登记不等于正文核实；尚无可信专项审核。不得用作确定性动作指导。"
+      "exclusion_reason": "来源登记不等于正文核实；尚无可信专项审核。不得用作确定性动作指导。",
+      "source_conflict_status": "unresolved",
+      "source_conflict_note": "用户说明PDF90–93主要为压步/前压步，PDF94起转入后压步；尚无原PDF可核查，原定位保留，待逐页复核，不得认证为前压步原文。"
     },
     {
       "knowledge_id": "K019",

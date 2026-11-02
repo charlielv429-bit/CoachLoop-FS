@@ -74,10 +74,20 @@ class Archive(Strict):
     entries: list[Knowledge] = Field(max_length=500)
 
 
+def source_conflict(entry):
+    # A read-only advisory for the supplied v1 candidates. Preserve stored facts.
+    if (entry.knowledge_id in ('K010','K011','K018') and entry.version==1
+            and entry.source_id=='B02' and entry.candidate_version=='draft-0.1'
+            and entry.source_locator=='PDF94–104；印刷80–90'):
+        return '用户说明PDF90–93主要为压步/前压步，PDF94起转入后压步；尚无原PDF可核查，原定位保留，待逐页复核，不得认证为前压步原文。'
+    return ''
+
+
 def presented(entry):
     data = entry.model_dump()
     complete = all(data[k] for k in ('source_id', 'source_title', 'source_locator'))
-    return {**data, 'source_label': '已登记，待核实' if complete else '待补充',
+    conflict=source_conflict(entry)
+    return {**data,'source_conflict_status':'unresolved' if conflict else 'not_flagged','source_conflict_note':conflict, 'source_label': '已登记，待核实' if complete else '待补充',
             'review_label': '已退回，待审核' if entry.specialist_review_status == 'rejected' else '待审核',
             'formal_teaching_basis': False}
 
