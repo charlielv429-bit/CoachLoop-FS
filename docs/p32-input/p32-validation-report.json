@@ -1,0 +1,139 @@
+{
+  "status": "validated_candidates_not_approved",
+  "original_schema_error_count": 141,
+  "original_schema_errors_by_type": {
+    "literal_error": 24,
+    "missing": 23,
+    "int_type": 23,
+    "extra_forbidden": 71
+  },
+  "original_schema_error_examples": [
+    {
+      "loc": [
+        "schema_version"
+      ],
+      "type": "literal_error"
+    },
+    {
+      "loc": [
+        "entries",
+        0,
+        "content"
+      ],
+      "type": "missing"
+    },
+    {
+      "loc": [
+        "entries",
+        0,
+        "source_verification_status"
+      ],
+      "type": "literal_error"
+    },
+    {
+      "loc": [
+        "entries",
+        0,
+        "version"
+      ],
+      "type": "int_type"
+    },
+    {
+      "loc": [
+        "entries",
+        0,
+        "claim"
+      ],
+      "type": "extra_forbidden"
+    },
+    {
+      "loc": [
+        "entries",
+        0,
+        "reviewer"
+      ],
+      "type": "extra_forbidden"
+    },
+    {
+      "loc": [
+        "entries",
+        0,
+        "import_warning"
+      ],
+      "type": "extra_forbidden"
+    },
+    {
+      "loc": [
+        "entries",
+        1,
+        "content"
+      ],
+      "type": "missing"
+    },
+    {
+      "loc": [
+        "entries",
+        1,
+        "source_verification_status"
+      ],
+      "type": "literal_error"
+    },
+    {
+      "loc": [
+        "entries",
+        1,
+        "version"
+      ],
+      "type": "int_type"
+    },
+    {
+      "loc": [
+        "entries",
+        1,
+        "claim"
+      ],
+      "type": "extra_forbidden"
+    },
+    {
+      "loc": [
+        "entries",
+        1,
+        "reviewer"
+      ],
+      "type": "extra_forbidden"
+    }
+  ],
+  "converted_schema": "coachloop-kb-v3.0",
+  "entry_count": 23,
+  "artifact_hashes": {
+    "01_Expert_Reviewed_Answers.docx": "cc47d12b5a7a68c367e59414834c824a46c1a94d1657f6feb649f44091296c94",
+    "02_Knowledge_Entries.docx": "004c019aa239840cb62ab61ad534bb357565fab35d10813384ebcd7e08a91cff",
+    "03_Knowledge_Candidates.json": "a927a62f471f1bdc688dac335ac29bf524031d738392502fcdab02b6a78a3559"
+  },
+  "transformations": {
+    "claim": "content",
+    "version": "draft-0.1 retained as candidate_version; integer version=1",
+    "source_verification_status": "unverified mapped to pending, never verified"
+  },
+  "missing": [
+    "教材原PDF/授权原文片段",
+    "逐条绑定的专项复核记录与审核人信息",
+    "大部分章节名与书籍版次"
+  ],
+  "locator_conflicts": [
+    {
+      "knowledge_id": "K010",
+      "note": "候选条目B02定位PDF94–104；五问填答前压步为PDF90–93，保留原值，待原文逐页核对"
+    },
+    {
+      "knowledge_id": "K011",
+      "note": "候选条目B02定位PDF94–104；五问填答前压步为PDF90–93，保留原值，待原文逐页核对"
+    },
+    {
+      "knowledge_id": "K018",
+      "note": "候选条目B02定位PDF94–104；五问填答前压步为PDF90–93，保留原值，待原文逐页核对"
+    }
+  ],
+  "professional_identity_created": false,
+  "system_approvals_created": 0
+}

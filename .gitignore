@@ -78,3 +78,7 @@ assets/mock/
 *.db-journal
 *.kb-backup.json
 *.kb-review.json
+
+# Local incoming documents and scratch validation artifacts
+/work/
+*.review-key

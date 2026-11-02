@@ -1,0 +1,474 @@
+{
+  "schema_version": "coachloop-kb-v3.0",
+  "entries": [
+    {
+      "knowledge_id": "K001",
+      "category": "KB-S",
+      "title": "上冰前需要检查冰鞋与装备是否合适，并在教师监督下完成入门",
+      "content": "上冰前需要检查冰鞋与装备是否合适，并在教师监督下完成入门准备",
+      "lesson_ids": [
+        "L01"
+      ],
+      "chapter": "",
+      "candidate_version": "draft-0.1",
+      "evidence_inspection_note": "正文已核对",
+      "applicability_limitations": "历史教材建议，现行安全条件须由教练核对",
+      "content_kind": "source_summary",
+      "source_id": "B01",
+      "source_title": "怎样练习花样滑冰｜沈祖修、杨家声",
+      "source_locator": "PDF9；印刷1",
+      "source_verification_status": "pending",
+      "specialist_review_status": "pending",
+      "version": 1
+    },
+    {
+      "knowledge_id": "K002",
+      "category": "KB-S",
+      "title": "初学者直线滑行练习可以分为站立、小步走、双脚滑行等基础动",
+      "content": "初学者直线滑行练习可以分为站立、小步走、双脚滑行等基础动作",
+      "lesson_ids": [
+        "L01"
+      ],
+      "chapter": "",
+      "candidate_version": "draft-0.1",
+      "evidence_inspection_note": "正文已核对",
+      "applicability_limitations": "仅描述教材编排，不等于45分钟全部掌握",
+      "content_kind": "source_summary",
+      "source_id": "B01",
+      "source_title": "怎样练习花样滑冰｜沈祖修、杨家声",
+      "source_locator": "PDF10；印刷2",
+      "source_verification_status": "pending",
+      "specialist_review_status": "pending",
+      "version": 1
+    },
+    {
+      "knowledge_id": "K003",
+      "category": "KB-S",
+      "title": "教材提供站立与小步走的动作示意，可供教练制作课前观察点",
+      "content": "教材提供站立与小步走的动作示意，可供教练制作课前观察点",
+      "lesson_ids": [
+        "L01"
+      ],
+      "chapter": "",
+      "candidate_version": "draft-0.1",
+      "evidence_inspection_note": "正文已核对",
+      "applicability_limitations": "应检查图示与学员装备、年龄适配",
+      "content_kind": "source_summary",
+      "source_id": "B01",
+      "source_title": "怎样练习花样滑冰｜沈祖修、杨家声",
+      "source_locator": "PDF10；印刷2；图一、图二",
+      "source_verification_status": "pending",
+      "specialist_review_status": "pending",
+      "version": 1
+    },
+    {
+      "knowledge_id": "K004",
+      "category": "KB-S",
+      "title": "技术教学应把器材、安全和基本滑行准备作为相互关联的内容",
+      "content": "技术教学应把器材、安全和基本滑行准备作为相互关联的内容",
+      "lesson_ids": [
+        "L01"
+      ],
+      "chapter": "",
+      "candidate_version": "draft-0.1",
+      "evidence_inspection_note": "仅目录定位",
+      "applicability_limitations": "需核对正文，不应写成教材原文结论",
+      "content_kind": "catalogue_lead",
+      "source_id": "B04",
+      "source_title": "花样滑冰｜韦迪主编",
+      "source_locator": "PDF5目录；印刷121–127",
+      "source_verification_status": "pending",
+      "specialist_review_status": "pending",
+      "version": 1
+    },
+    {
+      "knowledge_id": "K005",
+      "category": "KB-S",
+      "title": "教材把双脚滑行安排在直线滑行初学内容中",
+      "content": "教材把双脚滑行安排在直线滑行初学内容中",
+      "lesson_ids": [
+        "L02"
+      ],
+      "chapter": "",
+      "candidate_version": "draft-0.1",
+      "evidence_inspection_note": "正文已核对",
+      "applicability_limitations": "不能据此直接制定停止动作标准",
+      "content_kind": "source_summary",
+      "source_id": "B01",
+      "source_title": "怎样练习花样滑冰｜沈祖修、杨家声",
+      "source_locator": "PDF10–11；印刷2–3",
+      "source_verification_status": "pending",
+      "specialist_review_status": "pending",
+      "version": 1
+    },
+    {
+      "knowledge_id": "K006",
+      "category": "KB-S",
+      "title": "停止练习在初学者技术中有专门章节，具体方法应核对原文",
+      "content": "停止练习在初学者技术中有专门章节，具体方法应核对原文",
+      "lesson_ids": [
+        "L02"
+      ],
+      "chapter": "",
+      "candidate_version": "draft-0.1",
+      "evidence_inspection_note": "仅目录定位",
+      "applicability_limitations": "停止方式待花滑同学确认",
+      "content_kind": "catalogue_lead",
+      "source_id": "B01",
+      "source_title": "怎样练习花样滑冰｜沈祖修、杨家声",
+      "source_locator": "PDF6目录；印刷约4–5",
+      "source_verification_status": "pending",
+      "specialist_review_status": "pending",
+      "version": 1
+    },
+    {
+      "knowledge_id": "K007",
+      "category": "KB-S",
+      "title": "滑行与步法学习涉及蹬冰、滑行、换足等动作要素",
+      "content": "滑行与步法学习涉及蹬冰、滑行、换足等动作要素",
+      "lesson_ids": [
+        "L03"
+      ],
+      "chapter": "",
+      "candidate_version": "draft-0.1",
+      "evidence_inspection_note": "正文已核对",
+      "applicability_limitations": "一般步法结构，不是单足平衡量化标准",
+      "content_kind": "source_summary",
+      "source_id": "B02",
+      "source_title": "花样滑冰｜王树本",
+      "source_locator": "PDF76–77；印刷62–63",
+      "source_verification_status": "pending",
+      "specialist_review_status": "pending",
+      "version": 1
+    },
+    {
+      "knowledge_id": "K008",
+      "category": "KB-S",
+      "title": "王树本教材的基础技术部分提供分解动作序列图，可用于人工观",
+      "content": "王树本教材的基础技术部分提供分解动作序列图，可用于人工观察讨论",
+      "lesson_ids": [
+        "L03"
+      ],
+      "chapter": "",
+      "candidate_version": "draft-0.1",
+      "evidence_inspection_note": "正文抽样核对",
+      "applicability_limitations": "图的具体动作需逐一识别",
+      "content_kind": "source_summary",
+      "source_id": "B02",
+      "source_title": "花样滑冰｜王树本",
+      "source_locator": "PDF84–94；印刷70–80",
+      "source_verification_status": "pending",
+      "specialist_review_status": "pending",
+      "version": 1
+    },
+    {
+      "knowledge_id": "K009",
+      "category": "KB-S",
+      "title": "步法可以按转体、换足、连续等类别组织说明",
+      "content": "步法可以按转体、换足、连续等类别组织说明",
+      "lesson_ids": [
+        "L04"
+      ],
+      "chapter": "",
+      "candidate_version": "draft-0.1",
+      "evidence_inspection_note": "正文已核对",
+      "applicability_limitations": "不直接映射左前交叉的动作标准",
+      "content_kind": "source_summary",
+      "source_id": "B02",
+      "source_title": "花样滑冰｜王树本",
+      "source_locator": "PDF75–77；印刷61–63",
+      "source_verification_status": "pending",
+      "specialist_review_status": "pending",
+      "version": 1
+    },
+    {
+      "knowledge_id": "K010",
+      "category": "KB-S",
+      "title": "王树本教材包含前进交叉相关滑行示意，可作为交叉动作的检索",
+      "content": "王树本教材包含前进交叉相关滑行示意，可作为交叉动作的检索候选",
+      "lesson_ids": [
+        "L04"
+      ],
+      "chapter": "",
+      "candidate_version": "draft-0.1",
+      "evidence_inspection_note": "正文抽样核对",
+      "applicability_limitations": "左右方向、内外刃及图注尚需准确逐页对应",
+      "content_kind": "source_summary",
+      "source_id": "B02",
+      "source_title": "花样滑冰｜王树本",
+      "source_locator": "PDF94–104；印刷80–90",
+      "source_verification_status": "pending",
+      "specialist_review_status": "pending",
+      "version": 1
+    },
+    {
+      "knowledge_id": "K011",
+      "category": "KB-S",
+      "title": "完整交叉步教学资料应区分动作连续示意与教师认定的专项技术",
+      "content": "完整交叉步教学资料应区分动作连续示意与教师认定的专项技术要求",
+      "lesson_ids": [
+        "L05"
+      ],
+      "chapter": "",
+      "candidate_version": "draft-0.1",
+      "evidence_inspection_note": "正文抽样核对",
+      "applicability_limitations": "属于本课程提取原则，不是原文评分规则",
+      "content_kind": "course_proposal",
+      "source_id": "B02",
+      "source_title": "花样滑冰｜王树本",
+      "source_locator": "PDF94–104；印刷80–90",
+      "source_verification_status": "pending",
+      "specialist_review_status": "pending",
+      "version": 1
+    },
+    {
+      "knowledge_id": "K012",
+      "category": "KB-S",
+      "title": "《花样滑冰技法与指导》设有基本滑行与步法教学内容，可作为",
+      "content": "《花样滑冰技法与指导》设有基本滑行与步法教学内容，可作为专项交叉练习备选来源",
+      "lesson_ids": [
+        "L05"
+      ],
+      "chapter": "",
+      "candidate_version": "draft-0.1",
+      "evidence_inspection_note": "正文抽样核对",
+      "applicability_limitations": "左前交叉具体技术尚未完成全章核对",
+      "content_kind": "source_summary",
+      "source_id": "B03",
+      "source_title": "花样滑冰技法与指导｜李乡状等",
+      "source_locator": "PDF29–55；印刷19–45",
+      "source_verification_status": "pending",
+      "specialist_review_status": "pending",
+      "version": 1
+    },
+    {
+      "knowledge_id": "K013",
+      "category": "KB-S",
+      "title": "步法分类包含连续步法这一类型，可为连续交叉步课次建立术语",
+      "content": "步法分类包含连续步法这一类型，可为连续交叉步课次建立术语索引",
+      "lesson_ids": [
+        "L06"
+      ],
+      "chapter": "",
+      "candidate_version": "draft-0.1",
+      "evidence_inspection_note": "正文已核对",
+      "applicability_limitations": "不等于已经确认连续左前交叉动作的教学细节",
+      "content_kind": "source_summary",
+      "source_id": "B02",
+      "source_title": "花样滑冰｜王树本",
+      "source_locator": "PDF76；印刷62",
+      "source_verification_status": "pending",
+      "specialist_review_status": "pending",
+      "version": 1
+    },
+    {
+      "knowledge_id": "K014",
+      "category": "KB-S",
+      "title": "王树本教材将步法与舞姿列为独立技术章节，并给出步法分类",
+      "content": "王树本教材将步法与舞姿列为独立技术章节，并给出步法分类",
+      "lesson_ids": [
+        "L07",
+        "L08"
+      ],
+      "chapter": "",
+      "candidate_version": "draft-0.1",
+      "evidence_inspection_note": "正文已核对",
+      "applicability_limitations": "不可将书中的步法组合冒充本课程基础级步法规定套路",
+      "content_kind": "source_summary",
+      "source_id": "B02",
+      "source_title": "花样滑冰｜王树本",
+      "source_locator": "PDF75–77；印刷61–63",
+      "source_verification_status": "pending",
+      "specialist_review_status": "pending",
+      "version": 1
+    },
+    {
+      "knowledge_id": "K015",
+      "category": "KB-S",
+      "title": "ISU 2025–2026技术组手册的接续步针对竞赛节目",
+      "content": "ISU 2025–2026技术组手册的接续步针对竞赛节目技术认定",
+      "lesson_ids": [
+        "L07",
+        "L08"
+      ],
+      "chapter": "",
+      "candidate_version": "draft-0.1",
+      "evidence_inspection_note": "正文已核对",
+      "applicability_limitations": "仅作竞技术语背景，不用其等级条件评分初学者",
+      "content_kind": "source_summary",
+      "source_id": "B06",
+      "source_title": "国际滑联技术组手册·单人滑2025–2026（中文版）",
+      "source_locator": "PDF3–4；印刷3–4",
+      "source_verification_status": "pending",
+      "specialist_review_status": "pending",
+      "version": 1
+    },
+    {
+      "knowledge_id": "K016",
+      "category": "KB-P",
+      "title": "本课程将上冰准备、基础滑行和安全检查安排为同一课次，是课",
+      "content": "本课程将上冰准备、基础滑行和安全检查安排为同一课次，是课程团队的自拟设计",
+      "lesson_ids": [
+        "L01"
+      ],
+      "chapter": "",
+      "candidate_version": "draft-0.1",
+      "evidence_inspection_note": "资料支持部分基础内容",
+      "applicability_limitations": "课时组合为团队决策，不能归因于单一教材",
+      "content_kind": "course_proposal",
+      "source_id": "B01",
+      "source_title": "怎样练习花样滑冰｜沈祖修、杨家声",
+      "source_locator": "PDF9–11；印刷1–3",
+      "source_verification_status": "pending",
+      "specialist_review_status": "pending",
+      "version": 1
+    },
+    {
+      "knowledge_id": "K017",
+      "category": "KB-P",
+      "title": "不同滑行技能先安排复习再安排新练习，需由教练核对实际先修",
+      "content": "不同滑行技能先安排复习再安排新练习，需由教练核对实际先修关系",
+      "lesson_ids": [
+        "L02",
+        "L03"
+      ],
+      "chapter": "",
+      "candidate_version": "draft-0.1",
+      "evidence_inspection_note": "仅目录定位",
+      "applicability_limitations": "课程设计建议，非已核实原文因果",
+      "content_kind": "catalogue_lead",
+      "source_id": "B05",
+      "source_title": "少年儿童业余训练教材·花样滑冰｜编写组",
+      "source_locator": "PDF5目录：教学训练计划",
+      "source_verification_status": "pending",
+      "specialist_review_status": "pending",
+      "version": 1
+    },
+    {
+      "knowledge_id": "K018",
+      "category": "KB-P",
+      "title": "左前交叉步分成蹬冰、完整单次、连续练习三个课次，是本课程",
+      "content": "左前交叉步分成蹬冰、完整单次、连续练习三个课次，是本课程既定教学安排",
+      "lesson_ids": [
+        "L04",
+        "L05",
+        "L06"
+      ],
+      "chapter": "",
+      "candidate_version": "draft-0.1",
+      "evidence_inspection_note": "课程安排而非来源原文",
+      "applicability_limitations": "需要花滑同学确认进阶可行性及分层条件",
+      "content_kind": "course_proposal",
+      "source_id": "B02",
+      "source_title": "花样滑冰｜王树本",
+      "source_locator": "PDF94–104；印刷80–90",
+      "source_verification_status": "pending",
+      "specialist_review_status": "pending",
+      "version": 1
+    },
+    {
+      "knowledge_id": "K019",
+      "category": "KB-E",
+      "title": "评价应分开记录算法观察、教练判断和学生复练建议",
+      "content": "评价应分开记录算法观察、教练判断和学生复练建议",
+      "lesson_ids": [
+        "L04",
+        "L05",
+        "L06"
+      ],
+      "chapter": "",
+      "candidate_version": "draft-0.1",
+      "evidence_inspection_note": "课程自拟评价流程",
+      "applicability_limitations": "不可声称该教材定义AI评价方法",
+      "content_kind": "course_proposal",
+      "source_id": "B02",
+      "source_title": "花样滑冰｜王树本",
+      "source_locator": "PDF75–77；印刷61–63",
+      "source_verification_status": "pending",
+      "specialist_review_status": "pending",
+      "version": 1
+    },
+    {
+      "knowledge_id": "K020",
+      "category": "KB-E",
+      "title": "基础级步法考核不得直接采用ISU竞技接续步等级条件",
+      "content": "基础级步法考核不得直接采用ISU竞技接续步等级条件",
+      "lesson_ids": [
+        "L07",
+        "L08"
+      ],
+      "chapter": "",
+      "candidate_version": "draft-0.1",
+      "evidence_inspection_note": "正文核对+适用范围判断",
+      "applicability_limitations": "此为适用范围约束",
+      "content_kind": "course_proposal",
+      "source_id": "B06",
+      "source_title": "国际滑联技术组手册·单人滑2025–2026（中文版）",
+      "source_locator": "PDF3–4；印刷3–4",
+      "source_verification_status": "pending",
+      "specialist_review_status": "pending",
+      "version": 1
+    },
+    {
+      "knowledge_id": "K021",
+      "category": "KB-E",
+      "title": "综合评价维度需根据团队基础级步法动作清单另行制定，不从1",
+      "content": "综合评价维度需根据团队基础级步法动作清单另行制定，不从1987竞赛规则推导",
+      "lesson_ids": [
+        "L08"
+      ],
+      "chapter": "",
+      "candidate_version": "draft-0.1",
+      "evidence_inspection_note": "历史规则背景",
+      "applicability_limitations": "旧规则不作为现行评分标准",
+      "content_kind": "course_proposal",
+      "source_id": "B07",
+      "source_title": "花样滑冰竞赛规则（1987）",
+      "source_locator": "PDF5–9；印刷目录和1–4",
+      "source_verification_status": "pending",
+      "specialist_review_status": "pending",
+      "version": 1
+    },
+    {
+      "knowledge_id": "K022",
+      "category": "KB-P",
+      "title": "花滑场地条件可作为教学准备的核对项目之一",
+      "content": "花滑场地条件可作为教学准备的核对项目之一",
+      "lesson_ids": [
+        "L01"
+      ],
+      "chapter": "",
+      "candidate_version": "draft-0.1",
+      "evidence_inspection_note": "正文已核对",
+      "applicability_limitations": "历史书籍的具体温湿度等数值不作为现行安全阈值",
+      "content_kind": "source_summary",
+      "source_id": "B03",
+      "source_title": "花样滑冰技法与指导｜李乡状等",
+      "source_locator": "PDF26；印刷16",
+      "source_verification_status": "pending",
+      "specialist_review_status": "pending",
+      "version": 1
+    },
+    {
+      "knowledge_id": "K023",
+      "category": "KB-P",
+      "title": "身体控制及基础素质练习属于教学相关内容",
+      "content": "身体控制及基础素质练习属于教学相关内容",
+      "lesson_ids": [
+        "L01",
+        "L03"
+      ],
+      "chapter": "",
+      "candidate_version": "draft-0.1",
+      "evidence_inspection_note": "正文已核对",
+      "applicability_limitations": "不由此推定学生个人体能要求",
+      "content_kind": "source_summary",
+      "source_id": "B03",
+      "source_title": "花样滑冰技法与指导｜李乡状等",
+      "source_locator": "PDF26–27；印刷16–17",
+      "source_verification_status": "pending",
+      "specialist_review_status": "pending",
+      "version": 1
+    }
+  ]
+}

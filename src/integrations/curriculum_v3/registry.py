@@ -27,6 +27,11 @@ class Knowledge(Strict):
     title: str = Field(min_length=1, max_length=200)
     content: str = Field(min_length=1, max_length=10000)
     lesson_ids: list[str] = Field(max_length=8)
+    chapter: str = Field(default='', max_length=300)
+    candidate_version: str = Field(default='', max_length=100)
+    evidence_inspection_note: str = Field(default='', max_length=1000)
+    applicability_limitations: str = Field(default='', max_length=2000)
+    content_kind: Literal['source_summary','catalogue_lead','course_proposal','unspecified'] = 'unspecified'
     source_id: str = Field(default='', max_length=64)
     source_title: str = Field(default='', max_length=300)
     source_locator: str = Field(default='', max_length=1000)
@@ -34,7 +39,7 @@ class Knowledge(Strict):
     specialist_review_status: Literal['pending', 'requested', 'rejected'] = 'pending'
     version: int = Field(ge=1, le=10000)
 
-    @field_validator('title', 'content', 'source_id', 'source_title', 'source_locator')
+    @field_validator('title', 'content', 'source_id', 'source_title', 'source_locator', 'chapter', 'candidate_version', 'evidence_inspection_note', 'applicability_limitations')
     @classmethod
     def safe_text(cls, value):
         # Plain text only; locators are displayed as text, never fetched or linked.
@@ -138,6 +143,12 @@ class Registry:
                     if (not category or e.category == category)
                     and (not lesson_id or lesson_id in e.lesson_ids)
                     and keyword.casefold() in (e.title + '\n' + e.content + '\n' + e.source_title).casefold()]
+
+    def evidence_reports(self, knowledge_id=None):
+        return []
+
+    def teaching_evidence(self, lesson_id):
+        return []
 
     def lessons(self, lesson_id=None):
         result = []

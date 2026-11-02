@@ -2,13 +2,14 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from integrations.prelesson.adaptive_api import local_session
 from integrations.prelesson.api import PrelessonRoute
-from .planning import LessonRequest, EditRequest
+from .review import EvidenceReport
+from .planning import LessonRequest, EditRequest, guard_current_evidence
 from .persistence import review_materials
 from .registry import Archive, Knowledge, RegistryError, CATEGORIES
 
 BASE = '/api/v3'
-READ_PATHS = {BASE + path for path in ('/lessons', '/knowledge', '/history', '/export', '/plans/export', '/plans/history', '/review-materials')}
-WRITE_PATHS = {BASE + path for path in ('/knowledge', '/import', '/plans/draft', '/plans/edit')}
+READ_PATHS = {BASE + path for path in ('/lessons', '/knowledge', '/history', '/export', '/plans/export', '/plans/history', '/review-materials', '/evidence')}
+WRITE_PATHS = {BASE + path for path in ('/knowledge', '/import', '/plans/draft', '/plans/edit', '/evidence')}
 
 
 def plan_owner(request: Request):
@@ -29,6 +30,16 @@ def create_router(store, plans):
     @router.get(BASE + '/review-materials')
     def offline_review():
         return review_materials(store)
+
+    @router.get(BASE + '/evidence')
+    def reports(knowledge_id: str | None = Query(None,pattern=r'^[A-Za-z0-9_-]{1,64}$')):
+        return {'reports':store.evidence_reports(knowledge_id),'warning':'材料声明不是系统可信审核'}
+
+    @router.post(BASE + '/evidence')
+    def register_report(report: EvidenceReport):
+        if not hasattr(store,'save_report'):raise HTTPException(409,'Persistent evidence storage required')
+        try:return store.save_report(report)
+        except RegistryError as error:raise HTTPException(409,str(error)) from error
 
     @router.get(BASE + '/knowledge')
     def search(category: str | None = Query(None, pattern=r'^KB-[SPAE]$'),
@@ -61,28 +72,28 @@ def create_router(store, plans):
     @router.post(BASE + '/plans/draft')
     def draft(request: LessonRequest, owner: str = Depends(plan_owner)):
         try:
-            return plans.create(request, store, owner=owner)
+            return guard_current_evidence(plans.create(request, store, owner=owner),store)
         except RegistryError as error:
             raise HTTPException(409, str(error)) from error
 
     @router.post(BASE + '/plans/edit')
     def edit(request: EditRequest, owner: str = Depends(plan_owner)):
         try:
-            return plans.edit(request, owner=owner)
+            return guard_current_evidence(plans.edit(request, owner=owner),store)
         except RegistryError as error:
             raise HTTPException(409, str(error)) from error
 
     @router.get(BASE + '/plans/export')
     def export_plan(plan_id: str = Query(pattern=r'^[a-f0-9]{32}$'), owner: str = Depends(plan_owner)):
         try:
-            return plans.read(plan_id, owner=owner)
+            return guard_current_evidence(plans.read(plan_id, owner=owner),store)
         except RegistryError as error:
             raise HTTPException(404, str(error)) from error
 
     @router.get(BASE + '/plans/history')
     def plan_history(plan_id: str = Query(pattern=r'^[a-f0-9]{32}$'), owner: str = Depends(plan_owner)):
         try:
-            return {'versions': plans.read(plan_id, history=True, owner=owner)}
+            return {'versions': [guard_current_evidence(plan,store) for plan in plans.read(plan_id, history=True, owner=owner)]}
         except RegistryError as error:
             raise HTTPException(404, str(error)) from error
 
