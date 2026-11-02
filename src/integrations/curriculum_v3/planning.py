@@ -18,6 +18,7 @@ from pydantic import Field, field_validator, model_validator
 from agents.lesson_plan_agent.adaptive import AdaptiveRequest, AdaptiveLoad, organization_inputs, validate_classroom_conditions, _metric
 from agents.lesson_plan_agent.schemas import TeachingFlow
 from .registry import Strict, Knowledge, RegistryError
+from .l05 import initialize as initialize_l05, apply_teacher_fields, current_view as l05_current_view
 
 
 PLAN_COOKIE = 'coachloop_lesson_plans'
@@ -74,7 +75,14 @@ class TeacherEdits(Strict):
     organization_note: str = Field(default='', max_length=1000)
     resource_note: str = Field(default='', max_length=1000)
 
-    @field_validator('goal_draft', 'organization_note', 'resource_note')
+    action_points: str = Field(default='', max_length=1500)
+    practice_steps: str = Field(default='', max_length=2000)
+    common_errors: str = Field(default='', max_length=1500)
+    safety_notes: str = Field(default='', max_length=1500)
+    differentiation_notes: str = Field(default='', max_length=1500)
+    evaluation_observations: str = Field(default='', max_length=1500)
+
+    @field_validator('goal_draft', 'organization_note', 'resource_note', 'action_points', 'practice_steps', 'common_errors', 'safety_notes', 'differentiation_notes', 'evaluation_observations')
     @classmethod
     def plain(cls, value):
         return Knowledge.safe_text(value)
@@ -135,7 +143,7 @@ def build_framework(request, registry):
                              specialist_confirmation_reported=any(r['knowledge_id']==entry['knowledge_id'] and r['knowledge_version']==entry['version'] and r['kind']=='specialist_report' for r in reports),
                              system_review_status='operator_authenticated' if entry['knowledge_id'] in reviewed_ids else 'pending', usage='metadata_only_not_teaching_guidance',
                              exclusion_reason='已绑定受控草稿建议，仍须现场复核。' if entry['knowledge_id'] in reviewed_ids else '来源登记不等于正文核实；尚无可信专项审核。不得用作确定性动作指导。')
-    return dict(schema_version='lesson-framework-v3.1', mode='lesson', lesson={k:lesson[k] for k in ('lesson_id','title','duration_min','teaching_objective_draft')},
+    plan = dict(schema_version='lesson-framework-v3.1', mode='lesson', lesson={k:lesson[k] for k in ('lesson_id','title','duration_min','teaching_objective_draft')},
         title=lesson['title']+'｜待审核教案框架', review_status='pending_review', requires_teacher_review=True,
         execution_status='withheld_pending_teacher_and_safety_review' if approved else 'withheld_pending_specialist_evidence', technical_guidance=[{**item,'status':'reviewed_suggestion_pending_teacher_confirmation'} for item in approved if item['category']=='KB-S' and item['content_kind']=='source_summary'], formal_teaching_evidence=approved,
         objective_draft=lesson['teaching_objective_draft'], conditions=request.conditions.model_dump(),
@@ -149,6 +157,14 @@ def build_framework(request, registry):
         evidence_reports=[report for report in registry.evidence_reports() if report['knowledge_id'] in {entry['knowledge_id'] for entry in lesson['linked_knowledge']}],
         evidence_status='reviewed_suggestions_available' if approved else 'insufficient',
         warning=notice, teacher_edits=[], current_teacher_edits=TeacherEdits().model_dump())
+    if request.lesson_id=='L05':
+        location_checks=[]
+        for entry in registry.search():
+            if entry['knowledge_id'] in ('K010','K011','K018') and entry['source_id']=='B02':
+                location_checks.append({key:entry[key] for key in ('knowledge_id','version','source_id','source_title','source_locator','content_kind','source_conflict_status','source_conflict_note')})
+        initialize_l05(plan,lesson['linked_knowledge'],location_checks)
+    return plan
+
 
 
 class PlanStore:
@@ -187,6 +203,7 @@ class PlanStore:
                                         'status':'teacher_pending_review' if values['goal_draft'] else 'generated_pending_review'}
         plan['teacher_edits'].append(dict(version=plan['version'], changed_at=datetime.now(timezone.utc).isoformat(),
             actor='local_unverified_operator', review_status='pending_review', values=values))
+        apply_teacher_fields(plan)
         # Teacher text remains separate, explicitly unapproved; never overwrite
         # generated safety, resource holds, evidence status, flow or technical fields.
 
@@ -213,11 +230,11 @@ class PlanStore:
 def guard_current_evidence(plan, registry):
     """Preserve historical records internally, never re-export withdrawn guidance."""
     if not plan.get('formal_teaching_evidence'):
-        return plan
+        return l05_current_view(plan,registry)
     active={(item['knowledge_id'],item['version'],item['review_id']) for item in registry.teaching_evidence(plan['lesson']['lesson_id'])}
     def permitted(item):return (item['knowledge_id'],item['version'],item['review_id']) in active
     withdrawn=[item for item in plan['formal_teaching_evidence'] if not permitted(item)]
-    if not withdrawn:return plan
+    if not withdrawn:return l05_current_view(plan,registry)
     plan=deepcopy(plan)
     for key in ('formal_teaching_evidence','technical_guidance','teaching_suggestions'):
         plan[key]=[item for item in plan.get(key,[]) if permitted(item)]
@@ -229,4 +246,4 @@ def guard_current_evidence(plan, registry):
     plan['evidence_status']='requires_regeneration_after_review_change'
     plan['execution_status']='withheld_pending_specialist_evidence'
     plan['warning']='审核或知识版本已变化；已撤下失效建议，请重新生成并人工复核。'
-    return plan
+    return l05_current_view(plan,registry)
