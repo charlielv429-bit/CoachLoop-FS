@@ -21,7 +21,7 @@ from .adaptive_api import create_adaptive_router, ADAPTIVE, CATALOGUE, LOCAL_AUT
 
 from integrations.curriculum_v3.api import create_router as create_v3_router, READ_PATHS as V3_READ, WRITE_PATHS as V3_WRITE
 from integrations.curriculum_v3.registry import Registry
-from integrations.curriculum_v3.planning import PlanStore
+from integrations.curriculum_v3.planning import PlanStore, PlanSessions, PLAN_COOKIE
 
 STATIC = Path(__file__).with_name('console_static')
 COOKIE = 'coachloop_local_console'
@@ -42,7 +42,8 @@ LOCAL_SECURITY_HEADERS = {**SECURITY_HEADERS, 'Cross-Origin-Resource-Policy': 's
 
 
 class LocalBoundary:
-    def __init__(self, app, port, session, bearer):
+    def __init__(self, app, port, session, bearer, plan_sessions):
+        self.plan_sessions = plan_sessions
         self.app, self.host = app, f'127.0.0.1:{port}'
         self.origin, self.session, self.bearer = 'http://' + self.host, session, bearer
 
@@ -89,6 +90,11 @@ class LocalBoundary:
                     or any(k.lower() == b'authorization' for k, _ in headers)):
                 return await reject(403, 'Local session and same-origin JSON request required')
             scope = {**scope, 'coachloop_local_auth': LOCAL_AUTH, 'headers': [*headers, (b'authorization', ('Bearer ' + self.bearer).encode())]}
+        if scope['path'].startswith('/api/v3/plans/'):
+            owner = self.plan_sessions.owner(request.cookies.get(PLAN_COOKIE))
+            if owner is None:
+                return await reject(401, 'Open the local console to start a plan session')
+            scope = {**scope, 'coachloop_plan_owner': owner}
         return await self.app(scope, receive, secured)
 
 
@@ -99,6 +105,7 @@ def create_console_app(port: int = 8767, *, video_store=None):
     store = video_store if video_store is not None else VideoStore()
     registry = Registry()
     plans = PlanStore()
+    plan_sessions = PlanSessions()
     @asynccontextmanager
     async def lifespan(app):
         try:yield
@@ -126,6 +133,7 @@ def create_console_app(port: int = 8767, *, video_store=None):
         response = FileResponse(STATIC / 'index.html', media_type='text/html')
         response.set_cookie(COOKIE, session, httponly=True, samesite='strict', secure=False)
         response.set_cookie(VIDEO_COOKIE, video_token, httponly=True, samesite='strict', secure=False, max_age=1800)
+        response.set_cookie(PLAN_COOKIE, plan_sessions.issue(request.cookies.get(PLAN_COOKIE)), httponly=True, samesite='strict', secure=False)
         return response
     @app.get('/console.js')
     def javascript():
@@ -145,5 +153,5 @@ def create_console_app(port: int = 8767, *, video_store=None):
     @app.get('/health')
     def health():
         return {'status': 'ok', 'mode': 'local_interactive_console', 'database': 'not_used'}
-    app.add_middleware(LocalBoundary, port=port, session=session, bearer=bearer)
+    app.add_middleware(LocalBoundary, port=port, session=session, bearer=bearer, plan_sessions=plan_sessions)
     return app

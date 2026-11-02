@@ -6,6 +6,10 @@ Plans are bounded process-local snapshots; edits are append-only and unapproved.
 from copy import deepcopy
 from datetime import datetime, timezone
 import json
+import hashlib
+import hmac
+import re
+import secrets
 from threading import RLock
 from typing import Literal
 from uuid import uuid4
@@ -14,6 +18,30 @@ from pydantic import Field, field_validator, model_validator
 from agents.lesson_plan_agent.adaptive import AdaptiveRequest, AdaptiveLoad, organization_inputs, validate_classroom_conditions, _metric
 from agents.lesson_plan_agent.schemas import TeachingFlow
 from .registry import Strict, Knowledge, RegistryError
+
+
+PLAN_COOKIE = 'coachloop_lesson_plans'
+
+
+class PlanSessions:
+    """Process-signed browser cookie, not a teacher identity or authorization role."""
+    def __init__(self):
+        self._key = secrets.token_bytes(32)
+
+    def owner(self, cookie):
+        if not isinstance(cookie, str) or not re.fullmatch(r'[A-Za-z0-9_-]{43}\.[a-f0-9]{64}', cookie):
+            return None
+        token, signature = cookie.split('.')
+        expected = hmac.new(self._key, token.encode(), hashlib.sha256).hexdigest()
+        if not hmac.compare_digest(signature, expected):
+            return None
+        return hashlib.sha256(token.encode()).hexdigest()
+
+    def issue(self, cookie):
+        if self.owner(cookie):
+            return cookie
+        token = secrets.token_urlsafe(32)
+        return token + '.' + hmac.new(self._key, token.encode(), hashlib.sha256).hexdigest()
 
 
 class Conditions(Strict):
@@ -114,14 +142,16 @@ def build_framework(request, registry):
 
 
 class PlanStore:
-    """100 revisions total / 2 MiB JSON, shared by local sessions until shutdown."""
+    """100 revisions total / 2 MiB JSON, browser-owned until shutdown (global capacity)."""
     def __init__(self):
         self._plans = {}
+        self._owners = {}
         self._lock = RLock()
 
     def clear(self):
         with self._lock:
             self._plans.clear()
+            self._owners.clear()
 
     def _commit(self, plan_id, snapshots):
         proposed = {**self._plans, plan_id:snapshots}
@@ -130,13 +160,15 @@ class PlanStore:
         self._plans = proposed
         return deepcopy(snapshots[-1])
 
-    def create(self, request, registry):
+    def create(self, request, registry, *, owner="internal"):
         plan = build_framework(request,registry)
         plan_id = uuid4().hex
         plan.update(plan_id=plan_id, version=1)
         self._apply_edit(plan,request.edits)
         with self._lock:
-            return self._commit(plan_id,[plan])
+            result = self._commit(plan_id,[plan])
+            self._owners[plan_id] = owner
+            return result
 
     def _apply_edit(self, plan, edits):
         values = edits.model_dump()
@@ -148,10 +180,10 @@ class PlanStore:
         # Teacher text remains separate, explicitly unapproved; never overwrite
         # generated safety, resource holds, evidence status, flow or technical fields.
 
-    def edit(self, request):
+    def edit(self, request, *, owner="internal"):
         with self._lock:
             versions = self._plans.get(request.plan_id)
-            if not versions:
+            if not versions or self._owners.get(request.plan_id) != owner:
                 raise RegistryError('Plan not found in this process')
             if versions[-1]['version'] != request.expected_version:
                 raise RegistryError('Version conflict; reload latest plan')
@@ -160,9 +192,9 @@ class PlanStore:
             self._apply_edit(plan,edits)
             return self._commit(request.plan_id,[*versions,plan])
 
-    def read(self, plan_id, history=False):
+    def read(self, plan_id, history=False, *, owner="internal"):
         with self._lock:
             versions = self._plans.get(plan_id)
-            if not versions:
+            if not versions or self._owners.get(plan_id) != owner:
                 raise RegistryError('Plan not found in this process')
             return deepcopy(versions if history else versions[-1])

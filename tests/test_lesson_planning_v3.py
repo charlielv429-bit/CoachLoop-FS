@@ -169,3 +169,68 @@ def test_json_and_static_safety(client):
     script=client.get('/lesson-planning.js').text
     assert 'textContent' in script
     assert all(x not in script for x in ('innerHTML','localStorage','document.cookie','insertAdjacentHTML'))
+
+
+def test_other_browser_cannot_export_or_read_history_even_with_known_plan_id(client):
+    plan=post(client,'draft',payload()).json()
+    other=TestClient(client.app,base_url=ORIGIN,client=('127.0.0.1',50002))
+    other.get('/')
+    for path in ('export','history'):
+        response=other.get('/api/v3/plans/'+path,params={'plan_id':plan['plan_id']})
+        assert response.status_code==404
+        assert plan['conditions']['venue_conditions'] not in response.text
+    assert client.get('/api/v3/plans/export',params={'plan_id':plan['plan_id']}).json()==plan
+
+
+def test_other_browser_cannot_edit_known_plan_id(client):
+    plan=post(client,'draft',payload()).json()
+    other=TestClient(client.app,base_url=ORIGIN,client=('127.0.0.1',50002))
+    other.get('/')
+    response=post(other,'edit',dict(plan_id=plan['plan_id'],expected_version=1,goal_draft='模拟越权修改'))
+    assert response.status_code==409
+    assert client.get('/api/v3/plans/export',params={'plan_id':plan['plan_id']}).json()==plan
+
+
+def test_plan_cookie_refresh_forgery_and_loss(client):
+    from integrations.curriculum_v3.planning import PLAN_COOKIE
+    cookie=client.cookies.get(PLAN_COOKIE)
+    domain=next(c.domain for c in client.cookies.jar if c.name==PLAN_COOKIE)
+    plan=post(client,'draft',payload()).json()
+    client.get('/')
+    assert client.cookies.get(PLAN_COOKIE)==cookie
+    assert client.get('/api/v3/plans/export',params={'plan_id':plan['plan_id']}).status_code==200
+    client.cookies.delete(PLAN_COOKIE)
+    assert client.get('/api/v3/plans/export',params={'plan_id':plan['plan_id']}).status_code==401
+    assert post(client,'draft',payload()).status_code==401
+    client.cookies.set(PLAN_COOKIE,cookie[:-1]+('0' if cookie[-1]!='0' else '1'),domain=domain,path='/')
+    assert client.get('/api/v3/plans/history',params={'plan_id':plan['plan_id']}).status_code==401
+    client.get('/')
+    assert client.get('/api/v3/plans/export',params={'plan_id':plan['plan_id']}).status_code==404
+
+
+def test_plan_cookie_is_process_bound_and_not_exported(client):
+    from integrations.curriculum_v3.planning import PLAN_COOKIE, PlanSessions
+    cookie=client.cookies.get(PLAN_COOKIE)
+    assert PlanSessions().owner(cookie) is None
+    for value in ('', None, '\ud800', 'forged.'+'0'*64):
+        assert PlanSessions().owner(value) is None
+    plan=post(client,'draft',payload()).json()
+    assert cookie not in json.dumps(plan)
+    for path in ('/lesson-planning.js','/api/v3/plans/export?plan_id='+plan['plan_id']):
+        response=client.get(path)
+        assert cookie not in response.text and response.headers['cache-control']=='no-store'
+    assert 'HttpOnly' in client.get('/').headers['set-cookie']
+
+
+def test_browser_owned_plan_keeps_isolation_after_edit(client):
+    plan=post(client,'draft',payload()).json()
+    edit=post(client,'edit',dict(plan_id=plan['plan_id'],expected_version=1,resource_note='模拟本机私有备注')).json()
+    other=TestClient(client.app,base_url=ORIGIN,client=('127.0.0.1',50003))
+    other.get('/')
+    own=post(other,'draft',payload()).json()
+    assert own['plan_id']!=plan['plan_id']
+    assert client.get('/api/v3/plans/history',params={'plan_id':own['plan_id']}).status_code==404
+    for path in ('history','export'):
+        response=other.get('/api/v3/plans/'+path,params={'plan_id':plan['plan_id']})
+        assert response.status_code==404 and '模拟本机私有备注' not in response.text
+    assert client.get('/api/v3/plans/export',params={'plan_id':plan['plan_id']}).json()==edit

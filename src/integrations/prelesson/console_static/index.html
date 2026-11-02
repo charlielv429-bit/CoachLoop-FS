@@ -37,7 +37,7 @@
     <section id="prelesson-pane">
     <details id="lesson-planning-mode" class="panel" hidden><summary>按课次备课模式 · L01–L08（独立于24主题）</summary>
       <p class="notice">只生成待审核教案框架；来源登记、正文核实与专项审核分别记录。无正式专项依据时不生成动作要领、纠错或技术评分。</p>
-      <p>本机服务进程保存修改历史，退出或重启清空；所有本机会话共享。最多100个累计教案版本／2MiB，请及时导出，不填写身份或健康资料。</p>
+      <p>本机服务进程按浏览器会话隔离修改历史，刷新保留，退出或重启清空；清除会话Cookie后无法恢复旧记录，同一浏览器配置文件的标签页共享。全服务最多100个累计教案版本／2MiB，请及时导出，不填写身份或健康资料。</p>
       <form id="lp-form">
         <label>课程课次<select name="lesson_id" id="lp-lesson" required></select></label>
         <label>匿名班级<input name="class_label" value="匿名班级" required maxlength="80"></label>
