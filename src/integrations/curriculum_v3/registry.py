@@ -82,6 +82,7 @@ class RegistryError(ValueError):
 
 
 class Registry:
+    storage_description = '进程内存测试/嵌入模式；知识库共享，退出清空；正式本地启动器默认SQLite。'
     def __init__(self):
         self._history = {}
         self._lock = RLock()
@@ -101,12 +102,12 @@ class Registry:
         # Reject aggregate count before Archive's request-schema length validation,
         # otherwise the 501st stored revision raises an unhandled ValidationError.
         if len(history) > 200 or count > 500:
-            raise RegistryError('Registry capacity reached; export and restart')
+            raise RegistryError('Registry capacity reached; export and use a separate archive')
         # Bound the pretty-printed archive too, so every UI export fits one import.
         archive = Archive(entries=[e for h in history.values() for e in h])
         size = len(json.dumps(archive.model_dump(), ensure_ascii=False, indent=2).encode())
         if size > 900 * 1024:
-            raise RegistryError('Registry capacity reached; export and restart')
+            raise RegistryError('Registry capacity reached; export and use a separate archive')
         return history
 
     def save(self, entry):

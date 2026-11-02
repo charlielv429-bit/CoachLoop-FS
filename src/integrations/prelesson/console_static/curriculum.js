@@ -20,6 +20,7 @@
   async function loadLessons() {
     const data = await api('lessons');
     lessons = data.lessons;
+    el('storage').textContent = data.storage;
     if (!el('lesson').options.length) for (const lesson of lessons) {
       const option = document.createElement('option');
       option.value = lesson.lesson_id; option.textContent = lesson.lesson_id + ' ' + lesson.title + ' · 45分钟';
@@ -63,8 +64,14 @@
   el('export').addEventListener('click',() => guarded(async () => {
     const data = await api('export');
     const url = URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
-    const link = document.createElement('a'); link.href=url; link.download='coachloop-kb-v3.json'; link.click();
+    const link = document.createElement('a'); link.href=url; link.download='coachloop.kb-backup.json'; link.click();
     setTimeout(() => URL.revokeObjectURL(url),1000); message('已导出全部历史版本；请自行保管。');
+  }));
+  el('review').addEventListener('click',() => guarded(async () => {
+    const data = await api('review-materials');
+    const url = URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
+    const link = document.createElement('a'); link.href=url; link.download='coachloop.kb-review.json'; link.click();
+    setTimeout(() => URL.revokeObjectURL(url),1000); message('已导出离线待审核材料；导出不代表认证通过。');
   }));
   el('import').addEventListener('click',() => guarded(async () => {
     const file = el('import-file').files[0];

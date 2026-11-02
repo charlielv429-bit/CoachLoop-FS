@@ -23,7 +23,7 @@ with socket.socket() as sock:
 base=f'http://127.0.0.1:{port}'
 env={k:v for k,v in os.environ.items() if not (k.startswith('PG') or 'DATABASE' in k or k.startswith(('COACHLOOP_','TEACHING_')))}
 env.update(PYTHONDONTWRITEBYTECODE='1',LANGSMITH_TRACING='false',LANGCHAIN_TRACING_V2='false')
-server=subprocess.Popen([sys.executable,str(root/'scripts/run_prelesson_console.py'),'--port',str(port)],cwd=root,env=env,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+server=subprocess.Popen([sys.executable,str(root/'scripts/run_prelesson_console.py'),'--port',str(port),'--kb-dir',str(work/'knowledge')],cwd=root,env=env,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
 browser=None
 try:
     opener=urllib.request.build_opener(urllib.request.ProxyHandler({}))
@@ -41,8 +41,13 @@ try:
         if (profile/'DevToolsActivePort').exists():break
         time.sleep(.1)
     debugport=int((profile/'DevToolsActivePort').read_text().splitlines()[0])
-    with opener.open(f'http://127.0.0.1:{debugport}/json/list',timeout=5) as response:
-        target=next(t for t in json.load(response) if t['type']=='page')
+    target=None
+    for _ in range(100):
+        with opener.open(f'http://127.0.0.1:{debugport}/json/list',timeout=5) as response:
+            target=next((t for t in json.load(response) if t['type']=='page'),None)
+        if target:break
+        time.sleep(.1)
+    if target is None:raise RuntimeError('Chromium page target unavailable')
     with connect(target['webSocketDebuggerUrl'],origin='http://localhost',open_timeout=5) as ws:
         sequence=0
         def command(method,params):

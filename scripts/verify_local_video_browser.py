@@ -27,7 +27,7 @@ with socket.socket() as sock:sock.bind(('127.0.0.1',0));port=sock.getsockname()[
 base=f'http://127.0.0.1:{port}'
 env={k:v for k,v in os.environ.items() if not (k.startswith(('PG','COACHLOOP_','TEACHING_')) or 'DATABASE' in k)}
 env['PYTHONDONTWRITEBYTECODE']='1'
-server=subprocess.Popen([sys.executable,str(ROOT/'scripts/run_prelesson_console.py'),'--port',str(port)],env=env,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+server=subprocess.Popen([sys.executable,str(ROOT/'scripts/run_prelesson_console.py'),'--port',str(port),'--kb-dir',str(work/'knowledge')],env=env,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
 browser=None
 report=None
 try:

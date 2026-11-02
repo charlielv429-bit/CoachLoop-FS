@@ -23,7 +23,7 @@ with socket.socket() as sock:
 base=f'http://127.0.0.1:{port}'
 env={k:v for k,v in os.environ.items() if not (k.startswith('PG') or 'DATABASE' in k or k.startswith(('COACHLOOP_','TEACHING_')))}
 env.update(PYTHONDONTWRITEBYTECODE='1',LANGSMITH_TRACING='false',LANGCHAIN_TRACING_V2='false')
-server=subprocess.Popen([sys.executable,str(root/'scripts/run_prelesson_console.py'),'--port',str(port)],cwd=root,env=env,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+server=subprocess.Popen([sys.executable,str(root/'scripts/run_prelesson_console.py'),'--port',str(port),'--kb-dir',str(work/'knowledge')],cwd=root,env=env,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
 browser=None
 try:
     opener=urllib.request.build_opener(urllib.request.ProxyHandler({}))
@@ -41,8 +41,13 @@ try:
         if (profile/'DevToolsActivePort').exists():break
         time.sleep(.1)
     debugport=int((profile/'DevToolsActivePort').read_text().splitlines()[0])
-    with opener.open(f'http://127.0.0.1:{debugport}/json/list',timeout=5) as response:
-        target=next(t for t in json.load(response) if t['type']=='page')
+    target=None
+    for _ in range(100):
+        with opener.open(f'http://127.0.0.1:{debugport}/json/list',timeout=5) as response:
+            target=next((t for t in json.load(response) if t['type']=='page'),None)
+        if target:break
+        time.sleep(.1)
+    if target is None:raise RuntimeError('Chromium page target unavailable')
     with connect(target['webSocketDebuggerUrl'],origin='http://localhost',open_timeout=5) as ws:
         sequence=0
         def command(method,params):
@@ -89,10 +94,28 @@ try:
             if evaluate("document.querySelector('#v3-list').textContent.includes('仅测试界面')"):break
             time.sleep(.1)
         assert evaluate("document.querySelector('#v3-list').textContent.includes('仅测试界面') && document.querySelector('#v3-list').textContent.includes('模拟修订第二版')")
+        downloads=work/'downloads';downloads.mkdir()
+        command('Browser.setDownloadBehavior',{'behavior':'allow','downloadPath':str(downloads)})
+        evaluate("document.querySelector('#v3-export').click();true")
+        for _ in range(100):
+            files=list(downloads.glob('*.kb-backup.json'))
+            if files:break
+            time.sleep(.1)
+        assert files,'Knowledge backup download missing'
+        backup=json.loads(files[0].read_text())
+        assert [entry['version'] for entry in backup['entries']]==[1,2]
+        evaluate("document.querySelector('#v3-review').click();true")
+        for _ in range(100):
+            reviews=list(downloads.glob('*.kb-review.json'))
+            if reviews:break
+            time.sleep(.1)
+        assert reviews,'Offline review download missing'
+        packet=json.loads(reviews[0].read_text())
+        assert packet['archive']==backup and packet['status']=='pending_review'
         for stage in ('video','feedback','prelesson'):
             evaluate("document.querySelector('[data-stage="+stage+"]').click();true")
             assert evaluate("!document.querySelector('#"+stage+"-pane').hidden")
-        print('V3 Chromium acceptance: 8 lessons, selection, create/edit/history, pending labels, original 3 tabs PASS')
+        print('V3 Chromium acceptance: 8 lessons, selection, create/edit/history, pending labels, backup/review actual downloads, original 3 tabs PASS')
 finally:
     if browser is not None:
         browser.terminate()
