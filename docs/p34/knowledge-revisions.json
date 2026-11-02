@@ -1,0 +1,87 @@
+{
+  "schema_version": "coachloop-kb-v3.0",
+  "entries": [
+    {
+      "knowledge_id": "K010",
+      "category": "KB-S",
+      "title": "王树本教材左前压步连续动作的准确定位",
+      "content": "王树本教材第五章二、压步区分前、后及左、右方向；前压步以左前压步为例，图29为左前压步连续动作。原候选PDF94–104不能作为该图的准确定位，已追加更正版本。",
+      "lesson_ids": [
+        "L04"
+      ],
+      "chapter": "第五章 花样滑冰动作的技术及完成方法／二、压步／（一）前压步",
+      "candidate_version": "p3.4-original-pages-v2",
+      "evidence_inspection_note": "已对用户上传扫描原页进行图像核对，定位见独立P34原页核验声明；无逐条专项签署材料。人工身份与日期未提供，系统可信审核仍pending。",
+      "applicability_limitations": "仅记录原页可见名称、段落和图示定位，不把前压步与后压步混用。课程称左前交叉步，与教材左前压步的具体教学对应及学生适用条件仍待专项逐条审核；不据此批准动作指导。",
+      "content_kind": "source_summary",
+      "source_id": "B02",
+      "source_title": "花样滑冰｜王树本",
+      "source_locator": "原PDF90–93；印刷76–79；前压步动作方法与图29见原PDF91／印刷77",
+      "source_verification_status": "pending",
+      "specialist_review_status": "pending",
+      "version": 2
+    },
+    {
+      "knowledge_id": "K011",
+      "category": "KB-S",
+      "title": "L05完整动作资料提取原则与教材背景",
+      "content": "课程自拟资料提取原则：L05应分开记录教材连续动作图示与教师认定的专项要求。教材背景为王树本左前压步图29；该提取原则及L05任务安排不是教材原文，也不是教材评分规则。",
+      "lesson_ids": [
+        "L05"
+      ],
+      "chapter": "教材背景：第五章／二、压步／（一）前压步；课程自拟提取原则",
+      "candidate_version": "p3.4-original-pages-v2",
+      "evidence_inspection_note": "已对用户上传扫描原页进行图像核对，定位见独立P34原页核验声明；无逐条专项签署材料。人工身份与日期未提供，系统可信审核仍pending。",
+      "applicability_limitations": "不把课程名称、单次完整动作任务或提取原则归因于教材原文；待专项教师逐项确认动作、保护及教学适用性。旧PDF94–104定位不再用于左前压步图29。",
+      "content_kind": "course_proposal",
+      "source_id": "B02",
+      "source_title": "花样滑冰｜王树本",
+      "source_locator": "背景依据：原PDF91／印刷77／图29左前压步连续动作；本条课程提取原则无教材逐字出处",
+      "source_verification_status": "pending",
+      "specialist_review_status": "pending",
+      "version": 2
+    },
+    {
+      "knowledge_id": "K018",
+      "category": "KB-P",
+      "title": "L04至L06课次进阶安排属于课程自拟方案",
+      "content": "课程自拟方案：L04蹬冰、L05完整单次、L06连续练习是本课程既定课次安排。王树本前压步部分有分解、单次及连续练习的相关文字，但未在所供原页规定这三个课次或45分钟安排，不据此宣称教材给出了本课程进阶。",
+      "lesson_ids": [
+        "L04",
+        "L05",
+        "L06"
+      ],
+      "chapter": "教材背景：第五章／二、压步／（一）前压步／练习方法；课程自拟进阶",
+      "candidate_version": "p3.4-original-pages-v2",
+      "evidence_inspection_note": "已对用户上传扫描原页进行图像核对，定位见独立P34原页核验声明；无逐条专项签署材料。人工身份与日期未提供，系统可信审核仍pending。",
+      "applicability_limitations": "教材练习素材只作背景；三课次顺序、难度、分层、先修与负荷须由专项及现场教师确认。不得将其写作教材原文、官方标准或已批准教学安排。",
+      "content_kind": "course_proposal",
+      "source_id": "B02",
+      "source_title": "花样滑冰｜王树本",
+      "source_locator": "背景依据：原PDF91–93／印刷77–79／前压步练习方法；三课次安排为课程自拟，无教材逐字出处",
+      "source_verification_status": "pending",
+      "specialist_review_status": "pending",
+      "version": 2
+    },
+    {
+      "knowledge_id": "K012",
+      "category": "KB-S",
+      "title": "李乡状教材前压步与后压步的准确定位",
+      "content": "李乡状等教材第二章第三节在前压步部分以左前压步为例，列有动作要领与练习中易犯的错误及注意事项；后压步另列。该原页支持教材存在相关内容的事实，不自动构成本课程可实施的技术指导。",
+      "lesson_ids": [
+        "L05"
+      ],
+      "chapter": "第二章 花样滑冰的学习／第三节 花样滑冰的步法／一、前压步",
+      "candidate_version": "p3.4-original-pages-v2",
+      "evidence_inspection_note": "已对用户上传扫描原页进行图像核对，定位见独立P34原页核验声明；无逐条专项签署材料。人工身份与日期未提供，系统可信审核仍pending。",
+      "applicability_limitations": "原PDF36／印刷26的后交叉步滑行与原PDF41／印刷31的后压步均不是本课左前压步定位。所供前压步页为文字，没有对应编号动作图；脚序、用刃、错误及保护须逐条专项复核，不将此摘要当作技术指令。",
+      "content_kind": "source_summary",
+      "source_id": "B03",
+      "source_title": "花样滑冰技法与指导｜李乡状等",
+      "source_locator": "原PDF39／印刷29／第三节一、前压步；区别后压步：原PDF41／印刷31；目录原PDF5／印刷2",
+      "source_verification_status": "pending",
+      "specialist_review_status": "pending",
+      "version": 2
+    }
+  ]
+}

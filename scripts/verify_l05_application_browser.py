@@ -3,6 +3,7 @@ Runs loopback only, with synthetic inputs; outputs reviewable local evidence.
 Uses a temporary SQLite copy of the provided candidate package plus explicitly SYNTHETIC probes. No real approvals, models or videos.
 Linux test containers may require --no-sandbox; do not expose this browser.
 """
+import argparse
 import base64
 import json
 import os
@@ -15,6 +16,10 @@ import tempfile
 import time
 import urllib.request
 from websockets.sync.client import connect
+
+parser=argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--p34',action='store_true',help='Also load pending original-page revisions into the isolated test KB')
+args=parser.parse_args()
 
 root=Path(__file__).resolve().parents[1]
 work=Path(tempfile.mkdtemp(prefix='coachloop-ui-browser-'))
@@ -30,6 +35,9 @@ from integrations.curriculum_v3.review import EvidenceBundle
 registry=SQLiteRegistry(work/'knowledge')
 registry.import_archive(Archive.model_validate(json.loads((root/'docs/p32-input/p32-knowledge-import.json').read_text())))
 registry.save_reports(EvidenceBundle.model_validate(json.loads((root/'docs/p32-input/p32-evidence-reports.json').read_text())).reports)
+if args.p34:
+    registry.import_archive(Archive.model_validate(json.loads((root/'docs/p34/knowledge-revisions.json').read_text())))
+    registry.save_reports(EvidenceBundle.model_validate(json.loads((root/'docs/p34/source-evidence-reports.json').read_text())).reports)
 probe=Knowledge(knowledge_id='SYNTHETIC_P33_BROWSER',category='KB-S',title='模拟浏览器失效素材（非教材）',content='SYNTHETIC_QUOTE_TO_WITHDRAW',lesson_ids=['L05'],source_id='SYNTHETIC_SOURCE',source_title='模拟来源非教材',source_locator='模拟页码',content_kind='source_summary',version=1)
 registry.save(probe);registry.close()
 server=subprocess.Popen([sys.executable,str(root/'scripts/run_prelesson_console.py'),'--port',str(port),'--kb-dir',str(work/'knowledge')],cwd=root,env=env,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
@@ -91,7 +99,11 @@ try:
         assert evaluate("document.querySelector('#lp-result').textContent.includes('待审核教案框架')")
         assert evaluate("document.querySelector('#lp-result').textContent.includes('专项知识素材') && document.querySelector('#lp-result').textContent.includes('课程进阶建议') && document.querySelector('#lp-result').textContent.includes('评价观察建议')")
         assert evaluate("document.querySelector('#lp-result').textContent.includes('K011') && document.querySelector('#lp-result').textContent.includes('K018') && document.querySelector('#lp-result').textContent.includes('K019') && document.querySelector('#lp-result').textContent.includes('B03')")
-        assert evaluate("document.querySelector('#lp-result').textContent.includes('页码定位冲突')")
+        if args.p34:
+            assert evaluate("document.querySelector('#lp-result').textContent.includes('原PDF91') && document.querySelector('#lp-result').textContent.includes('原PDF39')")
+            assert evaluate("!document.querySelector('#lp-result').textContent.includes('尚无原PDF')")
+        else:
+            assert evaluate("document.querySelector('#lp-result').textContent.includes('页码定位冲突')")
         names=['goal_draft','action_points','practice_steps','common_errors','safety_notes','differentiation_notes','evaluation_observations']
         for name in names:
             evaluate("document.querySelector('#lp-edit-form').elements["+json.dumps(name)+"].value="+json.dumps('模拟教师填写：'+name)+";document.querySelector('#lp-edit-form').elements["+json.dumps(name)+"].dispatchEvent(new Event('input',{bubbles:true}));true")
@@ -109,7 +121,12 @@ try:
             time.sleep(.1)
         assert files,'Actual L05 export missing'
         exported=json.loads(files[0].read_text())
-        assert exported['version']==2 and exported['technical_guidance']==[]
+        assert exported['version']==2 and exported['technical_guidance']==exported['formal_teaching_evidence']==[]
+        if args.p34:
+            cards=[c for group in exported['l05_teaching_design']['material_groups'].values() for c in group if not c['knowledge_id'].startswith('SYNTHETIC')]
+            assert {(c['knowledge_id'],c['version']) for c in cards}=={('K011',2),('K012',2),('K018',2),('K019',1)}
+            assert all(c['source_verification_status']==c['specialist_review_status']=='pending' and not c['is_formal_guidance'] for c in cards)
+            assert len([r for r in exported['evidence_reports'] if r['evidence_id'].startswith('P34_')])==3
         assert [p['minutes'] for p in exported['teaching_flow']['phases']]==[9,29,7]
         for name in names:
             assert exported['l05_teaching_design']['areas'][name]['text']=='模拟教师填写：'+name
@@ -147,7 +164,7 @@ try:
             evaluate("document.querySelector('[data-stage="+stage+"]').click();true")
             assert evaluate("!document.querySelector('#"+stage+"-pane').hidden")
         assert evaluate("document.querySelectorAll('[name=theme_id] option').length")>0
-        print('P3.3 Chromium PASS: L05 real candidate groups/conflicts, seven teacher fields, saved versions, actual exports, stale-reference refresh, holds, legacy tabs')
+        print(('P3.4' if args.p34 else 'P3.3')+' Chromium PASS: L05 real candidate groups/conflicts, seven teacher fields, saved versions, actual exports, stale-reference refresh, holds, legacy tabs')
 finally:
     if browser is not None:
         browser.terminate()
