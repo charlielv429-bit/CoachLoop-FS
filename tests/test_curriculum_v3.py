@@ -143,7 +143,8 @@ def test_json_guards_and_safe_ui(client):
     script = client.get('/curriculum.js').text
     assert all(x not in script for x in ('innerHTML', 'outerHTML', 'insertAdjacentHTML', 'localStorage', 'document.cookie'))
     assert 'textContent' in script
-    assert 'V3.0 · 8课次课程目录与知识库管理' in client.get('/').text
+    assert 'V3.0 · 8课次课程目录与知识库管理' in client.get('/advanced').text
+    assert '专项知识库' in client.get('/').text
 
 
 def test_capacity_limit_is_atomic():

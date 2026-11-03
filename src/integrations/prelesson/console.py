@@ -12,7 +12,7 @@ import secrets
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from starlette.requests import Request
-from starlette.responses import FileResponse, JSONResponse
+from starlette.responses import FileResponse, JSONResponse, HTMLResponse
 
 from .api import create_router
 from integrations.local_video.service import VideoStore, VideoError, READ_PATHS, WRITE_PATHS, COOKIE as VIDEO_COOKIE, BASE as VIDEO_BASE
@@ -27,6 +27,8 @@ from integrations.curriculum_v3.planning import PlanStore, PlanSessions, PLAN_CO
 from integrations.teaching_loop.service import LoopStore, READ_PATHS as LOOP_READ, WRITE_PATHS as LOOP_WRITE
 from integrations.teaching_loop.api import create_router as create_loop_router
 
+from .teacher_api import create_router as create_teacher_router, READ_PATHS as TEACHER_READ, WRITE_PATHS as TEACHER_WRITE, unavailable_print
+
 STATIC = Path(__file__).with_name('console_static')
 COOKIE = 'coachloop_local_console'
 CANONICAL = '/api/v1/lesson-plans/draft'
@@ -35,6 +37,7 @@ ALLOWED = {('GET', '/'), ('GET', '/console.js'), ('GET', '/console.css'),
 ALLOWED |= {('GET',path) for path in READ_PATHS} | {('POST',path) for path in WRITE_PATHS}
 ALLOWED |= {('GET', path) for path in V3_READ} | {('POST', path) for path in V3_WRITE} | {('GET', '/curriculum.js'), ('GET', '/lesson-planning.js')}
 ALLOWED |= {('GET',p) for p in LOOP_READ} | {('POST',p) for p in LOOP_WRITE} | {('GET','/teaching-loop.js')}
+ALLOWED |= {('GET',p) for p in TEACHER_READ} | {('POST',p) for p in TEACHER_WRITE} | {('GET',p) for p in ('/advanced','/teacher.js','/teacher.css','/teacher-print.css','/teacher-print.js')}
 SECURITY_HEADERS = {
     'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer',
     'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'DENY',
@@ -65,6 +68,8 @@ class LocalBoundary:
                     + [(k.lower().encode(), v.encode()) for k, v in LOCAL_SECURITY_HEADERS.items()]}
             await send(message)
         async def reject(status, detail):
+            if scope['path'].startswith('/api/v4/print-'):
+                return await unavailable_print(status)(scope,receive,secured)
             return await JSONResponse({'detail': detail}, status_code=status)(scope, receive, secured)
         request = Request(scope)
         headers = scope.get('headers', [])
@@ -79,7 +84,7 @@ class LocalBoundary:
             return await reject(403, 'Cross-site access refused')
         if request.headers.get('origin') not in (None, self.origin):
             return await reject(403, 'Cross-origin access refused')
-        if scope['path'] in READ_PATHS | V3_READ | LOOP_READ:
+        if scope['path'] in READ_PATHS | V3_READ | LOOP_READ | TEACHER_READ:
             cookie = request.cookies.get(COOKIE, '')
             if not cookie or not hmac.compare_digest(cookie.encode(), self.session.encode()):
                 return await reject(401, 'Local console session required')
@@ -95,7 +100,7 @@ class LocalBoundary:
                     or any(k.lower() == b'authorization' for k, _ in headers)):
                 return await reject(403, 'Local session and same-origin JSON request required')
             scope = {**scope, 'coachloop_local_auth': LOCAL_AUTH, 'headers': [*headers, (b'authorization', ('Bearer ' + self.bearer).encode())]}
-        if scope['path'].startswith(('/api/v3/plans/','/api/v3/loops/')):
+        if scope['path'].startswith(('/api/v3/plans/','/api/v3/loops/','/api/v4/print-')):
             owner = self.plan_sessions.owner(request.cookies.get(PLAN_COOKIE))
             if owner is None:
                 return await reject(401, 'Open the local console to start a plan session')
@@ -126,23 +131,28 @@ def create_console_app(port: int = 8767, *, video_store=None, knowledge_store=No
     app.state.lesson_plans = plans
     app.state.teaching_loops = loops
     app.include_router(create_loop_router(loops))
+    app.include_router(create_teacher_router(registry,plans,loops))
     app.include_router(create_v3_router(registry, plans))
     @app.exception_handler(PersistenceError)
     async def knowledge_error(request, error):
+        if request.url.path.startswith('/api/v4/print-'):return unavailable_print(503)
         return JSONResponse({'detail':'Local knowledge storage unavailable; no reset performed'},status_code=503,headers={'Cache-Control':'no-store'})
     @app.exception_handler(VideoError)
     async def video_error(request, error):
+        if request.url.path.startswith('/api/v4/print-'):return unavailable_print(error.status)
         return JSONResponse({'detail': error.code},status_code=error.status,headers={'Cache-Control':'no-store'})
     @app.exception_handler(RequestValidationError)
     async def invalid_local_request(request, error):
+        if request.url.path.startswith('/api/v4/print-'):return unavailable_print(422)
         return JSONResponse({'detail':'Invalid local request fields'},status_code=422,headers={'Cache-Control':'no-store'})
     for router in create_video_routers():app.include_router(router)
     app.include_router(create_router(access_token=bearer))
     app.include_router(create_adaptive_router())
     @app.get('/')
+    @app.get('/advanced')
     def index(request: Request):
         video_token = store.session(request.cookies.get(VIDEO_COOKIE))
-        response = FileResponse(STATIC / 'index.html', media_type='text/html')
+        response = FileResponse(STATIC / ('index.html' if request.url.path=='/advanced' else 'teacher.html'), media_type='text/html')
         response.set_cookie(COOKIE, session, httponly=True, samesite='strict', secure=False)
         response.set_cookie(VIDEO_COOKIE, video_token, httponly=True, samesite='strict', secure=False, max_age=1800)
         response.set_cookie(PLAN_COOKIE, plan_sessions.issue(request.cookies.get(PLAN_COOKIE)), httponly=True, samesite='strict', secure=False)
@@ -165,6 +175,12 @@ def create_console_app(port: int = 8767, *, video_store=None, knowledge_store=No
     @app.get('/console.css')
     def stylesheet():
         return FileResponse(STATIC / 'console.css', media_type='text/css')
+    def teacher_static(filename):
+        def serve():
+            return FileResponse(STATIC/filename,media_type='text/javascript' if filename.endswith('.js') else 'text/css')
+        return serve
+    for name in ('teacher.js','teacher.css','teacher-print.css','teacher-print.js'):
+        app.add_api_route('/'+name,teacher_static(name),methods=['GET'],include_in_schema=False)
     @app.get('/health')
     def health():
         return {'status': 'ok', 'mode': 'local_interactive_console', 'database': 'local_sqlite_knowledge_only' if hasattr(registry, 'path') else 'not_used'}

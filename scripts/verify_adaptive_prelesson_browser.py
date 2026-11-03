@@ -35,7 +35,7 @@ try:
     profile=work/'profile';profile.mkdir()
     browser=subprocess.Popen([shutil.which('chromium') or shutil.which('google-chrome') or '/usr/lib/chromium/chromium','--headless','--no-sandbox','--disable-gpu','--disable-dev-shm-usage',
         '--disable-background-networking','--disable-extensions','--no-first-run','--remote-debugging-address=127.0.0.1',
-        '--remote-debugging-port=0','--remote-allow-origins=http://localhost','--user-data-dir='+str(profile),base],
+        '--remote-debugging-port=0','--remote-allow-origins=http://localhost','--user-data-dir='+str(profile),base+'/advanced'],
         stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
     for _ in range(100):
         if (profile/'DevToolsActivePort').exists():break
@@ -59,6 +59,7 @@ try:
                 if response.get('id')==sequence:return response
         def evaluate(expression):
             response=command('Runtime.evaluate',{'expression':expression,'returnByValue':True,'awaitPromise':True})
+            if response.get('result',{}).get('exceptionDetails'):raise AssertionError(response['result']['exceptionDetails'])
             return response.get('result',{}).get('result',{}).get('value')
         command('Emulation.setDeviceMetricsOverride',{'width':1440,'height':1100,'deviceScaleFactor':1,'mobile':False})
         for _ in range(100):
@@ -74,44 +75,44 @@ try:
                 time.sleep(.05)
             raise AssertionError('Draft did not render: '+str(evaluate("document.querySelector('#message').textContent")))
         for _ in range(100):
-            if evaluate("document.querySelectorAll('[name=theme_id] option').length===6"):break
+            if evaluate("document.querySelectorAll('#lesson-form [name=theme_id] option').length===6"):break
             time.sleep(.05)
-        assert evaluate("document.querySelectorAll('[name=theme_id] option').length===6")
-        evaluate("""const set=(n,v)=>document.querySelector('[name='+n+']').value=v;
+        assert evaluate("document.querySelectorAll('#lesson-form [name=theme_id] option').length===6")
+        evaluate("""const set=(n,v)=>document.querySelector('#lesson-form [name='+n+']').value=v;
             set('class_label','MOCK-BROWSER-V11');set('student_count','10');set('coach_count','2');
             set('venue_conditions','合成冰场');set('equipment_conditions','合成装备30套');
             set('usable_area_m2','200');set('declared_practice_capacity','10');set('equipment_sets','30');
-            document.querySelector('[name=safe_waiting_area]').checked=true;
-            document.querySelector('[name=mastered_skills][value=safety_equipment]').checked=true;
+            document.querySelector('#lesson-form [name=safe_waiting_area]').checked=true;
+            document.querySelector('#lesson-form [name=mastered_skills][value=safety_equipment]').checked=true;
             document.querySelector('#lesson-form').requestSubmit();true""")
         wait_result()
         assert evaluate("document.querySelector('#audience').textContent.includes('10人')")
         assert evaluate("document.querySelector('#elements').textContent.includes('短段双足滑行')")
         assert evaluate("document.querySelector('#elements').textContent.includes('教练2组5人')")
         first=evaluate("document.querySelector('#elements').textContent")
-        stale=evaluate("document.querySelector('[name=student_count]').value='30';document.querySelector('[name=coach_count]').value='1';document.querySelector('[name=student_count]').dispatchEvent(new Event('input',{bubbles:true}));document.querySelector('#result').hidden")
+        stale=evaluate("document.querySelector('#lesson-form [name=student_count]').value='30';document.querySelector('#lesson-form [name=coach_count]').value='1';document.querySelector('#lesson-form [name=student_count]').dispatchEvent(new Event('input',{bubbles:true}));document.querySelector('#result').hidden")
         assert stale is True
         evaluate("document.querySelector('#lesson-form').requestSubmit();true");wait_result()
         second=evaluate("document.querySelector('#elements').textContent")
         assert first!=second and '轮3' in second
         # Native level filter and Chinese/English search must select real topics.
-        evaluate("document.querySelector('[name=skill_level]').value='中级';document.querySelector('[name=skill_level]').dispatchEvent(new Event('change',{bubbles:true}));true")
-        assert evaluate("document.querySelectorAll('[name=theme_id] option').length") ==24
+        evaluate("document.querySelector('#lesson-form [name=skill_level]').value='中级';document.querySelector('#lesson-form [name=skill_level]').dispatchEvent(new Event('change',{bubbles:true}));true")
+        assert evaluate("document.querySelectorAll('#lesson-form [name=theme_id] option').length") ==24
         evaluate("document.querySelector('#theme-search').value='spin';document.querySelector('#theme-search').dispatchEvent(new Event('input',{bubbles:true}));true")
-        assert evaluate("document.querySelector('[name=theme_id]').value")=='two_foot_spin'
-        evaluate("document.querySelector('#theme-search').value='';document.querySelector('#theme-search').dispatchEvent(new Event('input',{bubbles:true}));document.querySelector('[name=theme_id]').value='posture';document.querySelector('[name=theme_id]').dispatchEvent(new Event('change',{bubbles:true}));document.querySelector('#lesson-form').requestSubmit();true")
+        assert evaluate("document.querySelector('#lesson-form [name=theme_id]').value")=='two_foot_spin'
+        evaluate("document.querySelector('#theme-search').value='';document.querySelector('#theme-search').dispatchEvent(new Event('input',{bubbles:true}));document.querySelector('#lesson-form [name=theme_id]').value='posture';document.querySelector('#lesson-form [name=theme_id]').dispatchEvent(new Event('change',{bubbles:true}));document.querySelector('#lesson-form').requestSubmit();true")
         wait_result()
         assert evaluate("document.querySelector('#elements').textContent.includes('移动姿态观察')")
         # Real instructor modification propagates to the flow and download.
-        evaluate("document.querySelector('[name=teacher_goal_edit]').value='先观察再讨论';document.querySelectorAll('[name=teacher_exercise_edits]')[0].value='教师提出的陆地观察任务';document.querySelector('[name=teacher_notes]').value='MOCK教师修改备注';document.querySelector('#lesson-form').requestSubmit();true")
+        evaluate("document.querySelector('#lesson-form [name=teacher_goal_edit]').value='先观察再讨论';document.querySelectorAll('#lesson-form [name=teacher_exercise_edits]')[0].value='教师提出的陆地观察任务';document.querySelector('#lesson-form [name=teacher_notes]').value='MOCK教师修改备注';document.querySelector('#lesson-form').requestSubmit();true")
         wait_result()
         assert evaluate("document.querySelector('#elements').textContent.includes('教师修改候选练习（未审核）：教师提出的陆地观察任务')")
         assert evaluate("document.querySelector('#elements').textContent.includes('先观察再讨论')")
         # An XSS label remains text, with no HTML image node.
-        evaluate("document.querySelector('[name=class_label]').value='<img src=x onerror=alert(1)>';document.querySelector('#lesson-form').requestSubmit();true")
+        evaluate("document.querySelector('#lesson-form [name=class_label]').value='<img src=x onerror=alert(1)>';document.querySelector('#lesson-form').requestSubmit();true")
         wait_result()
         assert evaluate("document.querySelector('#audience').textContent.includes('<img') && document.querySelector('#result img')===null")
-        evaluate("document.querySelector('[name=class_label]').value='MOCK-BROWSER-V11';document.querySelector('#lesson-form').requestSubmit();true");wait_result()
+        evaluate("document.querySelector('#lesson-form [name=class_label]').value='MOCK-BROWSER-V11';document.querySelector('#lesson-form').requestSubmit();true");wait_result()
         downloads=work/'downloads';downloads.mkdir()
         command('Browser.setDownloadBehavior',{'behavior':'allow','downloadPath':str(downloads)})
         evaluate("document.querySelector('#download').click();true")
@@ -132,10 +133,10 @@ try:
         (destination/'console.png').write_bytes(base64.b64decode(screenshot['result']['data']))
         (destination/'download.example.json').write_text(json.dumps(downloaded,ensure_ascii=False,indent=2)+'\n')
         # Zero-coach or missing-prerequisite requests must show a withheld plan.
-        evaluate("document.querySelector('[name=coach_count]').value='0';document.querySelector('#lesson-form').requestSubmit();true");wait_result()
+        evaluate("document.querySelector('#lesson-form [name=coach_count]').value='0';document.querySelector('#lesson-form').requestSubmit();true");wait_result()
         assert evaluate("document.querySelector('#message').textContent.includes('暂缓冰上方案')")
         assert evaluate("document.querySelector('#elements').textContent.includes('暂缓所有冰上实施')")
-        evaluate("document.querySelector('[name=coach_count]').value='1';document.querySelector('[name=mastered_skills][value=safety_equipment]').checked=false;document.querySelector('#lesson-form').requestSubmit();true");wait_result()
+        evaluate("document.querySelector('#lesson-form [name=coach_count]').value='1';document.querySelector('#lesson-form [name=mastered_skills][value=safety_equipment]').checked=false;document.querySelector('#lesson-form').requestSubmit();true");wait_result()
         assert evaluate("document.querySelector('#message').textContent.includes('暂缓冰上方案')")
         command('Network.deleteCookies',{'name':'coachloop_local_console','url':base})
         evaluate("document.querySelector('#lesson-form').requestSubmit();true")
