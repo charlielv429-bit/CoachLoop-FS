@@ -1,6 +1,7 @@
 """Real Chromium A-F acceptance. Empty temporary SQLite and deliberately absent video runtime.
 
 Only SYNTHETIC classroom conditions/keypoints/teacher text. No real video inference.
+With --textbook-check, textbook summaries refer to the actual supplied page evidence.
 """
 import argparse
 import base64
@@ -14,11 +15,13 @@ import sys
 import tempfile
 import time
 import urllib.request
+import urllib.parse
 from websockets.sync.client import connect
 
 ROOT=Path(__file__).resolve().parents[1]
 parser=argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--output-dir',type=Path,required=True,help='New directory for synthetic screenshots and actual printed PDF')
+parser.add_argument('--textbook-check',action='store_true',help='Verify exact pending textbook facts, all eight lessons and printed citations')
 args=parser.parse_args();args.output_dir.mkdir(parents=True,exist_ok=False)
 work=Path(tempfile.mkdtemp(prefix='coachloop-v4-'))
 with socket.socket() as sock:sock.bind(('127.0.0.1',0));port=sock.getsockname()[1]
@@ -83,6 +86,19 @@ try:
   assert evaluate("document.querySelectorAll('pre').length") == 0
   assert evaluate("document.querySelector('#plan-document').textContent.includes('待审核') && document.querySelector('#plan-document').textContent.includes('9分钟')")
   shot('02-L05-readable.SYNTHETIC.png')
+  if args.textbook_check:
+   text=evaluate("document.querySelector('#plan-document').innerText")
+   for term in ('原PDF91／印刷77','图29','原PDF93／印刷79','原PDF39／印刷29','侧走','单次压步','课程自拟','逐条专项'):
+    assert term in text,term
+   assert '缺少正式专项依据' not in text
+   shot('08-L05-textbook-facts.png','#plan-document')
+   evaluate("[...document.querySelectorAll('#plan-document h3')].find(h=>h.textContent.includes('原PDF39')).scrollIntoView();true")
+   shot('09-L05-Li-page39.png')
+   for lesson in ('L01','L02','L03','L04','L06','L07','L08'):
+    evaluate("document.querySelector('[data-lesson="+lesson+"]').click();true")
+    wait("document.querySelector('.lesson-card.active')?.dataset.lesson==='"+lesson+"' && document.querySelector('#plan-document').textContent.includes('分项证据与现场缺口')")
+   evaluate("document.querySelector('[data-lesson=L05]').click();true")
+   wait("document.querySelector('.lesson-card.active')?.dataset.lesson==='L05'")
   evaluate("document.querySelector('#plan-document section button').click();true")
   assert evaluate("document.activeElement.name")=='goal_draft'
   evaluate("document.querySelector('#teacher-edits').elements.goal_draft.value='SYNTHETIC：教师V4操作验收修改，仍待审核';document.querySelector('#teacher-edits').dispatchEvent(new Event('input',{bubbles:true}));document.querySelector('#plan-print').click();true")
@@ -96,6 +112,11 @@ try:
    if print_target:break
    time.sleep(.1)
   assert print_target,'Actual HTML print window missing'
+  if args.textbook_check:
+   plan_id=urllib.parse.parse_qs(urllib.parse.urlparse(print_target['url']).query)['plan_id'][0]
+   exported=evaluate("(async()=>await (await fetch('/api/v3/plans/export?plan_id="+plan_id+"')).json())()")
+   assert exported['version']==2 and exported['formal_teaching_evidence']==[]
+   (args.output_dir/'L05-plan.SYNTHETIC.json').write_text(json.dumps(exported,ensure_ascii=False,indent=2)+'\n')
   with connect(print_target['webSocketDebuggerUrl'],origin='http://localhost') as pw:
    def pc(method,params,n):
     pw.send(json.dumps({'id':n,'method':method,'params':params}))
@@ -108,6 +129,8 @@ try:
     if 'SYNTHETIC：教师V4' in text:break
     time.sleep(.1)
    assert 'SYNTHETIC：教师V4' in text and 'K011 v2' in text and '待审核' in text
+   if args.textbook_check:
+    assert all(term in text for term in ('原PDF91／印刷77','原PDF39／印刷29','侧走','待审核'))
    pdf=base64.b64decode(pc('Page.printToPDF',{'printBackground':True},100)['result']['data'])
    assert pdf.startswith(b'%PDF-')
    (args.output_dir/'L05-print.SYNTHETIC.pdf').write_bytes(pdf)
@@ -145,10 +168,20 @@ try:
   wait("document.querySelector('#plan-document').textContent.includes('专项教练')")
   assert evaluate("document.querySelector('#plan-document').textContent.includes('暂缓')")
   shot('07-resource-hold.SYNTHETIC.png')
+  if args.textbook_check:
+   status_code=evaluate("(async()=>{const packet=await (await fetch('/api/v3/export')).json();const k=packet.entries.find(e=>e.knowledge_id==='K012'&&e.version===2);k.version=3;k.content='SYNTHETIC 浏览器测试修订，支持关系待重新核对';return (await fetch('/api/v3/knowledge',{method:'POST',headers:{'Content-Type':'application/json','X-CoachLoop-Console':'1'},body:JSON.stringify(k)})).status;})()")
+   assert status_code==200
+   assert evaluate("(async()=> (await fetch("+json.dumps(print_target['url'])+")).status)()")==409
+   evaluate("document.querySelector('[data-lesson=L04]').click();true")
+   wait("document.querySelector('.lesson-card.active')?.dataset.lesson==='L04'")
+   evaluate("document.querySelector('[data-lesson=L05]').click();true")
+   wait("document.querySelector('#plan-document').textContent.includes('历史草稿引用的教材版本或声明已变化')")
+   evaluate("[...document.querySelectorAll('#plan-document p')].find(p=>p.textContent.includes('历史草稿引用')).scrollIntoView();true")
+   shot('10-stale-reference-blocked.SYNTHETIC.png')
   command('Page.navigate',{'url':base+'/advanced'})
   wait("Boolean(document.querySelector('#lesson-form')) && document.querySelectorAll('[name=theme_id] option').length>0")
   wait("document.querySelector('#lp-lesson').options.length===8")
-  (args.output_dir/'acceptance.json').write_text(json.dumps({'A_empty_init':True,'B_L05_loaded':True,'C_edit_and_real_PDF':True,'D_synthetic_loop':True,'E_missing_model_review_resource_holds':True,'F_advanced_entry':True,'knowledge_counts':status,'is_mock':True,'actual_teacher_review':False,'actual_Mac_test':False,'real_video_inference':False},ensure_ascii=False,indent=2)+'\n')
+  (args.output_dir/'acceptance.json').write_text(json.dumps({'textbook_facts_checked':args.textbook_check,'stale_textbook_print_blocked':args.textbook_check,'A_empty_init':True,'B_L05_loaded':True,'C_edit_and_real_PDF':True,'D_synthetic_loop':True,'E_missing_model_review_resource_holds':True,'F_advanced_entry':True,'knowledge_counts':status,'is_mock':True,'actual_teacher_review':False,'actual_Mac_test':False,'real_video_inference':False},ensure_ascii=False,indent=2)+'\n')
  print('V4 Chromium A-F PASS: empty seed, 8 lessons, readable L05, edits, actual HTML/PDF print, pending sources, missing model, synthetic events/feedback, invalidated confirmation, resource holds and advanced entry')
 finally:
  if browser is not None:browser.terminate();browser.wait(timeout=10)
