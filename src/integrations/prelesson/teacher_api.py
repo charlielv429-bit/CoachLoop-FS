@@ -16,8 +16,9 @@ from integrations.curriculum_v3.registry import Strict, Archive, RegistryError
 from integrations.curriculum_v3.review import EvidenceBundle
 from integrations.curriculum_v3.full_backup import snapshot
 from integrations.curriculum_v3.persistence import SQLiteRegistry
-from integrations.curriculum_v3.planning import TeacherEdits, guard_current_evidence
+from integrations.curriculum_v3.planning import guard_current_evidence
 from integrations.local_video.api import owner as video_owner
+from integrations.prelesson.textbook_content import assemble, markers_current
 
 ROOT=Path(__file__).resolve().parents[3]
 READ_PATHS={'/api/v4/catalogue','/api/v4/knowledge-status','/api/v4/print-plan','/api/v4/print-loop'}
@@ -76,9 +77,20 @@ def unavailable_print(status=409):
 def para(value):return '<p>'+escape(str(value)).replace('\n','<br>')+'</p>'
 
 
-def print_plan(plan):
+def display_warning(plan):
+    if "缺少正式专项依据" in plan["warning"]:
+        return "待审核教学草稿：原页核对、课程建议及现场缺项分列如下。逐条专项审核尚未完成，专项实操、示范与技术评价继续暂缓。"
+    return plan["warning"]
+
+
+def print_plan(plan, reference=None):
     edits=plan['current_teacher_edits']
-    sections=[('课次与状态',para(plan['lesson']['title']+' · 45分钟 · 文稿版本'+str(plan['version']))+para(plan['warning']))]
+    sections=[('课次与状态',para(plan['lesson']['title']+' · 45分钟 · 文稿版本'+str(plan['version']))+para(display_warning(plan)))]
+    if reference:
+        sections.append(('教材证据说明',para(reference['notice'])))
+        sections.append(('教材直接支持的事实（摘要，待审核）',''.join(para(f"{f['knowledge_id']} v{f['version']} / {f['source_id']} / {f['source_title']} / {f['locator']} / 声明 {f['report_id']} / "+('跨课次背景；' if f['cross_lesson_background'] else '')+f['text']) for f in reference['facts']) or para('本机尚无精确匹配的本课原页摘要。')))
+        sections.append(('基于教材编排的课程建议（非原文）',''.join(para(t) for t in reference['proposals'])))
+        sections.append(('分项证据与现场缺口',''.join(para(t) for t in reference['gaps'])))
     for key,label in LABELS.items():
         text=edits.get(key) or (plan['objective_draft'] if key=='goal_draft' else '待教师填写并复核；不自动补造专项动作、纠错或评价阈值。')
         sections.append((label,para(text)))
@@ -106,7 +118,7 @@ def create_router(registry,plans,loops):
     @router.get('/api/v4/catalogue')
     def catalogue():
         source=json.loads((ROOT/'docs/course-mvp/course-inventory.json').read_text())
-        return {'drafts':[{ 'lesson_id':item['lesson']['lesson_id'],'edits':TeacherEdits.model_validate(item['teacher_fields']).model_dump()} for item in source['lessons']],
+        return {'drafts':[assemble(registry,item['lesson']['lesson_id'],item['teacher_fields']) for item in source['lessons']],
                 'notice':'已有课程自拟草稿，所有文字待审核；不是实际教师意见。'}
 
     @router.get('/api/v4/knowledge-status')
@@ -125,7 +137,12 @@ def create_router(registry,plans,loops):
         try:
             plan=guard_current_evidence(plans.read(plan_id,owner=owner),registry)
             if plan['version']!=expected_version:raise RegistryError('Version changed')
-            return HTMLResponse(print_plan(plan))
+            source=json.loads((ROOT/'docs/course-mvp/course-inventory.json').read_text())
+            item=next(i for i in source['lessons'] if i['lesson']['lesson_id']==plan['lesson']['lesson_id'])
+            reference=assemble(registry,plan['lesson']['lesson_id'],item['teacher_fields'])
+            if not markers_current(plan['current_teacher_edits'],reference):
+                return unavailable_print()
+            return HTMLResponse(print_plan(plan,reference))
         except RegistryError:return unavailable_print()
 
     @router.get('/api/v4/print-loop',response_class=HTMLResponse)
