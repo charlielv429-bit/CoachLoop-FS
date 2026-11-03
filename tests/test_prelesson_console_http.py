@@ -63,8 +63,8 @@ Path(__file__).with_name('ready.txt').write_text('ready')
         payload=json.loads((ROOT/'docs/prelesson-workflow-v01.example-request.json').read_text())
         assert request('/api/v1/lesson-plans/draft',payload)[0]==401
         status,html,headers=request('/')
-        assert status==200 and 'HttpOnly' in headers['set-cookie'] and b'/console.js' in html
-        for path in ('/console.js','/console.css'):
+        assert status==200 and 'HttpOnly' in headers['set-cookie'] and b'/teacher.js' in html
+        for path in ('/teacher.js','/teacher.css','/advanced','/console.js','/console.css'):
             assert request(path)[0]==200
         plans=[]
         for count in (1,20):

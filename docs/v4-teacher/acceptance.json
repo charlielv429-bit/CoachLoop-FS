@@ -1,0 +1,20 @@
+{
+  "A_empty_init": true,
+  "B_L05_loaded": true,
+  "C_edit_and_real_PDF": true,
+  "D_synthetic_loop": true,
+  "E_missing_model_review_resource_holds": true,
+  "F_advanced_entry": true,
+  "knowledge_counts": {
+    "persistent": true,
+    "knowledge_ids": 23,
+    "versions": 27,
+    "reports": 50,
+    "decisions": 0,
+    "can_initialize": false
+  },
+  "is_mock": true,
+  "actual_teacher_review": false,
+  "actual_Mac_test": false,
+  "real_video_inference": false
+}

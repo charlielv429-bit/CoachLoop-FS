@@ -88,3 +88,6 @@ assets/mock/
 
 # Explicit blank teacher review deliverable; never allow textbook scans or real reviews.
 !docs/course-mvp/L05-teacher-review.docx
+
+# Generated synthetic teacher print acceptance only; textbook PDFs stay ignored.
+!docs/v4-teacher/L05-print.SYNTHETIC.pdf

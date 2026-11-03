@@ -57,7 +57,7 @@ try:
     profile=work/'profile';profile.mkdir()
     browser=subprocess.Popen([shutil.which('chromium') or shutil.which('google-chrome') or '/usr/lib/chromium/chromium','--headless','--no-sandbox','--disable-gpu','--disable-dev-shm-usage',
         '--disable-background-networking','--disable-extensions','--no-first-run','--remote-debugging-address=127.0.0.1',
-        '--remote-debugging-port=0','--remote-allow-origins=http://localhost','--user-data-dir='+str(profile),base],
+        '--remote-debugging-port=0','--remote-allow-origins=http://localhost','--user-data-dir='+str(profile),base+'/advanced'],
         stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
     for _ in range(100):
         if (profile/'DevToolsActivePort').exists():break

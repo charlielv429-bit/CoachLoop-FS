@@ -258,6 +258,15 @@ class SQLiteRegistry(Registry):
             result.append(envelope)
         return result
 
+    def initialization_counts(self):
+        """Read-only seed eligibility, including orphan evidence/review history."""
+        with self._transaction():
+            counts={table:self._connection.execute(f'SELECT COUNT(*) FROM {table}').fetchone()[0]
+                    for table in ('revisions','evidence_reports','review_decisions')}
+            ids=self._connection.execute('SELECT COUNT(DISTINCT knowledge_id) FROM revisions').fetchone()[0]
+            return dict(knowledge_ids=ids,versions=counts['revisions'],reports=counts['evidence_reports'],
+                        decisions=counts['review_decisions'],can_initialize=not any(counts.values()))
+
     def export_full(self):
         from .full_backup import snapshot
         with self._transaction():

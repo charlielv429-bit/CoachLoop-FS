@@ -12,4 +12,4 @@ else
   echo "Python unavailable. Use the project's existing Python environment."
   exit 1
 fi
-exec "${CONSOLE_PYTHON}" "${PROJECT_DIR}/scripts/run_prelesson_console.py" "$@"
+exec "${CONSOLE_PYTHON}" "${PROJECT_DIR}/scripts/run_prelesson_console.py" --open-browser "$@"
