@@ -29,6 +29,7 @@ function switchTab(name){
 }
 for(const button of document.querySelectorAll('#stage-nav [data-stage]')){button.addEventListener('click',()=>switchTab(button.dataset.stage));button.disabled=false;}
 function clearView(){
+  document.dispatchEvent(new Event('coachloop-evidence-changed'));
   result=null;report=null;document.querySelector('#video-events').replaceChildren();
   document.querySelector('#video-export').disabled=true;document.querySelector('#feedback-export').disabled=true;
   document.querySelector('#feedback-content').hidden=true;document.querySelector('#video-quality').textContent='';
@@ -82,10 +83,11 @@ async function waitForJob(current){
       if(state.state==='ready'){
         result=await api('/result?job_id='+encodeURIComponent(job));
         if(current!==version)return;
-        if(result.is_mock!==false||result.authenticated_coach!==false||result.review_verification!=='local_unverified'||result.technical_error_assessment!=='not_assessed')throw new Error('结果来源或审核保护异常。');
+        if((result.is_mock!==false&&!(result.is_mock===true&&result.synthetic_demo===true))||result.authenticated_coach!==false||result.review_verification!=='local_unverified'||result.technical_error_assessment!=='not_assessed')throw new Error('结果来源或审核保护异常。');
         if(blob){URL.revokeObjectURL(blob);blob=null;}
-        player.src=base+'/media?job_id='+encodeURIComponent(job);
-        renderResult();status('本机真实视频分析完成。所有候选变化待人工复核，审核身份未认证。');return;
+        if(!result.is_mock)player.src=base+'/media?job_id='+encodeURIComponent(job);
+        else{player.removeAttribute('src');player.load();}
+        renderResult();status(result.is_mock?'合成关键点演示已生成（未调用MediaPipe，不是真实视频）；候选变化待复核。':'本机真实视频分析完成。所有候选变化待人工复核，审核身份未认证。');return;
       }
       status(state.state==='queued'?'等待本机处理资源…':'本机解码 / MediaPipe / 特征与事件处理中，请稍候…');
       await new Promise(resolve=>setTimeout(resolve,750));
@@ -94,7 +96,7 @@ async function waitForJob(current){
 }
 function renderResult(){
   const quality=result.quality;
-  document.querySelector('#video-quality').textContent='真实视频 · 检出 '+quality.detected_frames+'/'+quality.source_frames+' 帧；检出比例 '+(quality.valid_frame_ratio*100).toFixed(1)+'%。检出不代表几何有效或技术正确。候选事件 '+result.review.records.length+' 条。';
+  document.querySelector('#video-quality').textContent=(result.is_mock?'合成关键点演示（未调用MediaPipe） · 合成检出 ':'真实视频 · 检出 ')+quality.detected_frames+'/'+quality.source_frames+' 帧；检出比例 '+(quality.valid_frame_ratio*100).toFixed(1)+'%。检出不代表几何有效或技术正确。候选事件 '+result.review.records.length+' 条。';
   const events=document.querySelector('#video-events');events.replaceChildren();
   if(!result.review.records.length){const p=document.createElement('p');p.textContent='未检出满足当前探索性参数的候选变化，不表示动作正确。';events.append(p);}
   for(const record of result.review.records){
@@ -109,7 +111,7 @@ function renderResult(){
     save.addEventListener('click',async()=>{
       save.disabled=true;const reviewedJob=job,current=version;
       try{await api('/review',{job_id:reviewedJob,event_id:record.event_id,status:choice.value,note:note.value,expected_sequence:record.review_history.length,request_id:crypto.randomUUID()});
-        if(current!==version)return;const updated=await api('/result?job_id='+encodeURIComponent(reviewedJob));if(current!==version)return;result=updated;report=null;document.querySelector('#feedback-content').hidden=true;document.querySelector('#feedback-export').disabled=true;renderResult();status('操作已追加到本地审核历史。身份未认证，不构成正式技术结论。');
+        if(current!==version)return;const updated=await api('/result?job_id='+encodeURIComponent(reviewedJob));if(current!==version)return;result=updated;report=null;document.querySelector('#feedback-content').hidden=true;document.querySelector('#feedback-export').disabled=true;renderResult();document.dispatchEvent(new Event('coachloop-evidence-changed'));status('操作已追加到本地审核历史。身份未认证，不构成正式技术结论。');
       }catch(error){status(error.message);}finally{save.disabled=false;}
     });
     box.append(title,detail,seek,choice,note,save);events.append(box);
@@ -134,7 +136,7 @@ function draw(){
 }
 player.addEventListener('timeupdate',draw);player.addEventListener('seeked',draw);player.addEventListener('loadedmetadata',draw);window.addEventListener('resize',draw);
 function download(value,name){const url=URL.createObjectURL(new Blob([JSON.stringify(value,null,2)],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
-document.querySelector('#video-export').addEventListener('click',async()=>{try{if(job){const current=version;const data=await api('/result?job_id='+encodeURIComponent(job));if(current!==version)return;download(data,'coachloop-real-video.local-unverified.json');}}catch(error){status(error.message);}});
+document.querySelector('#video-export').addEventListener('click',async()=>{try{if(job){const current=version;const data=await api('/result?job_id='+encodeURIComponent(job));if(current!==version)return;download(data,data.is_mock?'coachloop-SYNTHETIC-keypoints.local-unverified.json':'coachloop-real-video.local-unverified.json');}}catch(error){status(error.message);}});
 document.querySelector('#feedback-refresh').addEventListener('click',async()=>{
   const target=document.querySelector('#feedback-message');
   if(!job||!result){target.textContent='请先完成本机视频分析。';return;}
@@ -144,6 +146,9 @@ document.querySelector('#feedback-refresh').addEventListener('click',async()=>{
   }catch(error){report=null;document.querySelector('#feedback-content').hidden=true;document.querySelector('#feedback-export').disabled=true;target.textContent=error.message;}
 });
 document.querySelector('#feedback-export').addEventListener('click',()=>{if(report)download(report,'coachloop-postlesson.local-unverified.draft.json');});
+document.addEventListener('coachloop-demo-analysis',async event=>{
+  const current=++version;clearView();job=event.detail.job_id;try{await waitForJob(current);}catch(error){status(error.message);}
+});
 const initialVersion=version;
 api('/capabilities').then(async data=>{
   available=data.available;document.querySelector('#video-capabilities').textContent=data.available?'环境文件与工具已就绪；实际解码和MediaPipe运行仍需视频验证。':'缺少：'+data.missing.join('、')+'。请先运行视频环境准备脚本；备课仍可使用。';start.disabled=!data.available;

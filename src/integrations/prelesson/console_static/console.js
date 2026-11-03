@@ -155,3 +155,5 @@ if(isClassroom){
 
 if(!isClassroom){const videoScript=document.createElement('script');videoScript.src='/video-console.js';document.head.append(videoScript);}
 else{for(const button of document.querySelectorAll('#stage-nav [data-stage]')){if(button.dataset.stage!=='prelesson'){button.disabled=true;button.title='真实视频仅本机可用，模拟课堂禁止上传';}}}
+
+if(!isClassroom){const loopScript=document.createElement('script');loopScript.src='/teaching-loop.js';document.head.append(loopScript);}

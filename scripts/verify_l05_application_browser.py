@@ -20,7 +20,10 @@ from websockets.sync.client import connect
 parser=argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--p34',action='store_true',help='Also load pending original-page revisions into the isolated test KB')
 parser.add_argument('--course-mvp',action='store_true',help='Check all eight lesson views and L05 feedback draft in the existing UI')
+parser.add_argument('--teaching-loop',action='store_true',help='Exercise the private synthetic L05 teaching loop in Chromium')
+parser.add_argument('--loop-output-dir',type=Path,default=None,help='Optional NEW directory for explicitly synthetic loop artifacts')
 args=parser.parse_args()
+if args.teaching_loop:args.p34=True
 if args.course_mvp:args.p34=True
 
 root=Path(__file__).resolve().parents[1]
@@ -147,6 +150,9 @@ try:
         for name in names:
             assert exported['l05_teaching_design']['areas'][name]['text']==('教师反馈草稿（合成操作验收，非实际评价）' if args.course_mvp and name=='evaluation_observations' else '模拟教师填写：'+name)
             assert exported['l05_teaching_design']['areas'][name]['review_status']=='pending_review'
+        if args.teaching_loop:
+            from verify_teaching_loop_browser import exercise_loop
+            exercise_loop(evaluate,wait_for,command,work,args.loop_output_dir)
         registry=SQLiteRegistry(work/'knowledge')
         registry.save(Knowledge(**{**probe.model_dump(),'version':2,'content':'SYNTHETIC_NEW_VERSION'}));registry.close()
         evaluate("document.querySelector('#lp-refresh-evidence').click();true")

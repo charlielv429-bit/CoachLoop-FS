@@ -41,7 +41,10 @@
   }
   function show(plan,preserveEdits=false){
     const unsaved=preserveEdits?Object.fromEntries(new FormData(edit)):null;
+    const previousPlan=byId('output').dataset;
+    if(previousPlan.planId===plan.plan_id&&previousPlan.planVersion!==String(plan.version))document.dispatchEvent(new Event('coachloop-evidence-changed'));
     current=plan;byId('output').hidden=false;
+    Object.assign(byId('output').dataset,{planId:plan.plan_id,planVersion:String(plan.version),lessonId:plan.lesson.lesson_id,unsaved:preserveEdits?'true':'false'});
     byId('result').replaceChildren();
     byId('l05-fields').hidden=!plan.l05_teaching_design;byId('l05-fields').disabled=!plan.l05_teaching_design;
     if(plan.l05_teaching_design)renderL05(plan.l05_teaching_design,byId('result'));
@@ -56,7 +59,7 @@
     editDirty=preserveEdits;
     byId('history-result').textContent='';
   }
-  form.addEventListener('input',()=>{sequence++;current=null;byId('output').hidden=true;message('条件已变更，请重新生成；旧教案仍保留在本次进程历史中。');});
+  form.addEventListener('input',()=>{sequence++;current=null;byId('output').hidden=true;delete byId('output').dataset.planId;message('条件已变更，请重新生成；旧教案仍保留在本次进程历史中。');});
   form.addEventListener('submit',event=>{event.preventDefault();guard(async()=>{
     const token=++sequence, values=new FormData(form), conditions=Object.fromEntries(values);
     const lesson_id=conditions.lesson_id;delete conditions.lesson_id;delete conditions.prerequisites_confirmed;
@@ -65,7 +68,7 @@
     const plan=await api('plans/draft',{lesson_id,conditions,prerequisites_confirmed:values.has('prerequisites_confirmed')});
     if(token!==sequence)return;show(plan);message('已生成待审核教案框架；专项实操仍暂缓。');
   });});
-  edit.addEventListener('input',()=>{editDirty=true;editSequence++;});
+  edit.addEventListener('input',()=>{editDirty=true;editSequence++;byId('output').dataset.unsaved='true';});
   edit.addEventListener('submit',event=>{event.preventDefault();guard(async()=>{
     if(!current)throw new Error('请先生成课次框架。');
     const token=sequence, editToken=editSequence, plan=await api('plans/edit',{plan_id:current.plan_id,expected_version:current.version,...Object.fromEntries(new FormData(edit))});
